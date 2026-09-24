@@ -1,0 +1,26 @@
+# ROS 2 / colcon
+build/
+install/
+log/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+
+# Firmware build output
+firmware/build/
+
+# Local and generated data
+.env
+.env.*
+backups/
+АЙКАР/
+*.img
+*.img.*
+
+# Editors and OS
+.idea/
+.vscode/
+.DS_Store
+*~
