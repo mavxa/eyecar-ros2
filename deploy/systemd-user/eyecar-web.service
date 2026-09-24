@@ -1,0 +1,12 @@
+[Unit]
+Description=EyeCar web panel
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/python3 -m http.server 8080 --bind 0.0.0.0 --directory /home/mavxa/eyecar_web/www
+Restart=always
+RestartSec=2
+
+[Install]
+WantedBy=default.target

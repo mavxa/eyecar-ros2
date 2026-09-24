@@ -1,0 +1,13 @@
+[Unit]
+Description=EyeCar camera WebRTC server
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/home/mavxa/eyecar_web
+ExecStart=/home/mavxa/.local/bin/mediamtx /home/mavxa/eyecar_web/mediamtx.yml
+Restart=always
+RestartSec=2
+
+[Install]
+WantedBy=default.target

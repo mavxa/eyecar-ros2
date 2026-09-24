@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="dark">
+    <title>EyeCar</title>
+    <link rel="stylesheet" href="/styles.css">
+  </head>
+  <body>
+    <header>
+      <h1>EyeCar</h1>
+      <div class="statuses" aria-label="Состояние подключений">
+        <span id="ros-status" class="status offline">ROS: нет связи</span>
+        <span id="video-status" class="status">Video: WebRTC</span>
+      </div>
+    </header>
+
+    <main>
+      <section class="video-panel" aria-labelledby="video-title">
+        <div class="section-heading">
+          <h2 id="video-title">Камера</h2>
+          <a id="video-link" target="_blank" rel="noreferrer">Открыть отдельно</a>
+        </div>
+        <div class="video-frame">
+          <iframe
+            id="video"
+            title="Камера EyeCar"
+            allow="autoplay; fullscreen; picture-in-picture"
+            scrolling="no"
+          ></iframe>
+        </div>
+      </section>
+
+      <section class="control-panel" aria-labelledby="control-title">
+        <h2 id="control-title">Управление</h2>
+        <p class="hint">Удерживай несколько клавиш. Space — остановка.</p>
+
+        <div class="keys" aria-label="Управление ровером">
+          <button type="button" data-key="KeyW">W</button>
+          <button type="button" data-key="KeyA">A</button>
+          <button type="button" data-key="KeyS">S</button>
+          <button type="button" data-key="KeyD">D</button>
+          <button type="button" class="stop" data-key="Space">SPACE</button>
+        </div>
+
+        <dl class="command">
+          <div><dt>linear.x</dt><dd id="linear">0.000</dd></div>
+          <div><dt>angular.z</dt><dd id="angular">0.000</dd></div>
+        </dl>
+      </section>
+
+      <section class="topics-panel" aria-labelledby="topics-title">
+        <div class="section-heading">
+          <h2 id="topics-title">ROS topics</h2>
+          <span id="topic-count">0</span>
+        </div>
+        <div class="topics-table-wrap">
+          <table>
+            <thead><tr><th>Topic</th><th>Type</th></tr></thead>
+            <tbody id="topics">
+              <tr><td>/cmd_vel</td><td>geometry_msgs/msg/Twist</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <script src="/app.js"></script>
+  </body>
+</html>

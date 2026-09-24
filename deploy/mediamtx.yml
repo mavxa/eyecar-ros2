@@ -1,0 +1,33 @@
+logLevel: info
+logDestinations: [stdout]
+
+api: false
+metrics: false
+pprof: false
+playback: false
+rtmp: false
+hls: false
+srt: false
+moq: false
+
+rtsp: true
+rtspAddress: 127.0.0.1:8554
+rtspTransports: [tcp]
+
+webrtc: true
+webrtcAddress: :8889
+webrtcAllowOrigins: ["*"]
+webrtcLocalUDPAddress: :8189
+webrtcLocalTCPAddress: ""
+
+paths:
+  cam:
+    runOnInit: >-
+      sg video -c 'ffmpeg -nostdin -hide_banner -loglevel warning
+      -f v4l2 -input_format mjpeg -framerate 30 -video_size 640x360
+      -i /dev/video0 -an
+      -c:v libx264 -preset ultrafast -tune zerolatency
+      -profile:v baseline -pix_fmt yuv420p
+      -b:v 1000k -maxrate 1000k -bufsize 500k -g 15
+      -f rtsp -rtsp_transport tcp rtsp://127.0.0.1:$RTSP_PORT/$MTX_PATH'
+    runOnInitRestart: true

@@ -1,0 +1,12 @@
+[Unit]
+Description=EyeCar ROS 2 serial base driver
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/bin/bash -c 'source /opt/ros/jazzy/setup.bash && source /home/mavxa/ros2_ws/install/setup.bash && exec ros2 run eyecar_base serial_driver'
+Restart=always
+RestartSec=2
+
+[Install]
+WantedBy=default.target

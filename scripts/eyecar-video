@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+
+set -o pipefail
+
+/usr/bin/ssh \
+  -T \
+  -o ControlMaster=no \
+  -o ControlPath=none \
+  -o Compression=no \
+  eyecar \
+  'ffmpeg -nostdin -hide_banner -loglevel error \
+    -f v4l2 -input_format mjpeg -framerate 30 -video_size 640x360 \
+    -i /dev/video0 -an -c:v copy -flush_packets 1 -f nut pipe:1' \
+| ffplay \
+    -hide_banner \
+    -loglevel warning \
+    -nostats \
+    -window_title EyeCar \
+    -fflags nobuffer \
+    -flags low_delay \
+    -framedrop \
+    -sync ext \
+    -f nut pipe:0

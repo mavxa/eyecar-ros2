@@ -1,0 +1,13 @@
+[Unit]
+Description=EyeCar ROS 2 WebSocket bridge
+After=network.target eyecar-base.service
+Wants=eyecar-base.service
+
+[Service]
+Type=simple
+ExecStart=/bin/bash -c 'source /opt/ros/jazzy/setup.bash && source /home/mavxa/ros2_ws/install/setup.bash && exec ros2 run eyecar_web web_bridge'
+Restart=always
+RestartSec=2
+
+[Install]
+WantedBy=default.target
