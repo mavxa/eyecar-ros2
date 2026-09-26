@@ -5,6 +5,7 @@ from typing import Any
 from eyecar_interfaces.msg import LedState, LedStateArray
 from eyecar_interfaces.srv import SetLeds
 import rclpy
+from rclpy.executors import ExternalShutdownException
 from rclpy.node import Node
 from rclpy.qos import DurabilityPolicy, QoSProfile, ReliabilityPolicy
 from std_msgs.msg import ColorRGBA, UInt8
@@ -199,7 +200,7 @@ def main(args=None) -> None:
     try:
         node = LedStripNode()
         rclpy.spin(node)
-    except KeyboardInterrupt:
+    except (KeyboardInterrupt, ExternalShutdownException):
         pass
     finally:
         if node is not None:

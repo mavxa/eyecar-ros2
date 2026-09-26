@@ -32,6 +32,17 @@ sudo bash -lc '
 '
 ```
 
+For normal operation, install and enable the included root system service. It
+forces Fast DDS to use UDP so non-root EyeCar nodes can communicate with the
+root hardware driver:
+
+```bash
+sudo install -m 0644 deploy/systemd/eyecar-led.service \
+  /etc/systemd/system/eyecar-led.service
+sudo systemctl daemon-reload
+sudo systemctl enable --now eyecar-led.service
+```
+
 ## Topics
 
 Set all pixels to red:

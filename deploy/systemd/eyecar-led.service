@@ -1,0 +1,16 @@
+[Unit]
+Description=EyeCar WS281x LED strip driver
+After=network.target
+
+[Service]
+Type=simple
+Environment=HOME=/root
+Environment=ROS_DOMAIN_ID=0
+Environment=ROS_AUTOMATIC_DISCOVERY_RANGE=SUBNET
+Environment=FASTDDS_BUILTIN_TRANSPORTS=UDPv4
+ExecStart=/bin/bash -c 'source /opt/ros/jazzy/setup.bash && source /home/mavxa/ros2_ws/install/setup.bash && exec ros2 run eyecar_led led_strip --ros-args -p led_count:=12 -p brightness:=32'
+Restart=always
+RestartSec=2
+
+[Install]
+WantedBy=multi-user.target
