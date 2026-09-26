@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>eyecar_led</name>
+  <version>0.1.0</version>
+  <description>ROS 2 driver for the EyeCar WS281x status strip.</description>
+  <maintainer email="mavxa@users.noreply.github.com">mavxa</maintainer>
+  <license>MIT</license>
+
+  <exec_depend>eyecar_interfaces</exec_depend>
+  <exec_depend>rclpy</exec_depend>
+  <exec_depend>std_msgs</exec_depend>
+
+  <export>
+    <build_type>ament_python</build_type>
+  </export>
+</package>
