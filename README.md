@@ -22,9 +22,9 @@ Target: Ubuntu Server 24.04 ARM64 with ROS 2 Jazzy.
 
 ## Security status
 
-The source panel is read-only: its WebSocket bridge does not publish control
-commands, and ROS services are configured for local-only DDS. The deployed Pi
-must be updated and tested before treating this as the live security state.
+The deployed panel is read-only: its WebSocket bridge does not publish control
+commands and listens on loopback behind Nginx. ROS services are configured for
+local-only DDS; discovery from another ROS host has not yet been tested.
 The camera and topic values remain visible to devices on the same network.
 
 See [WEB_PANEL.md](docs/WEB_PANEL.md) for local preview and deployment, and

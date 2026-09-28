@@ -8,9 +8,11 @@
 английском. Панель не отправляет
 команды роботу. Управление остаётся в SSH: ros2 run eyecar_teleop keyboard_teleop.
 
-Сейчас это локально собранный черновик. Pi из домашней сети недоступна; активный
-сервер на ровере пока может оставаться старой версией :8080. Команды ниже —
-процедура установки и проверки, а не отчёт о проведённом развёртывании.
+28 сентября 2026 панель развёрнута на Pi: Nginx слушает :80, старый сервер
+:8080 выключен, WebSocket-мост слушает только 127.0.0.1:9090. На Pi проверены
+список живых топиков, чтение JPEG через мост и около 9,5 кадров/с в
+`/camera/image_raw`. WebRTC-страница MediaMTX отвечает по :8889; воспроизведение
+в браузере на каждом клиентском устройстве отдельно не проверялось.
 
 ## Локальное редактирование
 
@@ -50,7 +52,7 @@ ROS-поток берётся из существующего RTSP, поэтом
 70. 8 ГБ ОЗУ достаточно для такого буфера, но нагрузку на CPU, задержку и
 потерю кадров нужно измерить на Pi перед постоянным включением.
 
-## Установка на Pi, когда она снова доступна
+## Установка на Pi
 
 Сначала проверить, что на Pi установлены nginx, python3-opencv, ROS 2 Jazzy
 и ros-jazzy-rmw-fastrtps-cpp, есть права на установку Nginx, а актуальный
@@ -64,7 +66,7 @@ sudo apt install avahi-daemon
 sudo hostnamectl set-hostname eyecar
 sudo systemctl enable --now avahi-daemon
 mkdir -p ~/eyecar_web ~/.config/systemd/user
-cp deploy/fastdds-loopback.xml deploy/ros-local.env ~/eyecar_web/
+cp deploy/ros-local.env ~/eyecar_web/
 cp deploy/systemd-user/{eyecar-base,eyecar-rosbridge,eyecar-camera}.service ~/.config/systemd/user/
 sudo cp deploy/systemd/eyecar-led.service /etc/systemd/system/
 sudo cp deploy/nginx/eyecar.conf /etc/nginx/sites-available/eyecar
@@ -104,8 +106,8 @@ ros2 topic list
 ros2 run eyecar_teleop keyboard_teleop
 ~~~
 
-Проверить на Pi ros2 topic hz /camera/image_raw --qos-reliability best_effort,
-ros2 topic hz /camera/image_raw/compressed --qos-reliability best_effort, top,
+Проверить на Pi `ros2 topic hz /camera/image_raw --spin-time 3`,
+`ros2 topic hz /camera/image_raw/compressed --spin-time 3`, `top`,
 затем открыть /,
 /cmd_vel/, /cameras/cam/, /cam/ на телефоне и ноуте. Проверить прямой переход по
 вложенному URL и работу после перезагрузки. С другого компьютера с ROS убедиться,

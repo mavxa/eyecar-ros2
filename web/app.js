@@ -169,7 +169,7 @@ function connect() {
     try { packet = JSON.parse(event.data); } catch { return; }
     if (packet.op === 'topics' && packet.topics && typeof packet.topics === 'object') {
       state.topics = packet.topics;
-      render();
+      if (!['camera', 'standalone-camera'].includes(route())) render();
     } else if (packet.op === 'message' && packet.topic === state.watching) {
       state.messages.unshift({ time: new Date().toLocaleTimeString('en-GB'), msg: packet.msg });
       state.messages.length = Math.min(state.messages.length, 30);
@@ -181,7 +181,7 @@ function connect() {
     state.connected = false;
     state.topics = {};
     setStatus('ROS: offline');
-    render();
+    if (!['camera', 'standalone-camera'].includes(route())) render();
     setTimeout(connect, 1500);
   });
 }
@@ -194,4 +194,5 @@ document.addEventListener('click', (event) => {
 });
 window.addEventListener('popstate', render);
 setInterval(() => { if (state.connected) send({ op: 'list_topics' }); }, 3000);
+render();
 connect();

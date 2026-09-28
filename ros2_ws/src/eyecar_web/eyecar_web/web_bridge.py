@@ -96,10 +96,10 @@ class EyeCarWebBridge(Node):
         super().__init__('eyecar_web_bridge')
         self.declare_parameter('address', '127.0.0.1')
         self.declare_parameter('port', 9090)
-        self.clients: set[PanelClient] = set()
+        self.panel_clients: set[PanelClient] = set()
         self.clients_lock = threading.Lock()
         self.topic_snapshot: dict[str, str] = {}
-        self.subscriptions: dict[str, tuple[str, object]] = {}
+        self.watched_subscriptions: dict[str, tuple[str, object]] = {}
         self.last_sent: dict[str, float] = {}
         self.stopping = threading.Event()
         self.create_timer(0.2, self._refresh_topics_and_watches)
@@ -121,15 +121,15 @@ class EyeCarWebBridge(Node):
         }
         with self.clients_lock:
             self.topic_snapshot = snapshot
-            wanted = {client.topic for client in self.clients if client.topic}
+            wanted = {client.topic for client in self.panel_clients if client.topic}
 
-        for name, (type_name, subscription) in list(self.subscriptions.items()):
+        for name, (type_name, subscription) in list(self.watched_subscriptions.items()):
             if name not in wanted or snapshot.get(name) != type_name:
                 self.destroy_subscription(subscription)
-                del self.subscriptions[name]
+                del self.watched_subscriptions[name]
                 self.last_sent.pop(name, None)
 
-        for name in wanted - self.subscriptions.keys():
+        for name in wanted - self.watched_subscriptions.keys():
             type_name = snapshot.get(name)
             if type_name is None:
                 continue
@@ -140,7 +140,7 @@ class EyeCarWebBridge(Node):
                         topic, kind, msg),
                     QoSProfile(depth=5, reliability=ReliabilityPolicy.BEST_EFFORT),
                 )
-                self.subscriptions[name] = (type_name, subscription)
+                self.watched_subscriptions[name] = (type_name, subscription)
             except (ImportError, ValueError, RuntimeError) as exc:
                 self.get_logger().warning(f'Cannot watch {name}: {exc}')
 
@@ -161,7 +161,7 @@ class EyeCarWebBridge(Node):
             self.get_logger().warning(f'Cannot display {topic}: {exc}')
             return
         with self.clients_lock:
-            clients = tuple(c for c in self.clients if c.topic == topic)
+            clients = tuple(c for c in self.panel_clients if c.topic == topic)
         for client in clients:
             client.send(result)
 
@@ -198,7 +198,7 @@ class EyeCarWebBridge(Node):
             connection.settimeout(None)
             client = PanelClient(connection)
             with self.clients_lock:
-                self.clients.add(client)
+                self.panel_clients.add(client)
             self.get_logger().info(f'Viewer connected: {address[0]}')
             stream = connection.makefile('rb')
             while not self.stopping.is_set() and not client.closed:
@@ -214,7 +214,7 @@ class EyeCarWebBridge(Node):
         finally:
             if client is not None:
                 with self.clients_lock:
-                    self.clients.discard(client)
+                    self.panel_clients.discard(client)
                 client.close()
             else:
                 with contextlib.suppress(OSError):
@@ -254,8 +254,8 @@ class EyeCarWebBridge(Node):
         with contextlib.suppress(OSError):
             self.listener.close()
         with self.clients_lock:
-            clients = tuple(self.clients)
-            self.clients.clear()
+            clients = tuple(self.panel_clients)
+            self.panel_clients.clear()
         for client in clients:
             client.close()
 
