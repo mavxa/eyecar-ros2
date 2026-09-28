@@ -10,6 +10,8 @@ from rclpy.node import Node
 from rclpy.qos import DurabilityPolicy, QoSProfile, ReliabilityPolicy
 from std_msgs.msg import ColorRGBA, UInt8
 
+RGB_PATTERN = ((255, 0, 0), (0, 255, 0), (0, 0, 255))
+
 
 def clamp(value: float, minimum: float, maximum: float) -> float:
     return max(minimum, min(maximum, value))
@@ -22,7 +24,7 @@ class LedStripNode(Node):
         super().__init__('eyecar_led_driver')
 
         self.declare_parameter('gpio_pin', 18)
-        self.declare_parameter('led_count', 12)
+        self.declare_parameter('led_count', 13)
         self.declare_parameter('brightness', 64)
         self.declare_parameter('frequency_hz', 800_000)
         self.declare_parameter('dma_channel', 10)
@@ -63,7 +65,10 @@ class LedStripNode(Node):
             channel=pwm_channel,
         )
         self.strip.begin()
-        self.pixel_rgb = [(255, 255, 255) for _ in range(self.led_count)]
+        self.pixel_rgb = [
+            RGB_PATTERN[index % len(RGB_PATTERN)]
+            for index in range(self.led_count)
+        ]
         self._closed = False
 
         state_qos = QoSProfile(

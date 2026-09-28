@@ -55,18 +55,21 @@ ROS-поток берётся из существующего RTSP, поэтом
 ## Установка на Pi
 
 Сначала проверить, что на Pi установлены nginx, python3-opencv, ROS 2 Jazzy
-и ros-jazzy-rmw-fastrtps-cpp, есть права на установку Nginx, а актуальный
+и ros-jazzy-rmw-cyclonedds-cpp, есть права на установку Nginx, а актуальный
 репозиторий скопирован в ~/eyecar-ros2. Сохранить активные конфиги до замены.
 Для всех команд ROS на Pi нужен один и тот же локальный профиль DDS.
 
 ~~~bash
 cd ~/eyecar-ros2
-sudo apt install nginx python3-opencv ros-jazzy-rmw-fastrtps-cpp
+sudo apt install nginx python3-opencv ros-jazzy-rmw-cyclonedds-cpp
 sudo apt install avahi-daemon
 sudo hostnamectl set-hostname eyecar
 sudo systemctl enable --now avahi-daemon
 mkdir -p ~/eyecar_web ~/.config/systemd/user
 cp deploy/ros-local.env ~/eyecar_web/
+cp deploy/cyclonedds-loopback.xml ~/eyecar_web/
+grep -qxF 'set -a; source /home/mavxa/eyecar_web/ros-local.env; set +a' ~/.bashrc \
+  || echo 'set -a; source /home/mavxa/eyecar_web/ros-local.env; set +a' >> ~/.bashrc
 cp deploy/systemd-user/{eyecar-base,eyecar-rosbridge,eyecar-camera}.service ~/.config/systemd/user/
 sudo cp deploy/systemd/eyecar-led.service /etc/systemd/system/
 sudo cp deploy/nginx/eyecar.conf /etc/nginx/sites-available/eyecar
@@ -112,7 +115,7 @@ ros2 run eyecar_teleop keyboard_teleop
 /cmd_vel/, /cameras/cam/, /cam/ на телефоне и ноуте. Проверить прямой переход по
 вложенному URL и работу после перезагрузки. С другого компьютера с ROS убедиться,
 что узлы Pi не обнаруживаются. Если обнаруживаются, не считать DDS изоляцию
-готовой: проверить переменные всех сервисов и профили Fast DDS, а также
+готовой: проверить переменные всех сервисов и интерфейс `lo` в Cyclone DDS, а также
 остановить узлы, запущенные вручную без локального профиля.
 
 eyecar.local зависит от работающего mDNS/Avahi у Pi и клиента; по IP панель

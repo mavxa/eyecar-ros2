@@ -17,6 +17,7 @@ USB camera -> ffmpeg -> MediaMTX -> WebRTC panel
 - `deploy/` — Nginx, MediaMTX, local DDS profile, and systemd services;
 - `docs/` — installation and workflow notes;
 - `scripts/` — helper scripts.
+- `examples/` — small ROS 2 usage examples, including LED colors.
 
 Target: Ubuntu Server 24.04 ARM64 with ROS 2 Jazzy.
 
