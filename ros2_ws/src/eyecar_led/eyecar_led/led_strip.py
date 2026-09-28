@@ -63,7 +63,7 @@ class LedStripNode(Node):
             channel=pwm_channel,
         )
         self.strip.begin()
-        self.pixel_rgb = [(0, 0, 0) for _ in range(self.led_count)]
+        self.pixel_rgb = [(255, 255, 255) for _ in range(self.led_count)]
         self._closed = False
 
         state_qos = QoSProfile(

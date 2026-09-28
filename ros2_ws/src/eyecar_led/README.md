@@ -3,8 +3,10 @@
 ROS 2 driver for a three-wire WS2812/SK6812-compatible strip connected to
 BCM GPIO18, physical pin 12. The power supply and Raspberry Pi must share GND.
 
-The EyeCar configuration controls 12 pixels at low brightness. It supports a
-single fill color and Clover-style per-pixel updates.
+The EyeCar configuration controls 12 pixels at low brightness. The strip starts
+white when the driver starts. It supports a single fill color and Clover-style
+per-pixel updates. If the physical strip has 13 pixels, the thirteenth remains
+off until `led_count` is changed to 13 in the systemd service.
 
 ## Install and build on the Raspberry Pi
 
@@ -32,9 +34,7 @@ sudo bash -lc '
 '
 ```
 
-For normal operation, install and enable the included root system service. It
-forces Fast DDS to use UDP so non-root EyeCar nodes can communicate with the
-root hardware driver:
+For normal operation, install and enable the included root system service:
 
 ```bash
 sudo install -m 0644 deploy/systemd/eyecar-led.service \
@@ -61,6 +61,11 @@ ros2 topic pub --once /eyecar/led/brightness std_msgs/msg/UInt8 \
 
 Current values are published in `/eyecar/led/state` and
 `/eyecar/led/brightness_state`. Publishing black turns the strip off.
+
+On the current Pi deployment, a publisher running as `mavxa` discovers the
+root-owned LED node but its color messages do not reach the callback. Publishing
+as root does reach it. This ROS transport issue is still open; the startup
+white color does not depend on a separate publisher.
 
 ## Individual pixels
 
