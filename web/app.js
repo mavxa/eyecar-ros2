@@ -171,8 +171,13 @@ function connect() {
       state.topics = packet.topics;
       if (!['camera', 'standalone-camera'].includes(route())) render();
     } else if (packet.op === 'message' && packet.topic === state.watching) {
-      state.messages.unshift({ time: new Date().toLocaleTimeString('en-GB'), msg: packet.msg });
-      state.messages.length = Math.min(state.messages.length, 30);
+      const entry = { time: new Date().toLocaleTimeString('en-GB'), msg: packet.msg };
+      if (state.topics[packet.topic] === 'sensor_msgs/msg/CompressedImage') {
+        state.messages = [entry];
+      } else {
+        state.messages.unshift(entry);
+        state.messages.length = Math.min(state.messages.length, 30);
+      }
       renderTopic(packet.topic);
     }
   });

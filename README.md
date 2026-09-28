@@ -30,6 +30,7 @@ The camera and topic values remain visible to devices on the same network.
 
 See [WEB_PANEL.md](docs/WEB_PANEL.md) for local preview and deployment, and
 [ROS_WORKFLOW_AND_FIRMWARE.md](docs/ROS_WORKFLOW_AND_FIRMWARE.md) for ROS and
-Arduino workflows.
+Arduino workflows. See [VISION.md](docs/VISION.md) for the shared Ultralytics
+environment and the student's annotated-camera topic interface.
 
 Licensed under the MIT License.
