@@ -12,6 +12,9 @@ __pycache__/
 firmware/build/
 
 # Local and generated data
+.superdesign/
+web/node_modules/
+web/dist/
 .env
 .env.*
 backups/

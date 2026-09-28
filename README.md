@@ -4,16 +4,17 @@ ROS 2 Jazzy software for an educational EyeCar rover based on Raspberry Pi 4
 and Arduino Mega 2560.
 
 ```text
-keyboard / web panel -> /cmd_vel -> serial driver -> Arduino -> motor + steering
+keyboard over SSH -> /cmd_vel -> serial driver -> Arduino -> motor + steering
 USB camera -> ffmpeg -> MediaMTX -> WebRTC panel
+                                -> RTSP -> eyecar_camera -> /camera/image_raw
 ```
 
 ## Structure
 
 - `ros2_ws/src/` — ROS 2 packages;
 - `firmware/` — Arduino firmware;
-- `web/` — minimal browser panel;
-- `deploy/` — MediaMTX and systemd user services;
+- `web/` — Vite-based read-only topic and camera browser;
+- `deploy/` — Nginx, MediaMTX, local DDS profile, and systemd services;
 - `docs/` — installation and workflow notes;
 - `scripts/` — helper scripts.
 
@@ -21,8 +22,13 @@ Target: Ubuntu Server 24.04 ARM64 with ROS 2 Jazzy.
 
 ## Security status
 
-The current web panel has no authentication or operator lock. Anyone who can
-reach its network ports can publish rover control commands. Use it only on a
-trusted isolated network until authentication and command ownership are added.
+The source panel is read-only: its WebSocket bridge does not publish control
+commands, and ROS services are configured for local-only DDS. The deployed Pi
+must be updated and tested before treating this as the live security state.
+The camera and topic values remain visible to devices on the same network.
+
+See [WEB_PANEL.md](docs/WEB_PANEL.md) for local preview and deployment, and
+[ROS_WORKFLOW_AND_FIRMWARE.md](docs/ROS_WORKFLOW_AND_FIRMWARE.md) for ROS and
+Arduino workflows.
 
 Licensed under the MIT License.

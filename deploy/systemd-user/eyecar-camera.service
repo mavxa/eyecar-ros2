@@ -1,0 +1,14 @@
+[Unit]
+Description=EyeCar ROS camera publisher
+After=eyecar-video.service
+Wants=eyecar-video.service
+
+[Service]
+Type=simple
+EnvironmentFile=/home/mavxa/eyecar_web/ros-local.env
+ExecStart=/bin/bash -c 'source /opt/ros/jazzy/setup.bash && source /home/mavxa/ros2_ws/install/setup.bash && exec ros2 run eyecar_camera camera_publisher'
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=default.target

@@ -44,13 +44,12 @@ executable пакета и запускает его `main()`. Уже код в�
 ## 2. Что происходит в текущем EyeCar
 
 ```text
-терминал                         браузер
-ros2 run eyecar_teleop          http://<ip>:8080
+терминал SSH                    браузер
+ros2 run eyecar_teleop          http://<ip>/
   keyboard_teleop                    │
-        │                       /eyecar_web_bridge
-        └──────────────┬─────────────┘
-                       ▼
-             /cmd_vel (Twist)
+        │                       только просмотр
+        ▼
+  /cmd_vel (Twist)
                        │
                        ▼
        /eyecar_serial_driver (user-сервис)
@@ -231,22 +230,20 @@ colcon build --symlink-install --packages-up-to rover_state
 
 ## 7. Web-панель и USB-камера
 
-Основной способ просмотра и управления — открыть на ноутбуке или телефоне в той
-же сети:
+Панель для просмотра после установки новой версии:
 
 ```text
-http://172.16.1.182:8080
+http://eyecar.local/
 ```
 
-Текущий IP выдан сетью и может измениться. Панель содержит WebRTC-видео,
-состояние ROS-моста, список топиков и WASD-управление. Сочетания клавиш работают,
-потому что браузер сообщает отдельные события нажатия и отпускания; например,
-при `W+D` одновременно публикуются `linear.x=0.18` и `angular.z=-0.85`.
+Если mDNS недоступен, открыть `http://<IP Pi>/`. Панель содержит WebRTC-видео,
+список топиков и последние сообщения. Управление остаётся в терминальной
+`keyboard_teleop`, где доступны сочетания W+A/W+D/S+A/S+D.
 
 Сервисы на Raspberry Pi:
 
 ```bash
-systemctl --user status eyecar-base eyecar-web eyecar-video eyecar-rosbridge
+systemctl --user status eyecar-base eyecar-video eyecar-rosbridge eyecar-camera
 journalctl --user -u eyecar-video -f
 journalctl --user -u eyecar-rosbridge -f
 ```

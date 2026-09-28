@@ -19,7 +19,7 @@ setup(
     zip_safe=True,
     maintainer='mavxa',
     maintainer_email='mavxa@users.noreply.github.com',
-    description='Minimal ROS 2 WebSocket bridge for the EyeCar panel.',
+    description='Read-only ROS 2 topic bridge for the EyeCar panel.',
     license='MIT',
     entry_points={
         'console_scripts': [

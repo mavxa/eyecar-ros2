@@ -1,210 +1,197 @@
-const host = window.location.hostname;
-const rosStatus = document.querySelector('#ros-status');
-const videoStatus = document.querySelector('#video-status');
-const video = document.querySelector('#video');
-const videoLink = document.querySelector('#video-link');
-const topicsBody = document.querySelector('#topics');
-const topicCount = document.querySelector('#topic-count');
-const linearValue = document.querySelector('#linear');
-const angularValue = document.querySelector('#angular');
-const buttons = [...document.querySelectorAll('[data-key]')];
+import './styles.css';
 
-const videoUrl = `http://${host}:8889/cam?controls=false&muted=true&autoplay=true&playsInline=true`;
-video.src = videoUrl;
-videoLink.href = videoUrl;
-
-const speeds = {
-  forward: 0.18,
-  reverse: 0.25,
-  steering: 0.85,
+const app = document.querySelector('#app');
+const status = document.querySelector('#ros-status');
+const demo = import.meta.env.DEV && !new URLSearchParams(location.search).has('live');
+const sample = {
+  '/cmd_vel': 'geometry_msgs/msg/Twist',
+  '/camera/image_raw': 'sensor_msgs/msg/Image',
+  '/camera/image_raw/compressed': 'sensor_msgs/msg/CompressedImage',
+  '/eyecar/led/state': 'std_msgs/msg/ColorRGBA',
+  '/rosout': 'rcl_interfaces/msg/Log',
 };
+const state = { topics: demo ? sample : {}, socket: null, watching: null, messages: [], connected: false };
 
-const movementKeys = new Set(['KeyW', 'KeyA', 'KeyS', 'KeyD']);
-const heldKeys = new Set();
-let socket = null;
-let reconnectTimer = null;
-let topicsTimer = null;
-let commandTimer = null;
-let lastCommand = { linear: 0, angular: 0 };
-
-function setRosStatus(text, online = false) {
-  rosStatus.textContent = text;
-  rosStatus.classList.toggle('online', online);
-  rosStatus.classList.toggle('offline', !online);
+function el(tag, className, content) {
+  const node = document.createElement(tag);
+  if (className) node.className = className;
+  if (content !== undefined) node.textContent = content;
+  return node;
 }
-
-function send(payload) {
-  if (socket?.readyState !== WebSocket.OPEN) return false;
-  socket.send(JSON.stringify(payload));
-  return true;
+function link(label, href, className) {
+  const node = el('a', className, label);
+  node.href = href;
+  node.dataset.route = '';
+  return node;
 }
-
-function currentCommand() {
-  let linear = 0;
-  let angular = 0;
-
-  if (heldKeys.has('KeyW') !== heldKeys.has('KeyS')) {
-    linear = heldKeys.has('KeyW') ? speeds.forward : -speeds.reverse;
+function route() {
+  const path = decodeURI(location.pathname).replace(/\/+$/, '') || '/';
+  if (path === '/') return null;
+  if (path === '/cameras/cam') return 'camera';
+  if (path === '/cam') return 'standalone-camera';
+  return path;
+}
+function setStatus(label, kind = '') {
+  status.className = 'connection ' + kind;
+  status.lastElementChild.textContent = label;
+}
+function send(packet) {
+  if (state.socket?.readyState === WebSocket.OPEN) state.socket.send(JSON.stringify(packet));
+}
+function row(name, type, href, badge = '') {
+  const item = link('', href, 'topic-row');
+  const left = el('span');
+  left.append(el('span', 'topic-name', name), el('span', 'topic-type', type));
+  const right = el('span', 'row-right');
+  if (badge) right.append(el('span', 'tag', badge));
+  right.append(el('span', '', '›'));
+  item.append(left, right);
+  return item;
+}
+function section(title, rows) {
+  const block = el('section', 'section');
+  const heading = el('div', 'section-heading');
+  heading.append(el('h2', '', title), el('span', 'count', String(rows.length)));
+  const list = el('div', 'topic-list');
+  list.append(...(rows.length ? rows : [el('p', 'empty', 'No topics available yet.')]));
+  block.append(heading, list);
+  return block;
+}
+function head(name, type) {
+  const block = el('div', 'detail-head');
+  block.append(el('h1', '', name), el('div', 'detail-type', type));
+  return block;
+}
+function renderHome() {
+  const heading = el('div', 'page-heading');
+  const title = el('div');
+  title.append(el('h1', '', 'Rover overview'), el('p', '', 'Cameras and live ROS topics. The list updates automatically.'));
+  heading.append(title);
+  const topics = Object.entries(state.topics).sort(([a], [b]) => a.localeCompare(b));
+  const isImage = (type) => ['sensor_msgs/msg/Image', 'sensor_msgs/msg/CompressedImage'].includes(type);
+  const cameras = [row('/cam', 'WebRTC - MediaMTX', '/cameras/cam/', demo ? 'DEMO' : 'VIDEO')];
+  cameras.push(...topics.filter(([, type]) => isImage(type)).map(([name, type]) => row(name, type, name + '/')));
+  const others = topics.filter(([, type]) => !isImage(type)).map(([name, type]) => row(name, type, name + '/'));
+  app.replaceChildren(heading, section('Cameras', cameras), section('ROS topics', others));
+}
+function cameraFrame() {
+  const frame = el('div', 'video-frame');
+  if (demo) {
+    frame.append(el('div', 'video-placeholder', 'Demo preview - video appears when connected to the rover'));
+  } else {
+    const video = document.createElement('iframe');
+    video.title = 'EyeCar camera';
+    video.allow = 'autoplay; fullscreen';
+    video.src = location.protocol + '//' + location.hostname + ':8889/cam?controls=false&muted=true&autoplay=true&playsInline=true';
+    frame.append(video);
   }
-  if (heldKeys.has('KeyA') !== heldKeys.has('KeyD')) {
-    angular = heldKeys.has('KeyA') ? speeds.steering : -speeds.steering;
+  return frame;
+}
+function renderCamera() {
+  const actions = el('div', 'detail-actions');
+  const standalone = link('Open /cam in a new tab', '/cam/', 'subtle-link');
+  standalone.target = '_blank';
+  standalone.rel = 'noopener';
+  actions.append(standalone);
+  if (!demo) {
+    const direct = el('a', 'subtle-link', 'Open source stream');
+    direct.href = location.protocol + '//' + location.hostname + ':8889/cam';
+    direct.target = '_blank';
+    direct.rel = 'noopener';
+    actions.append(direct);
   }
-  return { linear, angular };
+  app.replaceChildren(link('All topics', '/', 'back'), head('/cam', 'WebRTC - MediaMTX'), cameraFrame(), actions);
 }
-
-function renderCommand(command) {
-  linearValue.textContent = command.linear.toFixed(3);
-  angularValue.textContent = command.angular.toFixed(3);
-  buttons.forEach((button) => {
-    button.classList.toggle('active', heldKeys.has(button.dataset.key));
-  });
+function renderStandaloneCamera() {
+  app.replaceChildren(cameraFrame());
 }
-
-function publishCommand(force = false) {
-  const command = currentCommand();
-  const changed = command.linear !== lastCommand.linear
-    || command.angular !== lastCommand.angular;
-  if (!force && !changed && heldKeys.size === 0) return;
-
-  send({
-    op: 'publish',
-    topic: '/cmd_vel',
-    msg: {
-      linear: { x: command.linear, y: 0, z: 0 },
-      angular: { x: 0, y: 0, z: command.angular },
-    },
-  });
-  lastCommand = command;
-  renderCommand(command);
-}
-
-function stop() {
-  heldKeys.clear();
-  publishCommand(true);
-}
-
-function requestTopics() {
-  send({
-    op: 'call_service',
-    id: 'eyecar-topics',
-    service: '/rosapi/topics',
-    type: 'rosapi_msgs/srv/Topics',
-    args: {},
-  });
-}
-
-function renderTopics(topics, types) {
-  const entries = topics.map((name, index) => ({
-    name,
-    type: types[index] || 'unknown',
-  })).sort((left, right) => left.name.localeCompare(right.name));
-
-  topicsBody.replaceChildren(...entries.map(({ name, type }) => {
-    const row = document.createElement('tr');
-    const nameCell = document.createElement('td');
-    const typeCell = document.createElement('td');
-    nameCell.textContent = name;
-    typeCell.textContent = type;
-    row.append(nameCell, typeCell);
-    return row;
-  }));
-  topicCount.textContent = String(entries.length);
-}
-
-function connectRos() {
-  clearTimeout(reconnectTimer);
-  setRosStatus('ROS: подключение');
-  socket = new WebSocket(`ws://${host}:9090`);
-
-  socket.addEventListener('open', () => {
-    setRosStatus('ROS: подключено', true);
-    send({
-      op: 'advertise',
-      id: 'eyecar-cmd-vel',
-      topic: '/cmd_vel',
-      type: 'geometry_msgs/msg/Twist',
-    });
-    requestTopics();
-    clearInterval(topicsTimer);
-    topicsTimer = setInterval(requestTopics, 3000);
-    clearInterval(commandTimer);
-    commandTimer = setInterval(() => publishCommand(false), 50);
-  });
-
-  socket.addEventListener('message', (event) => {
-    let message;
-    try {
-      message = JSON.parse(event.data);
-    } catch {
-      return;
+function renderTopic(name) {
+  const type = state.topics[name];
+  const stream = el('div', 'stream');
+  if (!state.messages.length) {
+    stream.append(el('p', 'empty', demo ? 'Demo preview - no live messages' : 'Waiting for messages…'));
+  }
+  for (const entry of state.messages) {
+    const block = el('div', 'message');
+    block.append(el('time', '', entry.time));
+    if (entry.msg?.jpeg_base64) {
+      const image = document.createElement('img');
+      image.className = 'image-preview';
+      image.alt = 'ROS topic frame';
+      image.src = 'data:image/jpeg;base64,' + entry.msg.jpeg_base64;
+      block.append(image);
+    } else {
+      block.append(el('pre', '', JSON.stringify(entry.msg, null, 2)));
     }
-    if (message.op === 'service_response' && message.id === 'eyecar-topics') {
-      const values = message.values || {};
-      renderTopics(values.topics || [], values.types || []);
-    }
-  });
-
-  socket.addEventListener('error', () => {
-    setRosStatus('ROS: ошибка');
-  });
-
-  socket.addEventListener('close', () => {
-    setRosStatus('ROS: нет связи');
-    clearInterval(topicsTimer);
-    clearInterval(commandTimer);
-    stop();
-    reconnectTimer = setTimeout(connectRos, 1500);
-  });
+    stream.append(block);
+  }
+  app.replaceChildren(
+    link('All topics', '/', 'back'),
+    head(name, type || 'Topic type unavailable'),
+    el('p', 'detail-status', demo ? 'Local preview - no live data' : type ? 'Latest messages' : 'Topic currently unavailable'),
+    stream,
+  );
 }
-
-function press(code) {
-  if (code === 'Space') {
-    stop();
+function render() {
+  const current = route();
+  const standalone = current === 'standalone-camera';
+  document.body.classList.toggle('standalone-camera', standalone);
+  const watch = current && current !== 'camera' && !standalone ? current : null;
+  if (state.watching !== watch) {
+    if (state.watching) send({ op: 'unwatch' });
+    state.watching = watch;
+    state.messages = [];
+    if (watch) send({ op: 'watch', topic: watch });
+  }
+  if (!current) renderHome();
+  else if (current === 'camera') renderCamera();
+  else if (standalone) renderStandaloneCamera();
+  else renderTopic(current);
+}
+function connect() {
+  if (demo) {
+    setStatus('ROS: DEMO', 'demo');
+    render();
     return;
   }
-  if (!movementKeys.has(code)) return;
-  heldKeys.add(code);
-  publishCommand(true);
-}
-
-function release(code) {
-  if (!movementKeys.has(code)) return;
-  heldKeys.delete(code);
-  publishCommand(true);
-}
-
-window.addEventListener('keydown', (event) => {
-  if (!movementKeys.has(event.code) && event.code !== 'Space') return;
-  event.preventDefault();
-  press(event.code);
-});
-
-window.addEventListener('keyup', (event) => {
-  if (!movementKeys.has(event.code) && event.code !== 'Space') return;
-  event.preventDefault();
-  release(event.code);
-});
-
-window.addEventListener('blur', stop);
-document.addEventListener('visibilitychange', () => {
-  if (document.hidden) stop();
-});
-window.addEventListener('beforeunload', stop);
-
-buttons.forEach((button) => {
-  const code = button.dataset.key;
-  button.addEventListener('pointerdown', (event) => {
-    event.preventDefault();
-    button.setPointerCapture(event.pointerId);
-    press(code);
+  setStatus('ROS: connecting');
+  const scheme = location.protocol === 'https:' ? 'wss:' : 'ws:';
+  const socket = new WebSocket(scheme + '//' + location.host + '/api/ws');
+  state.socket = socket;
+  socket.addEventListener('open', () => {
+    state.connected = true;
+    setStatus('ROS: connected', 'online');
+    send({ op: 'list_topics' });
+    if (state.watching) send({ op: 'watch', topic: state.watching });
   });
-  button.addEventListener('pointerup', () => release(code));
-  button.addEventListener('pointercancel', () => release(code));
+  socket.addEventListener('message', (event) => {
+    let packet;
+    try { packet = JSON.parse(event.data); } catch { return; }
+    if (packet.op === 'topics' && packet.topics && typeof packet.topics === 'object') {
+      state.topics = packet.topics;
+      render();
+    } else if (packet.op === 'message' && packet.topic === state.watching) {
+      state.messages.unshift({ time: new Date().toLocaleTimeString('en-GB'), msg: packet.msg });
+      state.messages.length = Math.min(state.messages.length, 30);
+      renderTopic(packet.topic);
+    }
+  });
+  socket.addEventListener('close', () => {
+    if (state.socket !== socket) return;
+    state.connected = false;
+    state.topics = {};
+    setStatus('ROS: offline');
+    render();
+    setTimeout(connect, 1500);
+  });
+}
+document.addEventListener('click', (event) => {
+  const anchor = event.target.closest('a[data-route]');
+  if (!anchor || (anchor.target && anchor.target !== '_self') || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey || event.button !== 0) return;
+  event.preventDefault();
+  history.pushState({}, '', anchor.pathname);
+  render();
 });
-
-video.addEventListener('load', () => {
-  videoStatus.textContent = 'Video: подключено';
-  videoStatus.classList.add('online');
-});
-
-connectRos();
+window.addEventListener('popstate', render);
+setInterval(() => { if (state.connected) send({ op: 'list_topics' }); }, 3000);
+connect();

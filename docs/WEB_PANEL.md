@@ -1,96 +1,128 @@
-# Web-панель EyeCar
+# Панель EyeCar
 
-Минимальная панель работает непосредственно на Raspberry Pi и доступна любому
-устройству в той же сети:
+Главная страница после развёртывания — http://eyecar.local/ или http://<IP Pi>/.
+Она показывает камеры и доступные ROS-топики. Адрес топика открывает последние
+сообщения и тип; /cameras/cam/ открывает WebRTC-видео и ссылку на отдельный
+адрес /cam/. Он занимает всю вкладку без интерфейса панели: вкладку можно
+перенести на второй монитор и развернуть через F11. Подписи интерфейса — на
+английском. Панель не отправляет
+команды роботу. Управление остаётся в SSH: ros2 run eyecar_teleop keyboard_teleop.
 
-```text
-http://172.16.1.182:8080
-```
+Сейчас это локально собранный черновик. Pi из домашней сети недоступна; активный
+сервер на ровере пока может оставаться старой версией :8080. Команды ниже —
+процедура установки и проверки, а не отчёт о проведённом развёртывании.
 
-Адрес `172.16.1.182` — текущий DHCP-адрес ровера. Если он изменится, узнать новый
-можно в списке клиентов роутера или командой `hostname -I` на Pi.
+## Локальное редактирование
 
-## Что запущено
+На ноуте:
 
-```text
-браузер :8080 ── web/app.js ── WebSocket :9090 ── /cmd_vel
-       │                                      │
-       └──── WebRTC :8889/UDP :8189           ▼
-                         камера        eyecar_serial_driver
-                                               │
-                                             Arduino
-```
+~~~bash
+cd /home/mavxa/zed/ros2/eyecar/eyecar-ros2/web
+bun install
+bun run dev
+~~~
 
-- `eyecar-web.service` раздаёт статические файлы панели на TCP 8080;
-- `eyecar-rosbridge.service` даёт панели узкий rosbridge-совместимый WebSocket
-  на TCP 9090: публикацию `/cmd_vel` и чтение списка топиков;
-- `eyecar-video.service` запускает MediaMTX v1.21.1 и ffmpeg: USB MJPEG
-  640x360@30 перекодируется в H.264 около 1 Мбит/с и отдаётся браузеру по WebRTC;
-- `eyecar-base.service` держит USB Serial, принимает `/cmd_vel` и отправляет
-  команды Arduino Mega.
+Открыть http://127.0.0.1:5173/. Без Pi показывается явно обозначенный
+демо-список. После изменения HTML/CSS/JS Vite обновляет страницу. Для подключения
+к живому мосту на том же хосте можно открыть /?live=1. Сборка: bun run build,
+результат в web/dist/. На Pi ставятся только собранные файлы, Bun/Vite там не
+нужны. Исходники: web/index.html, web/styles.css, web/app.js.
 
-RTSP слушает только `127.0.0.1:8554`. Наружу открыты TCP 8080, TCP 8889,
-TCP 9090 и UDP 8189.
+## Схема
 
-## Управление
+~~~text
+браузер :80 -> Nginx -> статика web/dist
+                    -> /api/ws -> 127.0.0.1:9090 -> список/подписка ROS
+                    -> WebRTC :8889/UDP :8189 -> MediaMTX
+USB камера -> ffmpeg -> MediaMTX -> локальный RTSP :8554 -> eyecar_camera
+                                                        -> /camera/image_raw
+                                                        -> /camera/image_raw/compressed
+SSH teleop -> /cmd_vel -> eyecar_base -> Arduino
+~~~
 
-- удержание `W`/`S` задаёт газ;
-- удержание `A`/`D` задаёт руль независимо от газа;
-- `W+A`, `W+D`, `S+A`, `S+D` передают обе оси одновременно;
-- `Space`, потеря фокуса вкладки и закрытие WebSocket сбрасывают `/cmd_vel`;
-- текущие пределы панели: вперёд `0.18`, назад `-0.25`, руль `±0.85`.
+WebSocket-мост принимает только list_topics, watch, unwatch; неизвестные
+операции возвращают ошибку. Список топиков обновляется раз в 3 с, сообщения
+ограничены 10 Гц на топик и 30 последними в браузере. Сырой Image в текстовом
+просмотрщике заменён метаданными, JPEG из CompressedImage можно посмотреть.
 
-Несколько одновременно открытых панелей сейчас публикуют в один `/cmd_vel`.
-Для обычной работы держать управление активным в одной вкладке.
+ROS-поток берётся из существующего RTSP, поэтому USB-камеру второй процесс не
+открывает. Нода публикует максимум 10 кадров/с, исходный bgr8 и JPEG качества
+70. 8 ГБ ОЗУ достаточно для такого буфера, но нагрузку на CPU, задержку и
+потерю кадров нужно измерить на Pi перед постоянным включением.
 
-## Управление сервисами
+## Установка на Pi, когда она снова доступна
 
-```bash
-systemctl --user status \
-  eyecar-base eyecar-web eyecar-video eyecar-rosbridge
+Сначала проверить, что на Pi установлены nginx, python3-opencv, ROS 2 Jazzy
+и ros-jazzy-rmw-fastrtps-cpp, есть права на установку Nginx, а актуальный
+репозиторий скопирован в ~/eyecar-ros2. Сохранить активные конфиги до замены.
+Для всех команд ROS на Pi нужен один и тот же локальный профиль DDS.
 
-systemctl --user restart \
-  eyecar-base eyecar-web eyecar-video eyecar-rosbridge
-
-journalctl --user -u eyecar-base -f
-journalctl --user -u eyecar-video -f
-journalctl --user -u eyecar-rosbridge -f
-```
-
-Все четыре сервиса уже включены через `systemctl --user enable`. Сейчас у
-пользователя `mavxa` выключен linger, поэтому после холодной загрузки они начнут
-работать только после его входа. Один раз выполнить:
-
-```bash
-sudo loginctl enable-linger mavxa
-loginctl show-user mavxa -p Linger
-```
-
-Ожидаемый результат второй команды: `Linger=yes`.
-
-## Где лежат файлы
-
-В рабочем проекте:
-
-- `web/` — HTML, CSS и JavaScript панели;
-- `ros2_ws/src/eyecar_web/` — ROS 2 WebSocket-мост;
-- `deploy/mediamtx.yml` — камера и WebRTC;
-- `deploy/systemd-user/` — unit-файлы.
-
-На Raspberry Pi:
-
-- `~/eyecar_web/www/` — раздаваемая панель;
-- `~/eyecar_web/mediamtx.yml` — активный конфиг видео;
-- `~/.config/systemd/user/eyecar-*.service` — активные unit-файлы;
-- `~/ros2_ws/` — собранный ROS 2 workspace.
-
-После изменения ROS-пакета:
-
-```bash
+~~~bash
+cd ~/eyecar-ros2
+sudo apt install nginx python3-opencv ros-jazzy-rmw-fastrtps-cpp
+sudo apt install avahi-daemon
+sudo hostnamectl set-hostname eyecar
+sudo systemctl enable --now avahi-daemon
+mkdir -p ~/eyecar_web ~/.config/systemd/user
+cp deploy/fastdds-loopback.xml deploy/ros-local.env ~/eyecar_web/
+cp deploy/systemd-user/{eyecar-base,eyecar-rosbridge,eyecar-camera}.service ~/.config/systemd/user/
+sudo cp deploy/systemd/eyecar-led.service /etc/systemd/system/
+sudo cp deploy/nginx/eyecar.conf /etc/nginx/sites-available/eyecar
+sudo ln -s /etc/nginx/sites-available/eyecar /etc/nginx/sites-enabled/eyecar
+sudo unlink /etc/nginx/sites-enabled/default  # конфиг в sites-available сохраняется
+sudo nginx -t
+cp -a ros2_ws/src/eyecar_web ros2_ws/src/eyecar_camera ~/ros2_ws/src/
 cd ~/ros2_ws
-colcon build --symlink-install --packages-select eyecar_web
-systemctl --user restart eyecar-rosbridge.service
-```
+source /opt/ros/jazzy/setup.bash
+colcon build --symlink-install --packages-select eyecar_web eyecar_camera
+# Копировать с ноутбука содержимое web/dist/ в /var/www/eyecar/
+systemctl --user daemon-reload
+sudo systemctl daemon-reload
+systemctl --user disable --now eyecar-web.service
+systemctl --user restart eyecar-base eyecar-rosbridge eyecar-video
+systemctl --user enable --now eyecar-camera
+sudo systemctl restart eyecar-led nginx
+~~~
 
-После изменения `web/` скопировать файлы в `~/eyecar_web/www/`; перезапуск
-статического сервера не требуется, достаточно обновить страницу.
+На Pi Bun не требуется: передать готовый web/dist/ с ноутбука. При первой
+установке eyecar-rosbridge будет слушать только 127.0.0.1:9090; Nginx даёт
+браузеру /api/ws. Порт 8080 старой панели закрывается после остановки сервиса.
+MediaMTX остаётся доступен на :8889/UDP :8189, поэтому камеру смогут смотреть
+участники той же сети.
+
+Перед переключением DDS проверить работающие ROS-процессы и CLI; затем
+перезапустить ROS daemon, если он был запущен со старым окружением. В SSH:
+
+~~~bash
+set -a
+source ~/eyecar_web/ros-local.env
+set +a
+source /opt/ros/jazzy/setup.bash
+source ~/ros2_ws/install/setup.bash
+ros2 daemon stop
+ros2 topic list
+ros2 run eyecar_teleop keyboard_teleop
+~~~
+
+Проверить на Pi ros2 topic hz /camera/image_raw --qos-reliability best_effort,
+ros2 topic hz /camera/image_raw/compressed --qos-reliability best_effort, top,
+затем открыть /,
+/cmd_vel/, /cameras/cam/, /cam/ на телефоне и ноуте. Проверить прямой переход по
+вложенному URL и работу после перезагрузки. С другого компьютера с ROS убедиться,
+что узлы Pi не обнаруживаются. Если обнаруживаются, не считать DDS изоляцию
+готовой: проверить переменные всех сервисов и профили Fast DDS, а также
+остановить узлы, запущенные вручную без локального профиля.
+
+eyecar.local зависит от работающего mDNS/Avahi у Pi и клиента; по IP панель
+должна открываться независимо от него. Профиль DDS ограничивает процессы,
+запущенные с этим окружением; другие ROS-процессы без профиля могут остаться
+доступными через сеть. Это следует проверить на самом ровере.
+
+Полезные журналы:
+
+~~~bash
+systemctl --user status eyecar-base eyecar-rosbridge eyecar-video eyecar-camera
+journalctl --user -u eyecar-camera -n 50 --no-pager
+journalctl --user -u eyecar-rosbridge -n 50 --no-pager
+sudo nginx -t
+~~~
