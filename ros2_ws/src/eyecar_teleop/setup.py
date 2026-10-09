@@ -25,6 +25,7 @@ setup(
         'console_scripts': [
             'keyboard_teleop = eyecar_teleop.keyboard_teleop:main',
             'cmd_vel_monitor = eyecar_teleop.cmd_vel_monitor:main',
+            'steamdeck_teleop = eyecar_teleop.steamdeck_teleop:main',
         ],
     },
 )

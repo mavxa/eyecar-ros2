@@ -48,16 +48,26 @@ print(result.boxes)
 PY
 ```
 
-## Student script in `scripts/`
+## Example mission in `scripts/`
 
-The vision script is for the student to implement. It can be a plain Python
-file; `colcon build` is not needed unless it becomes a ROS package. Its ROS
-interface should be:
+`scripts/modul1.py` uses the student's `best.pt` from
+`griftf/eyecar-yolo/marked_dataset` in `/opt/eyecar-vision/models/best.pt`.
+It drives forward until the model detects class `blue`, then stops and sets
+the LED strip to light blue. Detection continues after stopping: both model
+classes (`sticklight` and `blue`) appear in the annotated camera stream,
+in `/camera/detections`, and in the console log.
+It is a plain Python file; `colcon build` is not needed. Its camera ROS
+interface is:
 
 | Direction | Topic | Type |
 | --- | --- | --- |
 | Subscribe | `/camera/image_raw/compressed` | `sensor_msgs/msg/CompressedImage` |
 | Publish | `/camera/annotated/compressed` | `sensor_msgs/msg/CompressedImage` |
+| Publish | `/camera/detections` | `std_msgs/msg/String` containing JSON |
+
+Each `/camera/detections` message contains the input frame's `stamp_ns` and a
+`detections` array. Every detection has `class_id`, `class`, `confidence`, and
+`bbox_xyxy` in pixels. The array is empty when nothing is detected.
 
 The camera publisher already reads from the local RTSP stream, so the script
 should subscribe to ROS rather than open `/dev/video0` again. Decode the input
@@ -73,7 +83,7 @@ Launch it from a shell with the ROS workspace and local DDS profile loaded:
 ```bash
 source /opt/ros/jazzy/setup.bash
 set -a; source /opt/eyecar-vision/ros-local.env; set +a
-/opt/eyecar-vision/venv/bin/python scripts/your_detector.py
+/opt/eyecar-vision/venv/bin/python /opt/eyecar-vision/scripts/modul1.py
 ```
 
 Each user can keep a clone of this repository in their own home directory;
@@ -91,7 +101,7 @@ topic. Check ROS first with:
 ```bash
 ros2 topic info /camera/annotated/compressed
 ros2 topic hz /camera/annotated/compressed
+ros2 topic echo /camera/detections
 ```
 
-Until `best.pt` and the student's script are present and running, there is no
-annotated topic to display.
+The annotated topic exists only while `modul1.py` is running.
