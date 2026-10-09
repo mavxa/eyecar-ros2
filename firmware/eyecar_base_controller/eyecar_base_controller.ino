@@ -112,6 +112,39 @@ void reportUltrasonic() {
   Serial.println(ultrasonic_cm[3]);
 }
 
+// IR sensors in connector order A0 -> A4.
+// true: AO output, raw 10-bit ADC values (0..1023), not centimeters.
+// false: DO/S digital output, raw logic levels (0/1), polarity is sensor-specific.
+constexpr bool IR_ANALOG_MODE = true;
+constexpr uint8_t IR_PINS[] = {A0, A1, A2, A3, A4};
+constexpr uint8_t IR_COUNT = sizeof(IR_PINS) / sizeof(IR_PINS[0]);
+constexpr unsigned long IR_SAMPLE_MS = 100;
+uint16_t infrared_raw[IR_COUNT] = {};
+unsigned long last_infrared_sample_ms = 0;
+
+bool updateInfrared() {
+  if (millis() - last_infrared_sample_ms < IR_SAMPLE_MS) {
+    return false;
+  }
+
+  for (uint8_t i = 0; i < IR_COUNT; i++) {
+    infrared_raw[i] = IR_ANALOG_MODE
+        ? analogRead(IR_PINS[i])
+        : digitalRead(IR_PINS[i]);
+  }
+  last_infrared_sample_ms = millis();
+  return true;
+}
+
+void reportInfrared() {
+  Serial.print(F("IR"));
+  for (uint8_t i = 0; i < IR_COUNT; i++) {
+    Serial.print(' ');
+    Serial.print(infrared_raw[i]);
+  }
+  Serial.println();
+}
+
 Servo motor;
 Servo steering;
 
@@ -283,6 +316,10 @@ void readSerial() {
 }
 
 void setup() {
+  for (uint8_t i = 0; i < IR_COUNT; i++) {
+    pinMode(IR_PINS[i], INPUT);
+  }
+
   motor.attach(MOTOR_PIN);
   steering.attach(STEERING_PIN);
   stopBase();
@@ -291,6 +328,7 @@ void setup() {
   delay(ESC_ARM_TIME_MS);
   last_command_ms = millis();
   last_ultrasonic_sample_ms = millis();
+  last_infrared_sample_ms = millis();
   Serial.println(F("READY EYECAR_BASE_V1"));
 }
 
@@ -309,5 +347,8 @@ void loop() {
   // Send one complete set after all four sensors have been sampled.
   if (updateUltrasonic() && current_ultrasonic == 0) {
     reportUltrasonic();
+  }
+  if (updateInfrared()) {
+    reportInfrared();
   }
 }
