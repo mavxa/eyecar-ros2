@@ -1,0 +1,70 @@
+#!/usr/bin/env bash
+set -euo pipefail
+project_root=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)
+image_name=eyecar-rviz:jazzy
+
+if [[ ${1:-} == build ]]; then
+    exec docker build -t "$image_name" "$project_root/deploy/rviz"
+fi
+
+docker image inspect "$image_name" >/dev/null 2>&1 || {
+    echo 'Build first: bash scripts/eyecar-rviz build' >&2
+    exit 1
+}
+: "${DISPLAY:?Run from a terminal in your graphical laptop session}"
+rover_host=${1:-eyecar}
+demo_mode=0
+container_name=eyecar-rviz
+local_domain=81
+if [[ ${1:-} == demo ]]; then
+    demo_mode=1
+    rover_host=eyecar
+    container_name=eyecar-rviz-demo
+    local_domain=84
+fi
+temp_dir=$(mktemp -d /tmp/eyecar-rviz.XXXXXX)
+cleanup() {
+    ssh -S "$temp_dir/ssh" -O exit "$rover_host" >/dev/null 2>&1 || true
+    unlink "$temp_dir/xauth" 2>/dev/null || true
+    unlink "$temp_dir/ssh" 2>/dev/null || true
+    rmdir -- "$temp_dir"
+}
+trap cleanup EXIT
+
+touch "$temp_dir/xauth"
+chmod 600 "$temp_dir/xauth"
+xauth_source=${XAUTHORITY:-$HOME/.Xauthority}
+if [[ -r $xauth_source ]]; then
+    xauth -f "$xauth_source" nlist "$DISPLAY" | sed 's/^..../ffff/' | xauth -f "$temp_dir/xauth" nmerge -
+fi
+if [[ -z $(xauth -f "$temp_dir/xauth" list) ]]; then
+    # Hyprland may authorize the local UID instead of using Xauthority cookies.
+    if ! command -v xhost >/dev/null || ! xhost | sed 's/^[[:space:]]*//' | grep -Fxq "SI:localuser:$(id -un)"; then
+        echo 'No X11 cookie or existing local-user display permission found.' >&2
+        exit 1
+    fi
+fi
+
+if [[ $demo_mode == 0 ]]; then
+    ssh -fNT -M -S "$temp_dir/ssh" \
+        -o ExitOnForwardFailure=yes -o ServerAliveInterval=10 -o ServerAliveCountMax=3 \
+        -L 127.0.0.1:19090:127.0.0.1:9090 "$rover_host"
+fi
+
+gpu_args=()
+if [[ -d /dev/dri ]]; then
+    gpu_args+=(--device /dev/dri)
+    for device in /dev/dri/card* /dev/dri/renderD*; do
+        if [[ -e $device ]]; then
+            gpu_args+=(--group-add "$(stat -c %g "$device")")
+        fi
+    done
+fi
+docker run --rm --init --name "$container_name" --network host \
+    --user "$(id -u):$(id -g)" "${gpu_args[@]}" \
+    -e "EYECAR_RVIZ_DEMO=$demo_mode" -e "ROS_DOMAIN_ID=$local_domain" \
+    -e LIBGL_ALWAYS_SOFTWARE \
+    -e DISPLAY -e XAUTHORITY=/run/eyecar.xauth -e HOME=/tmp/eyecar-home \
+    -v /tmp/.X11-unix:/tmp/.X11-unix:ro \
+    -v "$temp_dir/xauth:/run/eyecar.xauth:ro" \
+    -v "$project_root:/workspace:ro" "$image_name"

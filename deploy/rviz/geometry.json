@@ -1,0 +1,11 @@
+{
+  "note": "Legacy flat-model reference, no longer read by the viewer. Edit models/eyecar/dimensions.json for the active URDF, sensors and command estimate.",
+  "body_length_m": 0.27,
+  "body_width_m": 0.12,
+  "sensors": [
+    {"name": "rear", "x": -0.12, "y": 0.0, "yaw_deg": 180},
+    {"name": "right", "x": 0.08, "y": -0.045, "yaw_deg": -90},
+    {"name": "left", "x": 0.08, "y": 0.045, "yaw_deg": 90},
+    {"name": "front", "x": 0.115, "y": 0.0, "yaw_deg": 0}
+  ]
+}

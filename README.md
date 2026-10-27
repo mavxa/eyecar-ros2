@@ -18,8 +18,35 @@ USB camera -> ffmpeg -> MediaMTX -> WebRTC panel
 - `docs/` — installation and workflow notes;
 - `scripts/` — helper scripts.
 - `examples/` — small ROS 2 usage examples, including LED colors.
+- `models/eyecar/` — editable rover model and downloadable URDF/CAD exports.
 
 Target: Ubuntu Server 24.04 ARM64 with ROS 2 Jazzy.
+
+## Model and RViz
+
+![EyeCar visual model](models/eyecar/generated/eyecar%20preview.png)
+
+The model includes two 240 x 120 mm plates, wheels, electronics, four HC-SR04
+sensors at the electronics level, a bumper with four IR modules, and a camera
+centered in its holder. Dimensions come from measurements and photographs;
+unmeasured mounts and chassis details remain approximate.
+
+[Model files and dimensions](models/eyecar/README.md) ·
+[URDF](models/eyecar/generated/eyecar.urdf) ·
+[STL, mm](models/eyecar/generated/eyecar.stl) ·
+[DXF drawing, mm](models/eyecar/generated/eyecar%20drawing.dxf)
+
+On a Linux laptop with Docker and XWayland:
+
+```bash
+bash scripts/eyecar-rviz build
+bash scripts/eyecar-rviz demo  # offline preview with synthetic data
+bash scripts/eyecar-rviz       # live read-only telemetry through SSH to eyecar
+```
+
+RViz shows sonar readings, joint animation and a path estimated from `/cmd_vel`.
+The path is not measured odometry. See [RVIZ.md](docs/RVIZ.md) for setup and
+[SENSORS.md](docs/SENSORS.md) for the ultrasonic/IR topic contract.
 
 ## Security status
 

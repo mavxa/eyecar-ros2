@@ -1,0 +1,71 @@
+Panels:
+  - Class: rviz_common/Displays
+    Name: Displays
+Visualization Manager:
+  Class: ""
+  Global Options:
+    Background Color: 245; 245; 245
+    Default Light: true
+    Fixed Frame: command_odom
+    Frame Rate: 30
+  Displays:
+    - Class: rviz_default_plugins/RobotModel
+      Name: EyeCar model
+      Enabled: true
+      Alpha: 1
+      Visual Enabled: true
+      Collision Enabled: false
+      Description Source: Topic
+      Description Topic:
+        Value: /robot_description
+        Depth: 1
+        Reliability Policy: Reliable
+        Durability Policy: Transient Local
+    - Class: rviz_default_plugins/Grid
+      Name: Grid
+      Enabled: true
+      Cell Size: 0.1
+      Plane Cell Count: 60
+      Color: 175; 175; 175
+    - Class: rviz_default_plugins/MarkerArray
+      Name: EyeCar ultrasonic
+      Enabled: true
+      Topic:
+        Value: /eyecar/ultrasonic_markers
+        Depth: 10
+        Reliability Policy: Reliable
+        Durability Policy: Volatile
+    - Class: rviz_default_plugins/MarkerArray
+      Name: Telemetry - command estimate
+      Enabled: true
+      Topic:
+        Value: /eyecar/telemetry_markers
+        Depth: 10
+        Reliability Policy: Reliable
+        Durability Policy: Volatile
+    - Class: rviz_default_plugins/Path
+      Name: Command path - not measured
+      Enabled: true
+      Color: 225; 125; 20
+      Line Style: Lines
+      Line Width: 0.01
+      Topic:
+        Value: /eyecar/command_path
+        Depth: 10
+        Reliability Policy: Reliable
+        Durability Policy: Volatile
+  Views:
+    Current:
+      Class: rviz_default_plugins/Orbit
+      Name: EyeCar 3D
+      Target Frame: base_link
+      Distance: 1.4
+      Pitch: 0.5
+      Yaw: 0.85
+      Focal Point:
+        X: 0.15
+        Y: 0
+        Z: 0.14
+Window Geometry:
+  Width: 1200
+  Height: 800

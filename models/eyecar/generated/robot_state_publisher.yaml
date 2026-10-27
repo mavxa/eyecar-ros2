@@ -1,0 +1,2231 @@
+robot_state_publisher:
+  ros__parameters:
+    robot_description: |
+      <?xml version="1.0"?>
+      <robot name="eyecar_visual">
+        <link name="base_link" />
+        <link name="rear_left_wheel" />
+        <joint name="rear_left_wheel_joint" type="continuous">
+          <parent link="base_link" />
+          <child link="rear_left_wheel" />
+          <origin xyz="-0.085 0.0725 0.03" rpy="0 0 0" />
+          <axis xyz="0 1 0" />
+        </joint>
+        <link name="rear_right_wheel" />
+        <joint name="rear_right_wheel_joint" type="continuous">
+          <parent link="base_link" />
+          <child link="rear_right_wheel" />
+          <origin xyz="-0.085 -0.0725 0.03" rpy="0 0 0" />
+          <axis xyz="0 1 0" />
+        </joint>
+        <link name="front_left_steer_link" />
+        <joint name="front_left_steering" type="revolute">
+          <parent link="base_link" />
+          <child link="front_left_steer_link" />
+          <origin xyz="0.085 0.0725 0.03" rpy="0 0 0" />
+          <axis xyz="0 0 1" />
+          <limit lower="-0.6536267774114604" upper="0.6536267774114604" effort="1" velocity="3" />
+        </joint>
+        <link name="front_left_wheel" />
+        <joint name="front_left_wheel_joint" type="continuous">
+          <parent link="front_left_steer_link" />
+          <child link="front_left_wheel" />
+          <origin xyz="0 0 0" rpy="0 0 0" />
+          <axis xyz="0 1 0" />
+        </joint>
+        <link name="front_right_steer_link" />
+        <joint name="front_right_steering" type="revolute">
+          <parent link="base_link" />
+          <child link="front_right_steer_link" />
+          <origin xyz="0.085 -0.0725 0.03" rpy="0 0 0" />
+          <axis xyz="0 0 1" />
+          <limit lower="-0.6536267774114604" upper="0.6536267774114604" effort="1" velocity="3" />
+        </joint>
+        <link name="front_right_wheel" />
+        <joint name="front_right_wheel_joint" type="continuous">
+          <parent link="front_right_steer_link" />
+          <child link="front_right_wheel" />
+          <origin xyz="0 0 0" rpy="0 0 0" />
+          <axis xyz="0 1 0" />
+        </joint>
+        <link name="us_rear" />
+        <joint name="us_rear_mount" type="fixed">
+          <parent link="base_link" />
+          <child link="us_rear" />
+          <origin xyz="-0.12 0 0.08" rpy="0 0 3.141593" />
+        </joint>
+        <link name="us_right" />
+        <joint name="us_right_mount" type="fixed">
+          <parent link="base_link" />
+          <child link="us_right" />
+          <origin xyz="0.08 -0.045 0.08" rpy="0 0 -1.570796" />
+        </joint>
+        <link name="us_left" />
+        <joint name="us_left_mount" type="fixed">
+          <parent link="base_link" />
+          <child link="us_left" />
+          <origin xyz="0.08 0.045 0.08" rpy="0 0 1.570796" />
+        </joint>
+        <link name="us_front" />
+        <joint name="us_front_mount" type="fixed">
+          <parent link="base_link" />
+          <child link="us_front" />
+          <origin xyz="0.115 0 0.08" rpy="0 0 0" />
+        </joint>
+        <link name="camera_link" />
+        <joint name="camera_mount" type="fixed">
+          <parent link="base_link" />
+          <child link="camera_link" />
+          <origin xyz="0.075 0 0.3" rpy="0 0 0" />
+        </joint>
+        <link name="camera_optical_frame" />
+        <joint name="camera_optical_mount" type="fixed">
+          <parent link="camera_link" />
+          <child link="camera_optical_frame" />
+          <origin xyz="0 0 0" rpy="-1.570796 0 -1.570796" />
+        </joint>
+        <link name="part_electronics_plate">
+          <visual name="electronics_plate">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <box size="0.24 0.12 0.003" />
+            </geometry>
+            <material name="electronics_plate_material">
+              <color rgba="0.08 0.09 0.1 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_electronics_plate_mount" type="fixed">
+          <parent link="base_link" />
+          <child link="part_electronics_plate" />
+          <origin xyz="0 0 0.065" rpy="0 0 0" />
+        </joint>
+        <link name="part_upper_plate">
+          <visual name="upper_plate">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <box size="0.24 0.12 0.003" />
+            </geometry>
+            <material name="upper_plate_material">
+              <color rgba="0.15 0.18 0.2 0.48" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_upper_plate_mount" type="fixed">
+          <parent link="base_link" />
+          <child link="part_upper_plate" />
+          <origin xyz="0 0 0.12" rpy="0 0 0" />
+        </joint>
+        <link name="part_post_m0p1_m0p045">
+          <visual name="post_-0.1_-0.045">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <cylinder radius="0.003" length="0.05499999999999999" />
+            </geometry>
+            <material name="post_-0.1_-0.045_material">
+              <color rgba="0.67 0.7 0.73 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_post_m0p1_m0p045_mount" type="fixed">
+          <parent link="base_link" />
+          <child link="part_post_m0p1_m0p045" />
+          <origin xyz="-0.1 -0.045 0.0925" rpy="0 0 0" />
+        </joint>
+        <link name="part_lower_post_m0p1_m0p045">
+          <visual name="lower_post_-0.1_-0.045">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <cylinder radius="0.003" length="0.05" />
+            </geometry>
+            <material name="lower_post_-0.1_-0.045_material">
+              <color rgba="0.67 0.7 0.73 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_lower_post_m0p1_m0p045_mount" type="fixed">
+          <parent link="base_link" />
+          <child link="part_lower_post_m0p1_m0p045" />
+          <origin xyz="-0.1 -0.045 0.04" rpy="0 0 0" />
+        </joint>
+        <link name="part_post_m0p1_0p045">
+          <visual name="post_-0.1_0.045">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <cylinder radius="0.003" length="0.05499999999999999" />
+            </geometry>
+            <material name="post_-0.1_0.045_material">
+              <color rgba="0.67 0.7 0.73 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_post_m0p1_0p045_mount" type="fixed">
+          <parent link="base_link" />
+          <child link="part_post_m0p1_0p045" />
+          <origin xyz="-0.1 0.045 0.0925" rpy="0 0 0" />
+        </joint>
+        <link name="part_lower_post_m0p1_0p045">
+          <visual name="lower_post_-0.1_0.045">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <cylinder radius="0.003" length="0.05" />
+            </geometry>
+            <material name="lower_post_-0.1_0.045_material">
+              <color rgba="0.67 0.7 0.73 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_lower_post_m0p1_0p045_mount" type="fixed">
+          <parent link="base_link" />
+          <child link="part_lower_post_m0p1_0p045" />
+          <origin xyz="-0.1 0.045 0.04" rpy="0 0 0" />
+        </joint>
+        <link name="part_post_0p1_m0p045">
+          <visual name="post_0.1_-0.045">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <cylinder radius="0.003" length="0.05499999999999999" />
+            </geometry>
+            <material name="post_0.1_-0.045_material">
+              <color rgba="0.67 0.7 0.73 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_post_0p1_m0p045_mount" type="fixed">
+          <parent link="base_link" />
+          <child link="part_post_0p1_m0p045" />
+          <origin xyz="0.1 -0.045 0.0925" rpy="0 0 0" />
+        </joint>
+        <link name="part_lower_post_0p1_m0p045">
+          <visual name="lower_post_0.1_-0.045">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <cylinder radius="0.003" length="0.05" />
+            </geometry>
+            <material name="lower_post_0.1_-0.045_material">
+              <color rgba="0.67 0.7 0.73 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_lower_post_0p1_m0p045_mount" type="fixed">
+          <parent link="base_link" />
+          <child link="part_lower_post_0p1_m0p045" />
+          <origin xyz="0.1 -0.045 0.04" rpy="0 0 0" />
+        </joint>
+        <link name="part_post_0p1_0p045">
+          <visual name="post_0.1_0.045">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <cylinder radius="0.003" length="0.05499999999999999" />
+            </geometry>
+            <material name="post_0.1_0.045_material">
+              <color rgba="0.67 0.7 0.73 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_post_0p1_0p045_mount" type="fixed">
+          <parent link="base_link" />
+          <child link="part_post_0p1_0p045" />
+          <origin xyz="0.1 0.045 0.0925" rpy="0 0 0" />
+        </joint>
+        <link name="part_lower_post_0p1_0p045">
+          <visual name="lower_post_0.1_0.045">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <cylinder radius="0.003" length="0.05" />
+            </geometry>
+            <material name="lower_post_0.1_0.045_material">
+              <color rgba="0.67 0.7 0.73 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_lower_post_0p1_0p045_mount" type="fixed">
+          <parent link="base_link" />
+          <child link="part_lower_post_0p1_0p045" />
+          <origin xyz="0.1 0.045 0.04" rpy="0 0 0" />
+        </joint>
+        <link name="part_lower_rail_m0p035">
+          <visual name="lower_rail_-0.035">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <box size="0.205 0.009 0.01" />
+            </geometry>
+            <material name="lower_rail_-0.035_material">
+              <color rgba="0.08 0.09 0.1 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_lower_rail_m0p035_mount" type="fixed">
+          <parent link="base_link" />
+          <child link="part_lower_rail_m0p035" />
+          <origin xyz="0 -0.035 0.02" rpy="0 0 0" />
+        </joint>
+        <link name="part_lower_rail_0p035">
+          <visual name="lower_rail_0.035">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <box size="0.205 0.009 0.01" />
+            </geometry>
+            <material name="lower_rail_0.035_material">
+              <color rgba="0.08 0.09 0.1 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_lower_rail_0p035_mount" type="fixed">
+          <parent link="base_link" />
+          <child link="part_lower_rail_0p035" />
+          <origin xyz="0 0.035 0.02" rpy="0 0 0" />
+        </joint>
+        <link name="part_transmission">
+          <visual name="transmission">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <box size="0.075 0.045 0.025" />
+            </geometry>
+            <material name="transmission_material">
+              <color rgba="0.08 0.09 0.1 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_transmission_mount" type="fixed">
+          <parent link="base_link" />
+          <child link="part_transmission" />
+          <origin xyz="-0.03 0 0.033" rpy="0 0 0" />
+        </joint>
+        <link name="part_motor">
+          <visual name="motor">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <cylinder radius="0.012" length="0.045" />
+            </geometry>
+            <material name="motor_material">
+              <color rgba="0.67 0.7 0.73 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_motor_mount" type="fixed">
+          <parent link="base_link" />
+          <child link="part_motor" />
+          <origin xyz="-0.045 0.035 0.037" rpy="0 1.570796 0" />
+        </joint>
+        <link name="part_drive_shaft">
+          <visual name="drive_shaft">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <cylinder radius="0.003" length="0.17" />
+            </geometry>
+            <material name="drive_shaft_material">
+              <color rgba="0.67 0.7 0.73 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_drive_shaft_mount" type="fixed">
+          <parent link="base_link" />
+          <child link="part_drive_shaft" />
+          <origin xyz="0 0 0.035" rpy="0 1.570796 0" />
+        </joint>
+        <link name="part_axle_m0p085">
+          <visual name="axle_-0.085">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <cylinder radius="0.004" length="0.145" />
+            </geometry>
+            <material name="axle_-0.085_material">
+              <color rgba="0.67 0.7 0.73 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_axle_m0p085_mount" type="fixed">
+          <parent link="base_link" />
+          <child link="part_axle_m0p085" />
+          <origin xyz="-0.085 0 0.03" rpy="1.570796 0 0" />
+        </joint>
+        <link name="part_axle_0p085">
+          <visual name="axle_0.085">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <cylinder radius="0.004" length="0.145" />
+            </geometry>
+            <material name="axle_0.085_material">
+              <color rgba="0.67 0.7 0.73 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_axle_0p085_mount" type="fixed">
+          <parent link="base_link" />
+          <child link="part_axle_0p085" />
+          <origin xyz="0.085 0 0.03" rpy="1.570796 0 0" />
+        </joint>
+        <link name="part_rear_left_wheel_tire">
+          <visual name="rear_left_wheel_tire">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <cylinder radius="0.03" length="0.023" />
+            </geometry>
+            <material name="rear_left_wheel_tire_material">
+              <color rgba="0.08 0.09 0.1 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_rear_left_wheel_tire_mount" type="fixed">
+          <parent link="rear_left_wheel" />
+          <child link="part_rear_left_wheel_tire" />
+          <origin xyz="0 0 0" rpy="1.570796 0 0" />
+        </joint>
+        <link name="part_rear_left_wheel_rim">
+          <visual name="rear_left_wheel_rim">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <cylinder radius="0.018" length="0.024" />
+            </geometry>
+            <material name="rear_left_wheel_rim_material">
+              <color rgba="0.67 0.7 0.73 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_rear_left_wheel_rim_mount" type="fixed">
+          <parent link="rear_left_wheel" />
+          <child link="part_rear_left_wheel_rim" />
+          <origin xyz="0 0 0" rpy="1.570796 0 0" />
+        </joint>
+        <link name="part_rear_left_wheel_hub">
+          <visual name="rear_left_wheel_hub">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <cylinder radius="0.006" length="0.026" />
+            </geometry>
+            <material name="rear_left_wheel_hub_material">
+              <color rgba="0.08 0.09 0.1 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_rear_left_wheel_hub_mount" type="fixed">
+          <parent link="rear_left_wheel" />
+          <child link="part_rear_left_wheel_hub" />
+          <origin xyz="0 0 0" rpy="1.570796 0 0" />
+        </joint>
+        <link name="part_rear_left_wheel_tread_0">
+          <visual name="rear_left_wheel_tread_0">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <box size="0.008 0.025 0.003" />
+            </geometry>
+            <material name="rear_left_wheel_tread_0_material">
+              <color rgba="0.13 0.14 0.15 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_rear_left_wheel_tread_0_mount" type="fixed">
+          <parent link="rear_left_wheel" />
+          <child link="part_rear_left_wheel_tread_0" />
+          <origin xyz="0 0 0.029" rpy="0 0 0" />
+        </joint>
+        <link name="part_rear_left_wheel_tread_1">
+          <visual name="rear_left_wheel_tread_1">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <box size="0.008 0.025 0.003" />
+            </geometry>
+            <material name="rear_left_wheel_tread_1_material">
+              <color rgba="0.13 0.14 0.15 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_rear_left_wheel_tread_1_mount" type="fixed">
+          <parent link="rear_left_wheel" />
+          <child link="part_rear_left_wheel_tread_1" />
+          <origin xyz="0.01109782 0 0.02679251" rpy="0 0.3926991 0" />
+        </joint>
+        <link name="part_rear_left_wheel_tread_2">
+          <visual name="rear_left_wheel_tread_2">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <box size="0.008 0.025 0.003" />
+            </geometry>
+            <material name="rear_left_wheel_tread_2_material">
+              <color rgba="0.13 0.14 0.15 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_rear_left_wheel_tread_2_mount" type="fixed">
+          <parent link="rear_left_wheel" />
+          <child link="part_rear_left_wheel_tread_2" />
+          <origin xyz="0.0205061 0 0.0205061" rpy="0 0.7853982 0" />
+        </joint>
+        <link name="part_rear_left_wheel_tread_3">
+          <visual name="rear_left_wheel_tread_3">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <box size="0.008 0.025 0.003" />
+            </geometry>
+            <material name="rear_left_wheel_tread_3_material">
+              <color rgba="0.13 0.14 0.15 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_rear_left_wheel_tread_3_mount" type="fixed">
+          <parent link="rear_left_wheel" />
+          <child link="part_rear_left_wheel_tread_3" />
+          <origin xyz="0.02679251 0 0.01109782" rpy="0 1.178097 0" />
+        </joint>
+        <link name="part_rear_left_wheel_tread_4">
+          <visual name="rear_left_wheel_tread_4">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <box size="0.008 0.025 0.003" />
+            </geometry>
+            <material name="rear_left_wheel_tread_4_material">
+              <color rgba="0.13 0.14 0.15 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_rear_left_wheel_tread_4_mount" type="fixed">
+          <parent link="rear_left_wheel" />
+          <child link="part_rear_left_wheel_tread_4" />
+          <origin xyz="0.029 0 3.469447e-18" rpy="0 1.570796 0" />
+        </joint>
+        <link name="part_rear_left_wheel_tread_5">
+          <visual name="rear_left_wheel_tread_5">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <box size="0.008 0.025 0.003" />
+            </geometry>
+            <material name="rear_left_wheel_tread_5_material">
+              <color rgba="0.13 0.14 0.15 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_rear_left_wheel_tread_5_mount" type="fixed">
+          <parent link="rear_left_wheel" />
+          <child link="part_rear_left_wheel_tread_5" />
+          <origin xyz="0.02679251 0 -0.01109782" rpy="0 1.963495 0" />
+        </joint>
+        <link name="part_rear_left_wheel_tread_6">
+          <visual name="rear_left_wheel_tread_6">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <box size="0.008 0.025 0.003" />
+            </geometry>
+            <material name="rear_left_wheel_tread_6_material">
+              <color rgba="0.13 0.14 0.15 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_rear_left_wheel_tread_6_mount" type="fixed">
+          <parent link="rear_left_wheel" />
+          <child link="part_rear_left_wheel_tread_6" />
+          <origin xyz="0.0205061 0 -0.0205061" rpy="0 2.356194 0" />
+        </joint>
+        <link name="part_rear_left_wheel_tread_7">
+          <visual name="rear_left_wheel_tread_7">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <box size="0.008 0.025 0.003" />
+            </geometry>
+            <material name="rear_left_wheel_tread_7_material">
+              <color rgba="0.13 0.14 0.15 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_rear_left_wheel_tread_7_mount" type="fixed">
+          <parent link="rear_left_wheel" />
+          <child link="part_rear_left_wheel_tread_7" />
+          <origin xyz="0.01109782 0 -0.02679251" rpy="0 2.748894 0" />
+        </joint>
+        <link name="part_rear_left_wheel_tread_8">
+          <visual name="rear_left_wheel_tread_8">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <box size="0.008 0.025 0.003" />
+            </geometry>
+            <material name="rear_left_wheel_tread_8_material">
+              <color rgba="0.13 0.14 0.15 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_rear_left_wheel_tread_8_mount" type="fixed">
+          <parent link="rear_left_wheel" />
+          <child link="part_rear_left_wheel_tread_8" />
+          <origin xyz="0 0 -0.029" rpy="0 3.141593 0" />
+        </joint>
+        <link name="part_rear_left_wheel_tread_9">
+          <visual name="rear_left_wheel_tread_9">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <box size="0.008 0.025 0.003" />
+            </geometry>
+            <material name="rear_left_wheel_tread_9_material">
+              <color rgba="0.13 0.14 0.15 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_rear_left_wheel_tread_9_mount" type="fixed">
+          <parent link="rear_left_wheel" />
+          <child link="part_rear_left_wheel_tread_9" />
+          <origin xyz="-0.01109782 0 -0.02679251" rpy="0 3.534292 0" />
+        </joint>
+        <link name="part_rear_left_wheel_tread_10">
+          <visual name="rear_left_wheel_tread_10">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <box size="0.008 0.025 0.003" />
+            </geometry>
+            <material name="rear_left_wheel_tread_10_material">
+              <color rgba="0.13 0.14 0.15 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_rear_left_wheel_tread_10_mount" type="fixed">
+          <parent link="rear_left_wheel" />
+          <child link="part_rear_left_wheel_tread_10" />
+          <origin xyz="-0.0205061 0 -0.0205061" rpy="0 3.926991 0" />
+        </joint>
+        <link name="part_rear_left_wheel_tread_11">
+          <visual name="rear_left_wheel_tread_11">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <box size="0.008 0.025 0.003" />
+            </geometry>
+            <material name="rear_left_wheel_tread_11_material">
+              <color rgba="0.13 0.14 0.15 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_rear_left_wheel_tread_11_mount" type="fixed">
+          <parent link="rear_left_wheel" />
+          <child link="part_rear_left_wheel_tread_11" />
+          <origin xyz="-0.02679251 0 -0.01109782" rpy="0 4.31969 0" />
+        </joint>
+        <link name="part_rear_left_wheel_tread_12">
+          <visual name="rear_left_wheel_tread_12">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <box size="0.008 0.025 0.003" />
+            </geometry>
+            <material name="rear_left_wheel_tread_12_material">
+              <color rgba="0.13 0.14 0.15 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_rear_left_wheel_tread_12_mount" type="fixed">
+          <parent link="rear_left_wheel" />
+          <child link="part_rear_left_wheel_tread_12" />
+          <origin xyz="-0.029 0 -6.938894e-18" rpy="0 4.712389 0" />
+        </joint>
+        <link name="part_rear_left_wheel_tread_13">
+          <visual name="rear_left_wheel_tread_13">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <box size="0.008 0.025 0.003" />
+            </geometry>
+            <material name="rear_left_wheel_tread_13_material">
+              <color rgba="0.13 0.14 0.15 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_rear_left_wheel_tread_13_mount" type="fixed">
+          <parent link="rear_left_wheel" />
+          <child link="part_rear_left_wheel_tread_13" />
+          <origin xyz="-0.02679251 0 0.01109782" rpy="0 5.105088 0" />
+        </joint>
+        <link name="part_rear_left_wheel_tread_14">
+          <visual name="rear_left_wheel_tread_14">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <box size="0.008 0.025 0.003" />
+            </geometry>
+            <material name="rear_left_wheel_tread_14_material">
+              <color rgba="0.13 0.14 0.15 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_rear_left_wheel_tread_14_mount" type="fixed">
+          <parent link="rear_left_wheel" />
+          <child link="part_rear_left_wheel_tread_14" />
+          <origin xyz="-0.0205061 0 0.0205061" rpy="0 5.497787 0" />
+        </joint>
+        <link name="part_rear_left_wheel_tread_15">
+          <visual name="rear_left_wheel_tread_15">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <box size="0.008 0.025 0.003" />
+            </geometry>
+            <material name="rear_left_wheel_tread_15_material">
+              <color rgba="0.13 0.14 0.15 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_rear_left_wheel_tread_15_mount" type="fixed">
+          <parent link="rear_left_wheel" />
+          <child link="part_rear_left_wheel_tread_15" />
+          <origin xyz="-0.01109782 0 0.02679251" rpy="0 5.890486 0" />
+        </joint>
+        <link name="part_rear_right_wheel_tire">
+          <visual name="rear_right_wheel_tire">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <cylinder radius="0.03" length="0.023" />
+            </geometry>
+            <material name="rear_right_wheel_tire_material">
+              <color rgba="0.08 0.09 0.1 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_rear_right_wheel_tire_mount" type="fixed">
+          <parent link="rear_right_wheel" />
+          <child link="part_rear_right_wheel_tire" />
+          <origin xyz="0 0 0" rpy="1.570796 0 0" />
+        </joint>
+        <link name="part_rear_right_wheel_rim">
+          <visual name="rear_right_wheel_rim">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <cylinder radius="0.018" length="0.024" />
+            </geometry>
+            <material name="rear_right_wheel_rim_material">
+              <color rgba="0.67 0.7 0.73 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_rear_right_wheel_rim_mount" type="fixed">
+          <parent link="rear_right_wheel" />
+          <child link="part_rear_right_wheel_rim" />
+          <origin xyz="0 0 0" rpy="1.570796 0 0" />
+        </joint>
+        <link name="part_rear_right_wheel_hub">
+          <visual name="rear_right_wheel_hub">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <cylinder radius="0.006" length="0.026" />
+            </geometry>
+            <material name="rear_right_wheel_hub_material">
+              <color rgba="0.08 0.09 0.1 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_rear_right_wheel_hub_mount" type="fixed">
+          <parent link="rear_right_wheel" />
+          <child link="part_rear_right_wheel_hub" />
+          <origin xyz="0 0 0" rpy="1.570796 0 0" />
+        </joint>
+        <link name="part_rear_right_wheel_tread_0">
+          <visual name="rear_right_wheel_tread_0">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <box size="0.008 0.025 0.003" />
+            </geometry>
+            <material name="rear_right_wheel_tread_0_material">
+              <color rgba="0.13 0.14 0.15 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_rear_right_wheel_tread_0_mount" type="fixed">
+          <parent link="rear_right_wheel" />
+          <child link="part_rear_right_wheel_tread_0" />
+          <origin xyz="0 0 0.029" rpy="0 0 0" />
+        </joint>
+        <link name="part_rear_right_wheel_tread_1">
+          <visual name="rear_right_wheel_tread_1">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <box size="0.008 0.025 0.003" />
+            </geometry>
+            <material name="rear_right_wheel_tread_1_material">
+              <color rgba="0.13 0.14 0.15 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_rear_right_wheel_tread_1_mount" type="fixed">
+          <parent link="rear_right_wheel" />
+          <child link="part_rear_right_wheel_tread_1" />
+          <origin xyz="0.01109782 0 0.02679251" rpy="0 0.3926991 0" />
+        </joint>
+        <link name="part_rear_right_wheel_tread_2">
+          <visual name="rear_right_wheel_tread_2">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <box size="0.008 0.025 0.003" />
+            </geometry>
+            <material name="rear_right_wheel_tread_2_material">
+              <color rgba="0.13 0.14 0.15 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_rear_right_wheel_tread_2_mount" type="fixed">
+          <parent link="rear_right_wheel" />
+          <child link="part_rear_right_wheel_tread_2" />
+          <origin xyz="0.0205061 0 0.0205061" rpy="0 0.7853982 0" />
+        </joint>
+        <link name="part_rear_right_wheel_tread_3">
+          <visual name="rear_right_wheel_tread_3">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <box size="0.008 0.025 0.003" />
+            </geometry>
+            <material name="rear_right_wheel_tread_3_material">
+              <color rgba="0.13 0.14 0.15 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_rear_right_wheel_tread_3_mount" type="fixed">
+          <parent link="rear_right_wheel" />
+          <child link="part_rear_right_wheel_tread_3" />
+          <origin xyz="0.02679251 0 0.01109782" rpy="0 1.178097 0" />
+        </joint>
+        <link name="part_rear_right_wheel_tread_4">
+          <visual name="rear_right_wheel_tread_4">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <box size="0.008 0.025 0.003" />
+            </geometry>
+            <material name="rear_right_wheel_tread_4_material">
+              <color rgba="0.13 0.14 0.15 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_rear_right_wheel_tread_4_mount" type="fixed">
+          <parent link="rear_right_wheel" />
+          <child link="part_rear_right_wheel_tread_4" />
+          <origin xyz="0.029 0 3.469447e-18" rpy="0 1.570796 0" />
+        </joint>
+        <link name="part_rear_right_wheel_tread_5">
+          <visual name="rear_right_wheel_tread_5">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <box size="0.008 0.025 0.003" />
+            </geometry>
+            <material name="rear_right_wheel_tread_5_material">
+              <color rgba="0.13 0.14 0.15 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_rear_right_wheel_tread_5_mount" type="fixed">
+          <parent link="rear_right_wheel" />
+          <child link="part_rear_right_wheel_tread_5" />
+          <origin xyz="0.02679251 0 -0.01109782" rpy="0 1.963495 0" />
+        </joint>
+        <link name="part_rear_right_wheel_tread_6">
+          <visual name="rear_right_wheel_tread_6">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <box size="0.008 0.025 0.003" />
+            </geometry>
+            <material name="rear_right_wheel_tread_6_material">
+              <color rgba="0.13 0.14 0.15 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_rear_right_wheel_tread_6_mount" type="fixed">
+          <parent link="rear_right_wheel" />
+          <child link="part_rear_right_wheel_tread_6" />
+          <origin xyz="0.0205061 0 -0.0205061" rpy="0 2.356194 0" />
+        </joint>
+        <link name="part_rear_right_wheel_tread_7">
+          <visual name="rear_right_wheel_tread_7">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <box size="0.008 0.025 0.003" />
+            </geometry>
+            <material name="rear_right_wheel_tread_7_material">
+              <color rgba="0.13 0.14 0.15 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_rear_right_wheel_tread_7_mount" type="fixed">
+          <parent link="rear_right_wheel" />
+          <child link="part_rear_right_wheel_tread_7" />
+          <origin xyz="0.01109782 0 -0.02679251" rpy="0 2.748894 0" />
+        </joint>
+        <link name="part_rear_right_wheel_tread_8">
+          <visual name="rear_right_wheel_tread_8">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <box size="0.008 0.025 0.003" />
+            </geometry>
+            <material name="rear_right_wheel_tread_8_material">
+              <color rgba="0.13 0.14 0.15 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_rear_right_wheel_tread_8_mount" type="fixed">
+          <parent link="rear_right_wheel" />
+          <child link="part_rear_right_wheel_tread_8" />
+          <origin xyz="0 0 -0.029" rpy="0 3.141593 0" />
+        </joint>
+        <link name="part_rear_right_wheel_tread_9">
+          <visual name="rear_right_wheel_tread_9">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <box size="0.008 0.025 0.003" />
+            </geometry>
+            <material name="rear_right_wheel_tread_9_material">
+              <color rgba="0.13 0.14 0.15 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_rear_right_wheel_tread_9_mount" type="fixed">
+          <parent link="rear_right_wheel" />
+          <child link="part_rear_right_wheel_tread_9" />
+          <origin xyz="-0.01109782 0 -0.02679251" rpy="0 3.534292 0" />
+        </joint>
+        <link name="part_rear_right_wheel_tread_10">
+          <visual name="rear_right_wheel_tread_10">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <box size="0.008 0.025 0.003" />
+            </geometry>
+            <material name="rear_right_wheel_tread_10_material">
+              <color rgba="0.13 0.14 0.15 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_rear_right_wheel_tread_10_mount" type="fixed">
+          <parent link="rear_right_wheel" />
+          <child link="part_rear_right_wheel_tread_10" />
+          <origin xyz="-0.0205061 0 -0.0205061" rpy="0 3.926991 0" />
+        </joint>
+        <link name="part_rear_right_wheel_tread_11">
+          <visual name="rear_right_wheel_tread_11">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <box size="0.008 0.025 0.003" />
+            </geometry>
+            <material name="rear_right_wheel_tread_11_material">
+              <color rgba="0.13 0.14 0.15 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_rear_right_wheel_tread_11_mount" type="fixed">
+          <parent link="rear_right_wheel" />
+          <child link="part_rear_right_wheel_tread_11" />
+          <origin xyz="-0.02679251 0 -0.01109782" rpy="0 4.31969 0" />
+        </joint>
+        <link name="part_rear_right_wheel_tread_12">
+          <visual name="rear_right_wheel_tread_12">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <box size="0.008 0.025 0.003" />
+            </geometry>
+            <material name="rear_right_wheel_tread_12_material">
+              <color rgba="0.13 0.14 0.15 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_rear_right_wheel_tread_12_mount" type="fixed">
+          <parent link="rear_right_wheel" />
+          <child link="part_rear_right_wheel_tread_12" />
+          <origin xyz="-0.029 0 -6.938894e-18" rpy="0 4.712389 0" />
+        </joint>
+        <link name="part_rear_right_wheel_tread_13">
+          <visual name="rear_right_wheel_tread_13">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <box size="0.008 0.025 0.003" />
+            </geometry>
+            <material name="rear_right_wheel_tread_13_material">
+              <color rgba="0.13 0.14 0.15 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_rear_right_wheel_tread_13_mount" type="fixed">
+          <parent link="rear_right_wheel" />
+          <child link="part_rear_right_wheel_tread_13" />
+          <origin xyz="-0.02679251 0 0.01109782" rpy="0 5.105088 0" />
+        </joint>
+        <link name="part_rear_right_wheel_tread_14">
+          <visual name="rear_right_wheel_tread_14">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <box size="0.008 0.025 0.003" />
+            </geometry>
+            <material name="rear_right_wheel_tread_14_material">
+              <color rgba="0.13 0.14 0.15 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_rear_right_wheel_tread_14_mount" type="fixed">
+          <parent link="rear_right_wheel" />
+          <child link="part_rear_right_wheel_tread_14" />
+          <origin xyz="-0.0205061 0 0.0205061" rpy="0 5.497787 0" />
+        </joint>
+        <link name="part_rear_right_wheel_tread_15">
+          <visual name="rear_right_wheel_tread_15">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <box size="0.008 0.025 0.003" />
+            </geometry>
+            <material name="rear_right_wheel_tread_15_material">
+              <color rgba="0.13 0.14 0.15 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_rear_right_wheel_tread_15_mount" type="fixed">
+          <parent link="rear_right_wheel" />
+          <child link="part_rear_right_wheel_tread_15" />
+          <origin xyz="-0.01109782 0 0.02679251" rpy="0 5.890486 0" />
+        </joint>
+        <link name="part_front_left_wheel_tire">
+          <visual name="front_left_wheel_tire">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <cylinder radius="0.03" length="0.023" />
+            </geometry>
+            <material name="front_left_wheel_tire_material">
+              <color rgba="0.08 0.09 0.1 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_front_left_wheel_tire_mount" type="fixed">
+          <parent link="front_left_wheel" />
+          <child link="part_front_left_wheel_tire" />
+          <origin xyz="0 0 0" rpy="1.570796 0 0" />
+        </joint>
+        <link name="part_front_left_wheel_rim">
+          <visual name="front_left_wheel_rim">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <cylinder radius="0.018" length="0.024" />
+            </geometry>
+            <material name="front_left_wheel_rim_material">
+              <color rgba="0.67 0.7 0.73 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_front_left_wheel_rim_mount" type="fixed">
+          <parent link="front_left_wheel" />
+          <child link="part_front_left_wheel_rim" />
+          <origin xyz="0 0 0" rpy="1.570796 0 0" />
+        </joint>
+        <link name="part_front_left_wheel_hub">
+          <visual name="front_left_wheel_hub">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <cylinder radius="0.006" length="0.026" />
+            </geometry>
+            <material name="front_left_wheel_hub_material">
+              <color rgba="0.08 0.09 0.1 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_front_left_wheel_hub_mount" type="fixed">
+          <parent link="front_left_wheel" />
+          <child link="part_front_left_wheel_hub" />
+          <origin xyz="0 0 0" rpy="1.570796 0 0" />
+        </joint>
+        <link name="part_front_left_wheel_tread_0">
+          <visual name="front_left_wheel_tread_0">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <box size="0.008 0.025 0.003" />
+            </geometry>
+            <material name="front_left_wheel_tread_0_material">
+              <color rgba="0.13 0.14 0.15 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_front_left_wheel_tread_0_mount" type="fixed">
+          <parent link="front_left_wheel" />
+          <child link="part_front_left_wheel_tread_0" />
+          <origin xyz="0 0 0.029" rpy="0 0 0" />
+        </joint>
+        <link name="part_front_left_wheel_tread_1">
+          <visual name="front_left_wheel_tread_1">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <box size="0.008 0.025 0.003" />
+            </geometry>
+            <material name="front_left_wheel_tread_1_material">
+              <color rgba="0.13 0.14 0.15 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_front_left_wheel_tread_1_mount" type="fixed">
+          <parent link="front_left_wheel" />
+          <child link="part_front_left_wheel_tread_1" />
+          <origin xyz="0.01109782 0 0.02679251" rpy="0 0.3926991 0" />
+        </joint>
+        <link name="part_front_left_wheel_tread_2">
+          <visual name="front_left_wheel_tread_2">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <box size="0.008 0.025 0.003" />
+            </geometry>
+            <material name="front_left_wheel_tread_2_material">
+              <color rgba="0.13 0.14 0.15 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_front_left_wheel_tread_2_mount" type="fixed">
+          <parent link="front_left_wheel" />
+          <child link="part_front_left_wheel_tread_2" />
+          <origin xyz="0.0205061 0 0.0205061" rpy="0 0.7853982 0" />
+        </joint>
+        <link name="part_front_left_wheel_tread_3">
+          <visual name="front_left_wheel_tread_3">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <box size="0.008 0.025 0.003" />
+            </geometry>
+            <material name="front_left_wheel_tread_3_material">
+              <color rgba="0.13 0.14 0.15 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_front_left_wheel_tread_3_mount" type="fixed">
+          <parent link="front_left_wheel" />
+          <child link="part_front_left_wheel_tread_3" />
+          <origin xyz="0.02679251 0 0.01109782" rpy="0 1.178097 0" />
+        </joint>
+        <link name="part_front_left_wheel_tread_4">
+          <visual name="front_left_wheel_tread_4">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <box size="0.008 0.025 0.003" />
+            </geometry>
+            <material name="front_left_wheel_tread_4_material">
+              <color rgba="0.13 0.14 0.15 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_front_left_wheel_tread_4_mount" type="fixed">
+          <parent link="front_left_wheel" />
+          <child link="part_front_left_wheel_tread_4" />
+          <origin xyz="0.029 0 3.469447e-18" rpy="0 1.570796 0" />
+        </joint>
+        <link name="part_front_left_wheel_tread_5">
+          <visual name="front_left_wheel_tread_5">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <box size="0.008 0.025 0.003" />
+            </geometry>
+            <material name="front_left_wheel_tread_5_material">
+              <color rgba="0.13 0.14 0.15 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_front_left_wheel_tread_5_mount" type="fixed">
+          <parent link="front_left_wheel" />
+          <child link="part_front_left_wheel_tread_5" />
+          <origin xyz="0.02679251 0 -0.01109782" rpy="0 1.963495 0" />
+        </joint>
+        <link name="part_front_left_wheel_tread_6">
+          <visual name="front_left_wheel_tread_6">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <box size="0.008 0.025 0.003" />
+            </geometry>
+            <material name="front_left_wheel_tread_6_material">
+              <color rgba="0.13 0.14 0.15 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_front_left_wheel_tread_6_mount" type="fixed">
+          <parent link="front_left_wheel" />
+          <child link="part_front_left_wheel_tread_6" />
+          <origin xyz="0.0205061 0 -0.0205061" rpy="0 2.356194 0" />
+        </joint>
+        <link name="part_front_left_wheel_tread_7">
+          <visual name="front_left_wheel_tread_7">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <box size="0.008 0.025 0.003" />
+            </geometry>
+            <material name="front_left_wheel_tread_7_material">
+              <color rgba="0.13 0.14 0.15 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_front_left_wheel_tread_7_mount" type="fixed">
+          <parent link="front_left_wheel" />
+          <child link="part_front_left_wheel_tread_7" />
+          <origin xyz="0.01109782 0 -0.02679251" rpy="0 2.748894 0" />
+        </joint>
+        <link name="part_front_left_wheel_tread_8">
+          <visual name="front_left_wheel_tread_8">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <box size="0.008 0.025 0.003" />
+            </geometry>
+            <material name="front_left_wheel_tread_8_material">
+              <color rgba="0.13 0.14 0.15 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_front_left_wheel_tread_8_mount" type="fixed">
+          <parent link="front_left_wheel" />
+          <child link="part_front_left_wheel_tread_8" />
+          <origin xyz="0 0 -0.029" rpy="0 3.141593 0" />
+        </joint>
+        <link name="part_front_left_wheel_tread_9">
+          <visual name="front_left_wheel_tread_9">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <box size="0.008 0.025 0.003" />
+            </geometry>
+            <material name="front_left_wheel_tread_9_material">
+              <color rgba="0.13 0.14 0.15 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_front_left_wheel_tread_9_mount" type="fixed">
+          <parent link="front_left_wheel" />
+          <child link="part_front_left_wheel_tread_9" />
+          <origin xyz="-0.01109782 0 -0.02679251" rpy="0 3.534292 0" />
+        </joint>
+        <link name="part_front_left_wheel_tread_10">
+          <visual name="front_left_wheel_tread_10">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <box size="0.008 0.025 0.003" />
+            </geometry>
+            <material name="front_left_wheel_tread_10_material">
+              <color rgba="0.13 0.14 0.15 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_front_left_wheel_tread_10_mount" type="fixed">
+          <parent link="front_left_wheel" />
+          <child link="part_front_left_wheel_tread_10" />
+          <origin xyz="-0.0205061 0 -0.0205061" rpy="0 3.926991 0" />
+        </joint>
+        <link name="part_front_left_wheel_tread_11">
+          <visual name="front_left_wheel_tread_11">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <box size="0.008 0.025 0.003" />
+            </geometry>
+            <material name="front_left_wheel_tread_11_material">
+              <color rgba="0.13 0.14 0.15 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_front_left_wheel_tread_11_mount" type="fixed">
+          <parent link="front_left_wheel" />
+          <child link="part_front_left_wheel_tread_11" />
+          <origin xyz="-0.02679251 0 -0.01109782" rpy="0 4.31969 0" />
+        </joint>
+        <link name="part_front_left_wheel_tread_12">
+          <visual name="front_left_wheel_tread_12">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <box size="0.008 0.025 0.003" />
+            </geometry>
+            <material name="front_left_wheel_tread_12_material">
+              <color rgba="0.13 0.14 0.15 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_front_left_wheel_tread_12_mount" type="fixed">
+          <parent link="front_left_wheel" />
+          <child link="part_front_left_wheel_tread_12" />
+          <origin xyz="-0.029 0 -6.938894e-18" rpy="0 4.712389 0" />
+        </joint>
+        <link name="part_front_left_wheel_tread_13">
+          <visual name="front_left_wheel_tread_13">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <box size="0.008 0.025 0.003" />
+            </geometry>
+            <material name="front_left_wheel_tread_13_material">
+              <color rgba="0.13 0.14 0.15 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_front_left_wheel_tread_13_mount" type="fixed">
+          <parent link="front_left_wheel" />
+          <child link="part_front_left_wheel_tread_13" />
+          <origin xyz="-0.02679251 0 0.01109782" rpy="0 5.105088 0" />
+        </joint>
+        <link name="part_front_left_wheel_tread_14">
+          <visual name="front_left_wheel_tread_14">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <box size="0.008 0.025 0.003" />
+            </geometry>
+            <material name="front_left_wheel_tread_14_material">
+              <color rgba="0.13 0.14 0.15 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_front_left_wheel_tread_14_mount" type="fixed">
+          <parent link="front_left_wheel" />
+          <child link="part_front_left_wheel_tread_14" />
+          <origin xyz="-0.0205061 0 0.0205061" rpy="0 5.497787 0" />
+        </joint>
+        <link name="part_front_left_wheel_tread_15">
+          <visual name="front_left_wheel_tread_15">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <box size="0.008 0.025 0.003" />
+            </geometry>
+            <material name="front_left_wheel_tread_15_material">
+              <color rgba="0.13 0.14 0.15 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_front_left_wheel_tread_15_mount" type="fixed">
+          <parent link="front_left_wheel" />
+          <child link="part_front_left_wheel_tread_15" />
+          <origin xyz="-0.01109782 0 0.02679251" rpy="0 5.890486 0" />
+        </joint>
+        <link name="part_front_right_wheel_tire">
+          <visual name="front_right_wheel_tire">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <cylinder radius="0.03" length="0.023" />
+            </geometry>
+            <material name="front_right_wheel_tire_material">
+              <color rgba="0.08 0.09 0.1 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_front_right_wheel_tire_mount" type="fixed">
+          <parent link="front_right_wheel" />
+          <child link="part_front_right_wheel_tire" />
+          <origin xyz="0 0 0" rpy="1.570796 0 0" />
+        </joint>
+        <link name="part_front_right_wheel_rim">
+          <visual name="front_right_wheel_rim">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <cylinder radius="0.018" length="0.024" />
+            </geometry>
+            <material name="front_right_wheel_rim_material">
+              <color rgba="0.67 0.7 0.73 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_front_right_wheel_rim_mount" type="fixed">
+          <parent link="front_right_wheel" />
+          <child link="part_front_right_wheel_rim" />
+          <origin xyz="0 0 0" rpy="1.570796 0 0" />
+        </joint>
+        <link name="part_front_right_wheel_hub">
+          <visual name="front_right_wheel_hub">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <cylinder radius="0.006" length="0.026" />
+            </geometry>
+            <material name="front_right_wheel_hub_material">
+              <color rgba="0.08 0.09 0.1 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_front_right_wheel_hub_mount" type="fixed">
+          <parent link="front_right_wheel" />
+          <child link="part_front_right_wheel_hub" />
+          <origin xyz="0 0 0" rpy="1.570796 0 0" />
+        </joint>
+        <link name="part_front_right_wheel_tread_0">
+          <visual name="front_right_wheel_tread_0">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <box size="0.008 0.025 0.003" />
+            </geometry>
+            <material name="front_right_wheel_tread_0_material">
+              <color rgba="0.13 0.14 0.15 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_front_right_wheel_tread_0_mount" type="fixed">
+          <parent link="front_right_wheel" />
+          <child link="part_front_right_wheel_tread_0" />
+          <origin xyz="0 0 0.029" rpy="0 0 0" />
+        </joint>
+        <link name="part_front_right_wheel_tread_1">
+          <visual name="front_right_wheel_tread_1">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <box size="0.008 0.025 0.003" />
+            </geometry>
+            <material name="front_right_wheel_tread_1_material">
+              <color rgba="0.13 0.14 0.15 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_front_right_wheel_tread_1_mount" type="fixed">
+          <parent link="front_right_wheel" />
+          <child link="part_front_right_wheel_tread_1" />
+          <origin xyz="0.01109782 0 0.02679251" rpy="0 0.3926991 0" />
+        </joint>
+        <link name="part_front_right_wheel_tread_2">
+          <visual name="front_right_wheel_tread_2">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <box size="0.008 0.025 0.003" />
+            </geometry>
+            <material name="front_right_wheel_tread_2_material">
+              <color rgba="0.13 0.14 0.15 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_front_right_wheel_tread_2_mount" type="fixed">
+          <parent link="front_right_wheel" />
+          <child link="part_front_right_wheel_tread_2" />
+          <origin xyz="0.0205061 0 0.0205061" rpy="0 0.7853982 0" />
+        </joint>
+        <link name="part_front_right_wheel_tread_3">
+          <visual name="front_right_wheel_tread_3">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <box size="0.008 0.025 0.003" />
+            </geometry>
+            <material name="front_right_wheel_tread_3_material">
+              <color rgba="0.13 0.14 0.15 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_front_right_wheel_tread_3_mount" type="fixed">
+          <parent link="front_right_wheel" />
+          <child link="part_front_right_wheel_tread_3" />
+          <origin xyz="0.02679251 0 0.01109782" rpy="0 1.178097 0" />
+        </joint>
+        <link name="part_front_right_wheel_tread_4">
+          <visual name="front_right_wheel_tread_4">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <box size="0.008 0.025 0.003" />
+            </geometry>
+            <material name="front_right_wheel_tread_4_material">
+              <color rgba="0.13 0.14 0.15 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_front_right_wheel_tread_4_mount" type="fixed">
+          <parent link="front_right_wheel" />
+          <child link="part_front_right_wheel_tread_4" />
+          <origin xyz="0.029 0 3.469447e-18" rpy="0 1.570796 0" />
+        </joint>
+        <link name="part_front_right_wheel_tread_5">
+          <visual name="front_right_wheel_tread_5">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <box size="0.008 0.025 0.003" />
+            </geometry>
+            <material name="front_right_wheel_tread_5_material">
+              <color rgba="0.13 0.14 0.15 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_front_right_wheel_tread_5_mount" type="fixed">
+          <parent link="front_right_wheel" />
+          <child link="part_front_right_wheel_tread_5" />
+          <origin xyz="0.02679251 0 -0.01109782" rpy="0 1.963495 0" />
+        </joint>
+        <link name="part_front_right_wheel_tread_6">
+          <visual name="front_right_wheel_tread_6">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <box size="0.008 0.025 0.003" />
+            </geometry>
+            <material name="front_right_wheel_tread_6_material">
+              <color rgba="0.13 0.14 0.15 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_front_right_wheel_tread_6_mount" type="fixed">
+          <parent link="front_right_wheel" />
+          <child link="part_front_right_wheel_tread_6" />
+          <origin xyz="0.0205061 0 -0.0205061" rpy="0 2.356194 0" />
+        </joint>
+        <link name="part_front_right_wheel_tread_7">
+          <visual name="front_right_wheel_tread_7">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <box size="0.008 0.025 0.003" />
+            </geometry>
+            <material name="front_right_wheel_tread_7_material">
+              <color rgba="0.13 0.14 0.15 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_front_right_wheel_tread_7_mount" type="fixed">
+          <parent link="front_right_wheel" />
+          <child link="part_front_right_wheel_tread_7" />
+          <origin xyz="0.01109782 0 -0.02679251" rpy="0 2.748894 0" />
+        </joint>
+        <link name="part_front_right_wheel_tread_8">
+          <visual name="front_right_wheel_tread_8">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <box size="0.008 0.025 0.003" />
+            </geometry>
+            <material name="front_right_wheel_tread_8_material">
+              <color rgba="0.13 0.14 0.15 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_front_right_wheel_tread_8_mount" type="fixed">
+          <parent link="front_right_wheel" />
+          <child link="part_front_right_wheel_tread_8" />
+          <origin xyz="0 0 -0.029" rpy="0 3.141593 0" />
+        </joint>
+        <link name="part_front_right_wheel_tread_9">
+          <visual name="front_right_wheel_tread_9">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <box size="0.008 0.025 0.003" />
+            </geometry>
+            <material name="front_right_wheel_tread_9_material">
+              <color rgba="0.13 0.14 0.15 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_front_right_wheel_tread_9_mount" type="fixed">
+          <parent link="front_right_wheel" />
+          <child link="part_front_right_wheel_tread_9" />
+          <origin xyz="-0.01109782 0 -0.02679251" rpy="0 3.534292 0" />
+        </joint>
+        <link name="part_front_right_wheel_tread_10">
+          <visual name="front_right_wheel_tread_10">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <box size="0.008 0.025 0.003" />
+            </geometry>
+            <material name="front_right_wheel_tread_10_material">
+              <color rgba="0.13 0.14 0.15 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_front_right_wheel_tread_10_mount" type="fixed">
+          <parent link="front_right_wheel" />
+          <child link="part_front_right_wheel_tread_10" />
+          <origin xyz="-0.0205061 0 -0.0205061" rpy="0 3.926991 0" />
+        </joint>
+        <link name="part_front_right_wheel_tread_11">
+          <visual name="front_right_wheel_tread_11">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <box size="0.008 0.025 0.003" />
+            </geometry>
+            <material name="front_right_wheel_tread_11_material">
+              <color rgba="0.13 0.14 0.15 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_front_right_wheel_tread_11_mount" type="fixed">
+          <parent link="front_right_wheel" />
+          <child link="part_front_right_wheel_tread_11" />
+          <origin xyz="-0.02679251 0 -0.01109782" rpy="0 4.31969 0" />
+        </joint>
+        <link name="part_front_right_wheel_tread_12">
+          <visual name="front_right_wheel_tread_12">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <box size="0.008 0.025 0.003" />
+            </geometry>
+            <material name="front_right_wheel_tread_12_material">
+              <color rgba="0.13 0.14 0.15 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_front_right_wheel_tread_12_mount" type="fixed">
+          <parent link="front_right_wheel" />
+          <child link="part_front_right_wheel_tread_12" />
+          <origin xyz="-0.029 0 -6.938894e-18" rpy="0 4.712389 0" />
+        </joint>
+        <link name="part_front_right_wheel_tread_13">
+          <visual name="front_right_wheel_tread_13">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <box size="0.008 0.025 0.003" />
+            </geometry>
+            <material name="front_right_wheel_tread_13_material">
+              <color rgba="0.13 0.14 0.15 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_front_right_wheel_tread_13_mount" type="fixed">
+          <parent link="front_right_wheel" />
+          <child link="part_front_right_wheel_tread_13" />
+          <origin xyz="-0.02679251 0 0.01109782" rpy="0 5.105088 0" />
+        </joint>
+        <link name="part_front_right_wheel_tread_14">
+          <visual name="front_right_wheel_tread_14">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <box size="0.008 0.025 0.003" />
+            </geometry>
+            <material name="front_right_wheel_tread_14_material">
+              <color rgba="0.13 0.14 0.15 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_front_right_wheel_tread_14_mount" type="fixed">
+          <parent link="front_right_wheel" />
+          <child link="part_front_right_wheel_tread_14" />
+          <origin xyz="-0.0205061 0 0.0205061" rpy="0 5.497787 0" />
+        </joint>
+        <link name="part_front_right_wheel_tread_15">
+          <visual name="front_right_wheel_tread_15">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <box size="0.008 0.025 0.003" />
+            </geometry>
+            <material name="front_right_wheel_tread_15_material">
+              <color rgba="0.13 0.14 0.15 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_front_right_wheel_tread_15_mount" type="fixed">
+          <parent link="front_right_wheel" />
+          <child link="part_front_right_wheel_tread_15" />
+          <origin xyz="-0.01109782 0 0.02679251" rpy="0 5.890486 0" />
+        </joint>
+        <link name="part_raspberry_pi">
+          <visual name="raspberry_pi">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <box size="0.085 0.056 0.003" />
+            </geometry>
+            <material name="raspberry_pi_material">
+              <color rgba="0.08 0.42 0.22 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_raspberry_pi_mount" type="fixed">
+          <parent link="base_link" />
+          <child link="part_raspberry_pi" />
+          <origin xyz="-0.057 0 0.073" rpy="0 0 0" />
+        </joint>
+        <link name="part_pi_usb_m0p018">
+          <visual name="pi_usb_-0.018">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <box size="0.016 0.015 0.014" />
+            </geometry>
+            <material name="pi_usb_-0.018_material">
+              <color rgba="0.67 0.7 0.73 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_pi_usb_m0p018_mount" type="fixed">
+          <parent link="base_link" />
+          <child link="part_pi_usb_m0p018" />
+          <origin xyz="-0.02 -0.018 0.082" rpy="0 0 0" />
+        </joint>
+        <link name="part_pi_usb_0p018">
+          <visual name="pi_usb_0.018">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <box size="0.016 0.015 0.014" />
+            </geometry>
+            <material name="pi_usb_0.018_material">
+              <color rgba="0.67 0.7 0.73 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_pi_usb_0p018_mount" type="fixed">
+          <parent link="base_link" />
+          <child link="part_pi_usb_0p018" />
+          <origin xyz="-0.02 0.018 0.082" rpy="0 0 0" />
+        </joint>
+        <link name="part_pi_chip">
+          <visual name="pi_chip">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <box size="0.016 0.016 0.004" />
+            </geometry>
+            <material name="pi_chip_material">
+              <color rgba="0.08 0.09 0.1 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_pi_chip_mount" type="fixed">
+          <parent link="base_link" />
+          <child link="part_pi_chip" />
+          <origin xyz="-0.06 0 0.077" rpy="0 0 0" />
+        </joint>
+        <link name="part_arduino_mega">
+          <visual name="arduino_mega">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <box size="0.102 0.054 0.003" />
+            </geometry>
+            <material name="arduino_mega_material">
+              <color rgba="0.04 0.29 0.57 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_arduino_mega_mount" type="fixed">
+          <parent link="base_link" />
+          <child link="part_arduino_mega" />
+          <origin xyz="0.05 0 0.073" rpy="0 0 0" />
+        </joint>
+        <link name="part_expansion_shield">
+          <visual name="expansion_shield">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <box size="0.09 0.053 0.003" />
+            </geometry>
+            <material name="expansion_shield_material">
+              <color rgba="0.15 0.2 0.24 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_expansion_shield_mount" type="fixed">
+          <parent link="base_link" />
+          <child link="part_expansion_shield" />
+          <origin xyz="0.05 0 0.084" rpy="0 0 0" />
+        </joint>
+        <link name="part_headers_m0p023">
+          <visual name="headers_-0.023">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <box size="0.085 0.005 0.008" />
+            </geometry>
+            <material name="headers_-0.023_material">
+              <color rgba="0.08 0.09 0.1 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_headers_m0p023_mount" type="fixed">
+          <parent link="base_link" />
+          <child link="part_headers_m0p023" />
+          <origin xyz="0.05 -0.023 0.089" rpy="0 0 0" />
+        </joint>
+        <link name="part_headers_0p023">
+          <visual name="headers_0.023">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <box size="0.085 0.005 0.008" />
+            </geometry>
+            <material name="headers_0.023_material">
+              <color rgba="0.08 0.09 0.1 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_headers_0p023_mount" type="fixed">
+          <parent link="base_link" />
+          <child link="part_headers_0p023" />
+          <origin xyz="0.05 0.023 0.089" rpy="0 0 0" />
+        </joint>
+        <link name="part_front_bumper">
+          <visual name="front_bumper">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <box size="0.035 0.16 0.006" />
+            </geometry>
+            <material name="front_bumper_material">
+              <color rgba="0.08 0.09 0.1 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_front_bumper_mount" type="fixed">
+          <parent link="base_link" />
+          <child link="part_front_bumper" />
+          <origin xyz="0.1375 0 0.018" rpy="0 0 0" />
+        </joint>
+        <link name="part_ir_0_board">
+          <visual name="ir_0_board">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <box size="0.018 0.01 0.002" />
+            </geometry>
+            <material name="ir_0_board_material">
+              <color rgba="0.04 0.29 0.57 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_ir_0_board_mount" type="fixed">
+          <parent link="base_link" />
+          <child link="part_ir_0_board" />
+          <origin xyz="0.1355 -0.045 0.012" rpy="0 0 0" />
+        </joint>
+        <link name="part_ir_0_receiver">
+          <visual name="ir_0_receiver">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <box size="0.006 0.006 0.004" />
+            </geometry>
+            <material name="ir_0_receiver_material">
+              <color rgba="0.08 0.09 0.1 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_ir_0_receiver_mount" type="fixed">
+          <parent link="base_link" />
+          <child link="part_ir_0_receiver" />
+          <origin xyz="0.1405 -0.045 0.009" rpy="0 0 0" />
+        </joint>
+        <link name="part_ir_1_board">
+          <visual name="ir_1_board">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <box size="0.018 0.01 0.002" />
+            </geometry>
+            <material name="ir_1_board_material">
+              <color rgba="0.04 0.29 0.57 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_ir_1_board_mount" type="fixed">
+          <parent link="base_link" />
+          <child link="part_ir_1_board" />
+          <origin xyz="0.1355 -0.015 0.012" rpy="0 0 0" />
+        </joint>
+        <link name="part_ir_1_receiver">
+          <visual name="ir_1_receiver">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <box size="0.006 0.006 0.004" />
+            </geometry>
+            <material name="ir_1_receiver_material">
+              <color rgba="0.08 0.09 0.1 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_ir_1_receiver_mount" type="fixed">
+          <parent link="base_link" />
+          <child link="part_ir_1_receiver" />
+          <origin xyz="0.1405 -0.015 0.009" rpy="0 0 0" />
+        </joint>
+        <link name="part_ir_2_board">
+          <visual name="ir_2_board">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <box size="0.018 0.01 0.002" />
+            </geometry>
+            <material name="ir_2_board_material">
+              <color rgba="0.04 0.29 0.57 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_ir_2_board_mount" type="fixed">
+          <parent link="base_link" />
+          <child link="part_ir_2_board" />
+          <origin xyz="0.1355 0.015 0.012" rpy="0 0 0" />
+        </joint>
+        <link name="part_ir_2_receiver">
+          <visual name="ir_2_receiver">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <box size="0.006 0.006 0.004" />
+            </geometry>
+            <material name="ir_2_receiver_material">
+              <color rgba="0.08 0.09 0.1 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_ir_2_receiver_mount" type="fixed">
+          <parent link="base_link" />
+          <child link="part_ir_2_receiver" />
+          <origin xyz="0.1405 0.015 0.009" rpy="0 0 0" />
+        </joint>
+        <link name="part_ir_3_board">
+          <visual name="ir_3_board">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <box size="0.018 0.01 0.002" />
+            </geometry>
+            <material name="ir_3_board_material">
+              <color rgba="0.04 0.29 0.57 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_ir_3_board_mount" type="fixed">
+          <parent link="base_link" />
+          <child link="part_ir_3_board" />
+          <origin xyz="0.1355 0.045 0.012" rpy="0 0 0" />
+        </joint>
+        <link name="part_ir_3_receiver">
+          <visual name="ir_3_receiver">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <box size="0.006 0.006 0.004" />
+            </geometry>
+            <material name="ir_3_receiver_material">
+              <color rgba="0.08 0.09 0.1 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_ir_3_receiver_mount" type="fixed">
+          <parent link="base_link" />
+          <child link="part_ir_3_receiver" />
+          <origin xyz="0.1405 0.045 0.009" rpy="0 0 0" />
+        </joint>
+        <link name="part_us_rear_bracket">
+          <visual name="us_rear_bracket">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <box size="0.008 0.04 0.01" />
+            </geometry>
+            <material name="us_rear_bracket_material">
+              <color rgba="0.08 0.09 0.1 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_us_rear_bracket_mount" type="fixed">
+          <parent link="base_link" />
+          <child link="part_us_rear_bracket" />
+          <origin xyz="-0.117 -3.67394e-19 0.069" rpy="0 0 3.141593" />
+        </joint>
+        <link name="part_us_rear_pcb">
+          <visual name="us_rear_pcb">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <box size="0.002 0.045 0.02" />
+            </geometry>
+            <material name="us_rear_pcb_material">
+              <color rgba="0.04 0.29 0.57 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_us_rear_pcb_mount" type="fixed">
+          <parent link="base_link" />
+          <child link="part_us_rear_pcb" />
+          <origin xyz="-0.12 0 0.08" rpy="0 0 3.141593" />
+        </joint>
+        <link name="part_us_rear_0">
+          <visual name="us_rear_0">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <cylinder radius="0.008" length="0.012" />
+            </geometry>
+            <material name="us_rear_0_material">
+              <color rgba="0.67 0.7 0.73 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_us_rear_0_mount" type="fixed">
+          <parent link="base_link" />
+          <child link="part_us_rear_0" />
+          <origin xyz="-0.127 0.012 0.08" rpy="0 1.570796 3.141593" />
+        </joint>
+        <link name="part_us_rear_1">
+          <visual name="us_rear_1">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <cylinder radius="0.008" length="0.012" />
+            </geometry>
+            <material name="us_rear_1_material">
+              <color rgba="0.67 0.7 0.73 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_us_rear_1_mount" type="fixed">
+          <parent link="base_link" />
+          <child link="part_us_rear_1" />
+          <origin xyz="-0.127 -0.012 0.08" rpy="0 1.570796 3.141593" />
+        </joint>
+        <link name="part_us_right_bracket">
+          <visual name="us_right_bracket">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <box size="0.008 0.04 0.01" />
+            </geometry>
+            <material name="us_right_bracket_material">
+              <color rgba="0.08 0.09 0.1 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_us_right_bracket_mount" type="fixed">
+          <parent link="base_link" />
+          <child link="part_us_right_bracket" />
+          <origin xyz="0.08 -0.042 0.069" rpy="0 0 -1.570796" />
+        </joint>
+        <link name="part_us_right_pcb">
+          <visual name="us_right_pcb">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <box size="0.002 0.045 0.02" />
+            </geometry>
+            <material name="us_right_pcb_material">
+              <color rgba="0.04 0.29 0.57 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_us_right_pcb_mount" type="fixed">
+          <parent link="base_link" />
+          <child link="part_us_right_pcb" />
+          <origin xyz="0.08 -0.045 0.08" rpy="0 0 -1.570796" />
+        </joint>
+        <link name="part_us_right_0">
+          <visual name="us_right_0">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <cylinder radius="0.008" length="0.012" />
+            </geometry>
+            <material name="us_right_0_material">
+              <color rgba="0.67 0.7 0.73 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_us_right_0_mount" type="fixed">
+          <parent link="base_link" />
+          <child link="part_us_right_0" />
+          <origin xyz="0.068 -0.052 0.08" rpy="0 1.570796 -1.570796" />
+        </joint>
+        <link name="part_us_right_1">
+          <visual name="us_right_1">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <cylinder radius="0.008" length="0.012" />
+            </geometry>
+            <material name="us_right_1_material">
+              <color rgba="0.67 0.7 0.73 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_us_right_1_mount" type="fixed">
+          <parent link="base_link" />
+          <child link="part_us_right_1" />
+          <origin xyz="0.092 -0.052 0.08" rpy="0 1.570796 -1.570796" />
+        </joint>
+        <link name="part_us_left_bracket">
+          <visual name="us_left_bracket">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <box size="0.008 0.04 0.01" />
+            </geometry>
+            <material name="us_left_bracket_material">
+              <color rgba="0.08 0.09 0.1 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_us_left_bracket_mount" type="fixed">
+          <parent link="base_link" />
+          <child link="part_us_left_bracket" />
+          <origin xyz="0.08 0.042 0.069" rpy="0 0 1.570796" />
+        </joint>
+        <link name="part_us_left_pcb">
+          <visual name="us_left_pcb">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <box size="0.002 0.045 0.02" />
+            </geometry>
+            <material name="us_left_pcb_material">
+              <color rgba="0.04 0.29 0.57 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_us_left_pcb_mount" type="fixed">
+          <parent link="base_link" />
+          <child link="part_us_left_pcb" />
+          <origin xyz="0.08 0.045 0.08" rpy="0 0 1.570796" />
+        </joint>
+        <link name="part_us_left_0">
+          <visual name="us_left_0">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <cylinder radius="0.008" length="0.012" />
+            </geometry>
+            <material name="us_left_0_material">
+              <color rgba="0.67 0.7 0.73 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_us_left_0_mount" type="fixed">
+          <parent link="base_link" />
+          <child link="part_us_left_0" />
+          <origin xyz="0.092 0.052 0.08" rpy="0 1.570796 1.570796" />
+        </joint>
+        <link name="part_us_left_1">
+          <visual name="us_left_1">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <cylinder radius="0.008" length="0.012" />
+            </geometry>
+            <material name="us_left_1_material">
+              <color rgba="0.67 0.7 0.73 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_us_left_1_mount" type="fixed">
+          <parent link="base_link" />
+          <child link="part_us_left_1" />
+          <origin xyz="0.068 0.052 0.08" rpy="0 1.570796 1.570796" />
+        </joint>
+        <link name="part_us_front_bracket">
+          <visual name="us_front_bracket">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <box size="0.008 0.04 0.01" />
+            </geometry>
+            <material name="us_front_bracket_material">
+              <color rgba="0.08 0.09 0.1 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_us_front_bracket_mount" type="fixed">
+          <parent link="base_link" />
+          <child link="part_us_front_bracket" />
+          <origin xyz="0.112 0 0.069" rpy="0 0 0" />
+        </joint>
+        <link name="part_us_front_pcb">
+          <visual name="us_front_pcb">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <box size="0.002 0.045 0.02" />
+            </geometry>
+            <material name="us_front_pcb_material">
+              <color rgba="0.04 0.29 0.57 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_us_front_pcb_mount" type="fixed">
+          <parent link="base_link" />
+          <child link="part_us_front_pcb" />
+          <origin xyz="0.115 0 0.08" rpy="0 0 0" />
+        </joint>
+        <link name="part_us_front_0">
+          <visual name="us_front_0">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <cylinder radius="0.008" length="0.012" />
+            </geometry>
+            <material name="us_front_0_material">
+              <color rgba="0.67 0.7 0.73 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_us_front_0_mount" type="fixed">
+          <parent link="base_link" />
+          <child link="part_us_front_0" />
+          <origin xyz="0.122 -0.012 0.08" rpy="0 1.570796 0" />
+        </joint>
+        <link name="part_us_front_1">
+          <visual name="us_front_1">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <cylinder radius="0.008" length="0.012" />
+            </geometry>
+            <material name="us_front_1_material">
+              <color rgba="0.67 0.7 0.73 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_us_front_1_mount" type="fixed">
+          <parent link="base_link" />
+          <child link="part_us_front_1" />
+          <origin xyz="0.122 0.012 0.08" rpy="0 1.570796 0" />
+        </joint>
+        <link name="part_camera_mast">
+          <visual name="camera_mast">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <box size="0.004 0.055 0.16" />
+            </geometry>
+            <material name="camera_mast_material">
+              <color rgba="0.08 0.09 0.1 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_camera_mast_mount" type="fixed">
+          <parent link="base_link" />
+          <child link="part_camera_mast" />
+          <origin xyz="0.065 0 0.2" rpy="0 0 0" />
+        </joint>
+        <link name="part_mast_foot">
+          <visual name="mast_foot">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <box size="0.025 0.065 0.006" />
+            </geometry>
+            <material name="mast_foot_material">
+              <color rgba="0.08 0.09 0.1 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_mast_foot_mount" type="fixed">
+          <parent link="base_link" />
+          <child link="part_mast_foot" />
+          <origin xyz="0.065 0 0.124" rpy="0 0 0" />
+        </joint>
+        <link name="part_camera_holder_m0p0425">
+          <visual name="camera_holder_-0.0425">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <box size="0.02 0.004 0.04" />
+            </geometry>
+            <material name="camera_holder_-0.0425_material">
+              <color rgba="0.08 0.09 0.1 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_camera_holder_m0p0425_mount" type="fixed">
+          <parent link="base_link" />
+          <child link="part_camera_holder_m0p0425" />
+          <origin xyz="0.065 -0.0425 0.3" rpy="0 0 0" />
+        </joint>
+        <link name="part_camera_holder_0p0425">
+          <visual name="camera_holder_0.0425">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <box size="0.02 0.004 0.04" />
+            </geometry>
+            <material name="camera_holder_0.0425_material">
+              <color rgba="0.08 0.09 0.1 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_camera_holder_0p0425_mount" type="fixed">
+          <parent link="base_link" />
+          <child link="part_camera_holder_0p0425" />
+          <origin xyz="0.065 0.0425 0.3" rpy="0 0 0" />
+        </joint>
+        <link name="part_camera_holder_bar">
+          <visual name="camera_holder_bar">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <box size="0.025 0.085 0.006" />
+            </geometry>
+            <material name="camera_holder_bar_material">
+              <color rgba="0.08 0.09 0.1 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_camera_holder_bar_mount" type="fixed">
+          <parent link="base_link" />
+          <child link="part_camera_holder_bar" />
+          <origin xyz="0.065 0 0.283" rpy="0 0 0" />
+        </joint>
+        <link name="part_camera_bar">
+          <visual name="camera_bar">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <box size="0.025 0.155 0.025" />
+            </geometry>
+            <material name="camera_bar_material">
+              <color rgba="0.12 0.14 0.16 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_camera_bar_mount" type="fixed">
+          <parent link="base_link" />
+          <child link="part_camera_bar" />
+          <origin xyz="0.075 0 0.3" rpy="0 0 0" />
+        </joint>
+        <link name="part_camera_lens_ring">
+          <visual name="camera_lens_ring">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <cylinder radius="0.01" length="0.006" />
+            </geometry>
+            <material name="camera_lens_ring_material">
+              <color rgba="0.67 0.7 0.73 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_camera_lens_ring_mount" type="fixed">
+          <parent link="base_link" />
+          <child link="part_camera_lens_ring" />
+          <origin xyz="0.0875 0 0.3" rpy="0 1.570796 0" />
+        </joint>
+        <link name="part_camera_lens">
+          <visual name="camera_lens">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+              <cylinder radius="0.007" length="0.004" />
+            </geometry>
+            <material name="camera_lens_material">
+              <color rgba="0.02 0.08 0.12 1" />
+            </material>
+          </visual>
+        </link>
+        <joint name="part_camera_lens_mount" type="fixed">
+          <parent link="base_link" />
+          <child link="part_camera_lens" />
+          <origin xyz="0.0925 0 0.3" rpy="0 1.570796 0" />
+        </joint>
+      </robot>
