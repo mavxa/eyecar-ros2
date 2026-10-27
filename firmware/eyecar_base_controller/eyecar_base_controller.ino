@@ -1,9 +1,13 @@
-#include <Servo.h>
-
+#include <Servo.h> //servo
+#include <NewPing.h> //sonic
 // KvantoShield PLS signal row: motor on S3, steering servo on S2.
 // Pulse limits are based on the bundled EyeCar examples and live calibration.
+
+// motor driver
 constexpr uint8_t MOTOR_PIN = 3;
+// servo
 constexpr uint8_t STEERING_PIN = 2;
+
 constexpr int MOTOR_NEUTRAL_US = 1500;
 constexpr int MOTOR_FORWARD_RANGE_US = 130;
 constexpr int MOTOR_REVERSE_RANGE_US = 150;
@@ -16,6 +20,130 @@ constexpr unsigned long ESC_ARM_TIME_MS = 1500;
 constexpr unsigned long REVERSE_BRAKE_TIME_MS = 180;
 constexpr unsigned long REVERSE_NEUTRAL_TIME_MS = 180;
 constexpr unsigned long SERIAL_BAUD = 115200;
+
+// sonic
+constexpr uint8_t US1_TRIG_PIN = 5;
+constexpr uint8_t US1_ECHO_PIN = 6;
+
+constexpr uint8_t US2_TRIG_PIN = 7;
+constexpr uint8_t US2_ECHO_PIN = 8;
+
+constexpr uint8_t US3_TRIG_PIN = 10;
+constexpr uint8_t US3_ECHO_PIN = 11;
+
+constexpr uint8_t US4_TRIG_PIN = 12;
+constexpr uint8_t US4_ECHO_PIN = 13;
+
+constexpr unsigned int ULTRASONIC_MAX_CM = 400;
+
+NewPing us1(
+    US1_TRIG_PIN,
+    US1_ECHO_PIN,
+    ULTRASONIC_MAX_CM
+);
+
+NewPing us2(
+    US2_TRIG_PIN,
+    US2_ECHO_PIN,
+    ULTRASONIC_MAX_CM
+);
+
+NewPing us3(
+    US3_TRIG_PIN,
+    US3_ECHO_PIN,
+    ULTRASONIC_MAX_CM
+);
+
+NewPing us4(
+    US4_TRIG_PIN,
+    US4_ECHO_PIN,
+    ULTRASONIC_MAX_CM
+);
+
+
+// NewPing returns 0 when no echo is received within ULTRASONIC_MAX_CM.
+uint16_t ultrasonic_cm[4] = {0, 0, 0, 0}; //storage for us data
+
+uint8_t current_ultrasonic = 0;
+constexpr unsigned long ULTRASONIC_SAMPLE_MS = 50;
+unsigned long last_ultrasonic_sample_ms = 0;
+
+bool updateUltrasonic() {
+  if (millis() - last_ultrasonic_sample_ms < ULTRASONIC_SAMPLE_MS) {
+    return false;
+  }
+
+  switch (current_ultrasonic) {
+    case 0:
+      ultrasonic_cm[0] = us1.ping_cm();
+      break;
+
+    case 1:
+      ultrasonic_cm[1] = us2.ping_cm();
+      break;
+
+    case 2:
+      ultrasonic_cm[2] = us3.ping_cm();
+      break;
+
+    case 3:
+      ultrasonic_cm[3] = us4.ping_cm();
+      break;
+  }
+
+  // Leave a quiet interval after each measurement to reduce cross-talk.
+  last_ultrasonic_sample_ms = millis();
+  current_ultrasonic++;
+
+  if (current_ultrasonic >= 4) {
+    current_ultrasonic = 0;
+  }
+  return true;
+}
+
+void reportUltrasonic() {
+  Serial.print(F("US "));
+  Serial.print(ultrasonic_cm[0]);
+  Serial.print(' ');
+  Serial.print(ultrasonic_cm[1]);
+  Serial.print(' ');
+  Serial.print(ultrasonic_cm[2]);
+  Serial.print(' ');
+  Serial.println(ultrasonic_cm[3]);
+}
+
+// IR sensors in connector order A0 -> A4.
+// true: AO output, raw 10-bit ADC values (0..1023), not centimeters.
+// false: DO/S digital output, raw logic levels (0/1), polarity is sensor-specific.
+constexpr bool IR_ANALOG_MODE = true;
+constexpr uint8_t IR_PINS[] = {A0, A1, A2, A3, A4};
+constexpr uint8_t IR_COUNT = sizeof(IR_PINS) / sizeof(IR_PINS[0]);
+constexpr unsigned long IR_SAMPLE_MS = 100;
+uint16_t infrared_raw[IR_COUNT] = {};
+unsigned long last_infrared_sample_ms = 0;
+
+bool updateInfrared() {
+  if (millis() - last_infrared_sample_ms < IR_SAMPLE_MS) {
+    return false;
+  }
+
+  for (uint8_t i = 0; i < IR_COUNT; i++) {
+    infrared_raw[i] = IR_ANALOG_MODE
+        ? analogRead(IR_PINS[i])
+        : digitalRead(IR_PINS[i]);
+  }
+  last_infrared_sample_ms = millis();
+  return true;
+}
+
+void reportInfrared() {
+  Serial.print(F("IR"));
+  for (uint8_t i = 0; i < IR_COUNT; i++) {
+    Serial.print(' ');
+    Serial.print(infrared_raw[i]);
+  }
+  Serial.println();
+}
 
 Servo motor;
 Servo steering;
@@ -188,6 +316,10 @@ void readSerial() {
 }
 
 void setup() {
+  for (uint8_t i = 0; i < IR_COUNT; i++) {
+    pinMode(IR_PINS[i], INPUT);
+  }
+
   motor.attach(MOTOR_PIN);
   steering.attach(STEERING_PIN);
   stopBase();
@@ -195,6 +327,8 @@ void setup() {
   Serial.begin(SERIAL_BAUD);
   delay(ESC_ARM_TIME_MS);
   last_command_ms = millis();
+  last_ultrasonic_sample_ms = millis();
+  last_infrared_sample_ms = millis();
   Serial.println(F("READY EYECAR_BASE_V1"));
 }
 
@@ -208,5 +342,13 @@ void loop() {
       Serial.println(F("WATCHDOG STOP"));
       watchdog_reported = true;
     }
+  }
+
+  // Send one complete set after all four sensors have been sampled.
+  if (updateUltrasonic() && current_ultrasonic == 0) {
+    reportUltrasonic();
+  }
+  if (updateInfrared()) {
+    reportInfrared();
   }
 }

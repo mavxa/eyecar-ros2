@@ -1,0 +1,40 @@
+{
+  "units": "meters, degrees",
+  "notes": [
+    "Approximate visual model from user measurements and photographs; not manufacturing CAD or a collision model.",
+    "Two 240 x 120 mm plates. The 105 mm chassis stack uses gaps of 50 and 55 mm; lowest drivetrain datum is 15 mm above ground.",
+    "Camera width 155 mm is left-to-right, confirmed by user. Mast height is measured from the upper plate; bracket 85 mm is assumed to be its width.",
+    "All HC-SR04 centers are at 80 mm above ground, alongside the electronics. The camera is centered within the holder height.",
+    "Plate thickness, wheelbase/track/width, electronics placement, mast thickness, camera depth and sensor heights are estimates.",
+    "Four physical IR modules are drawn. Firmware still reports five raw IR channels; no channel assignment is inferred."
+  ],
+  "plate_length": 0.24,
+  "plate_width": 0.12,
+  "plate_thickness": 0.003,
+  "chassis_bottom_z": 0.015,
+  "electronics_plate_offset": 0.050,
+  "upper_plate_offset": 0.105,
+  "wheel_radius": 0.030,
+  "wheel_width": 0.023,
+  "wheelbase": 0.170,
+  "wheel_track": 0.145,
+  "bumper_length": 0.035,
+  "bumper_width": 0.160,
+  "mast_from_front": 0.055,
+  "mast_height": 0.160,
+  "mast_width": 0.055,
+  "bracket_width": 0.085,
+  "bracket_height": 0.040,
+  "camera_width": 0.155,
+  "camera_height": 0.025,
+  "camera_depth": 0.025,
+  "command_timeout_s": 0.5,
+  "angular_command_limit": 0.85,
+  "estimated_max_steering_deg": 30,
+  "sensors": [
+    {"name": "rear", "x": -0.120, "y": 0.0, "z": 0.080, "yaw_deg": 180},
+    {"name": "right", "x": 0.080, "y": -0.045, "z": 0.080, "yaw_deg": -90},
+    {"name": "left", "x": 0.080, "y": 0.045, "z": 0.080, "yaw_deg": 90},
+    {"name": "front", "x": 0.115, "y": 0.0, "z": 0.080, "yaw_deg": 0}
+  ]
+}
