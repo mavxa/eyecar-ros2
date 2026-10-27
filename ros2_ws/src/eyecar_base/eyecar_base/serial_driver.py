@@ -8,6 +8,9 @@ import rclpy
 import serial
 from geometry_msgs.msg import Twist
 from rclpy.node import Node
+from std_msgs.msg import UInt16MultiArray
+
+from eyecar_base.sensor_protocol import parse_sensor_line
 
 
 PROTOCOL_BANNER = 'READY EYECAR_BASE_V1'
@@ -84,6 +87,10 @@ class EyeCarSerialDriver(Node):
             self.on_command,
             10,
         )
+        self.ultrasonic_publisher = self.create_publisher(
+            UInt16MultiArray, '/eyecar/ultrasonic', 1)
+        self.infrared_publisher = self.create_publisher(
+            UInt16MultiArray, '/eyecar/infrared', 1)
         self.timer = self.create_timer(1.0 / command_rate, self.on_timer)
 
         if self.motion_enabled:
@@ -153,10 +160,28 @@ class EyeCarSerialDriver(Node):
             if line == PROTOCOL_BANNER:
                 self.handshake_complete = True
                 self.get_logger().info('EyeCar controller handshake complete')
+            elif line.startswith(('US ', 'IR ')):
+                self.publish_sensor_line(line)
             elif line.startswith(('ERR', 'WATCHDOG')):
                 self.get_logger().warning(f'Controller: {line}')
             else:
                 self.get_logger().debug(f'Controller: {line}')
+
+    def publish_sensor_line(self, line: str) -> None:
+        if not self.handshake_complete:
+            return
+        try:
+            parsed = parse_sensor_line(line)
+        except ValueError as error:
+            self.get_logger().warning(f'Invalid sensor telemetry: {error}')
+            return
+        if parsed is None:
+            return
+        kind, values = parsed
+        message = UInt16MultiArray()
+        message.data = values
+        publisher = self.ultrasonic_publisher if kind == 'US' else self.infrared_publisher
+        publisher.publish(message)
 
     def normalized_command(self) -> tuple[int, int]:
         command_fresh = (
