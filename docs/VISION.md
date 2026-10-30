@@ -9,7 +9,7 @@ The trained model is a separate file. Copy the student's `best.pt` to
 `/opt/eyecar-vision/models/best.pt` before testing. The model file is not
 included in this repository.
 
-To reproduce the shared setup on the Pi:
+To reproduce the shared setup on a fresh Pi:
 
 ```bash
 sudo apt install python3-venv
@@ -22,6 +22,20 @@ install -m 0644 deploy/vision-ros.env /opt/eyecar-vision/ros-local.env
 install -m 0644 deploy/cyclonedds-loopback.xml \
   /opt/eyecar-vision/cyclonedds-loopback.xml
 ```
+
+Create `/opt/eyecar-vision/ros-env.bash` with:
+
+```bash
+source /opt/ros/jazzy/setup.bash
+set -a
+source /opt/eyecar-vision/ros-local.env
+set +a
+```
+
+Source the workspace overlay as well when a script imports custom messages such
+as `eyecar_interfaces`. On an existing AP-enabled rover, preserve the active DDS
+profile instead of replacing it with the loopback defaults above. Follow
+[networking](NETWORKING.md#one-time-pi-activation) for the matching vision profile.
 
 Run the setup as `mavxa`; both accounts may execute the installed interpreter.
 Verify the imports after sourcing ROS:

@@ -4,7 +4,7 @@ project_root=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)
 image_name=eyecar-rviz:jazzy
 
 if [[ ${1:-} == build ]]; then
-    exec docker build -t "$image_name" "$project_root/deploy/rviz"
+    exec docker build -t "$image_name" "$project_root"
 fi
 
 docker image inspect "$image_name" >/dev/null 2>&1 || {
@@ -63,8 +63,11 @@ fi
 docker run --rm --init --name "$container_name" --network host \
     --user "$(id -u):$(id -g)" "${gpu_args[@]}" \
     -e "EYECAR_RVIZ_DEMO=$demo_mode" -e "ROS_DOMAIN_ID=$local_domain" \
+    -e ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST \
+    -e EYECAR_RVIZ_DIRECT=0 \
     -e LIBGL_ALWAYS_SOFTWARE \
     -e DISPLAY -e XAUTHORITY=/run/eyecar.xauth -e HOME=/tmp/eyecar-home \
     -v /tmp/.X11-unix:/tmp/.X11-unix:ro \
     -v "$temp_dir/xauth:/run/eyecar.xauth:ro" \
-    -v "$project_root:/workspace:ro" "$image_name"
+    -v "$project_root:/workspace:ro" "$image_name" \
+    bash /workspace/deploy/rviz/start.sh

@@ -1,6 +1,4 @@
 #!/usr/bin/env python3
-"""View EyeCar telemetry, URDF joints and explicitly command-derived motion locally."""
-
 import json
 import math
 import os
@@ -14,6 +12,7 @@ from geometry_msgs.msg import Point, PoseStamped, TransformStamped, Twist
 from nav_msgs.msg import Odometry, Path as RosPath
 from rclpy.executors import ExternalShutdownException
 from rclpy.node import Node
+from rclpy.qos import qos_profile_sensor_data
 from std_msgs.msg import UInt16MultiArray
 from std_srvs.srv import Empty
 from sensor_msgs.msg import JointState
@@ -39,7 +38,9 @@ class TelemetryBridge(Node):
         super().__init__('eyecar_rviz_bridge')
         self.geometry = json.loads((ROOT / 'models/eyecar/dimensions.json').read_text())
         self.url = os.environ.get('EYECAR_BRIDGE_URL', 'ws://127.0.0.1:19090')
-        self.publishers_by_topic = {
+        self.demo = os.environ.get('EYECAR_RVIZ_DEMO') == '1'
+        self.direct = os.environ.get('EYECAR_RVIZ_DIRECT') == '1' and not self.demo
+        self.publishers_by_topic = {} if self.direct else {
             topic: self.create_publisher(kind, topic, 10) for topic, kind in TOPIC_TYPES.items()
         }
         self.markers = self.create_publisher(MarkerArray, '/eyecar/ultrasonic_markers', 10)
@@ -54,18 +55,48 @@ class TelemetryBridge(Node):
         self.last_path_at = 0.0
         self.sensor_values = {TOPICS[0]: None, TOPICS[1]: None}
         self.sensor_times = {}
-        self.demo = os.environ.get('EYECAR_RVIZ_DEMO') == '1'
         self.started_at = time.monotonic()
         self.create_service(Empty, '/eyecar/reset_command_estimate', self.reset_estimate)
         self.latest = {}
         self.lock = threading.Lock()
         self.stopping = threading.Event()
-        self.workers = [] if self.demo else [threading.Thread(target=self.receive, args=(topic,)) for topic in TOPICS]
+        self.workers = [] if self.demo or self.direct else [threading.Thread(target=self.receive, args=(topic,)) for topic in TOPICS]
+        if self.direct:
+            for topic, kind in TOPIC_TYPES.items():
+                self.create_subscription(kind, topic,
+                                         lambda message, topic=topic: self.receive_ros(topic, message),
+                                         qos_profile_sensor_data)
         for worker in self.workers:
             worker.start()
         self.create_timer(0.05, self.publish_latest)
-        self.get_logger().info('DEMO: all readings and motion are synthetic' if self.demo else
-                               'Receiving telemetry only; motion is a command estimate, not measured odometry')
+        if self.demo:
+            self.get_logger().info('DEMO: all readings and motion are synthetic')
+        else:
+            source = 'ROS 2 (DDS)' if self.direct else 'WebSocket'
+            self.get_logger().info(f'Receiving telemetry via {source}; motion is a command estimate, not measured odometry')
+
+    def store_message(self, topic, message):
+        if topic == '/cmd_vel':
+            values = [message[axis][coordinate] for axis in ('linear', 'angular')
+                      for coordinate in ('x', 'y', 'z')]
+            if any(not isinstance(value, (int, float)) or not math.isfinite(value) for value in values):
+                raise ValueError('Invalid velocity command')
+        else:
+            values = message['data']
+            count = 4 if topic == TOPICS[0] else 5
+            maximum = 400 if topic == TOPICS[0] else 1023
+            if len(values) != count or any(type(value) is not int or not 0 <= value <= maximum for value in values):
+                raise ValueError('Invalid sensor readings')
+        with self.lock:
+            self.latest[topic] = (message, time.monotonic())
+
+    def receive_ros(self, topic, message):
+        payload = ({axis: vector_fields(getattr(message, axis)) for axis in ('linear', 'angular')}
+                   if topic == '/cmd_vel' else {'data': list(message.data)})
+        try:
+            self.store_message(topic, payload)
+        except (ValueError, KeyError, TypeError) as exc:
+            self.get_logger().warning(f'{topic}: {exc}; ignored')
 
     def receive(self, topic):
         # The existing panel bridge watches one topic per WebSocket connection.
@@ -84,23 +115,7 @@ class TelemetryBridge(Node):
                         if event.get('op') == 'error':
                             raise ValueError(event.get('message', 'Bridge rejected watch'))
                         if event.get('op') == 'message' and event.get('topic') == topic:
-                            message = event['msg']
-                            if topic == '/cmd_vel':
-                                values = [message[axis][coordinate] for axis in ('linear', 'angular')
-                                          for coordinate in ('x', 'y', 'z')]
-                                if any(not isinstance(value, (int, float)) or not math.isfinite(value) for value in values):
-                                    raise ValueError('Invalid velocity command')
-                            else:
-                                values = message['data']
-                                count = 4 if topic == TOPICS[0] else 5
-                                maximum = 400 if topic == TOPICS[0] else 1023
-                                if len(values) != count or any(
-                                    type(value) is not int or not 0 <= value <= maximum
-                                    for value in values
-                                ):
-                                    raise ValueError('Invalid sensor readings')
-                            with self.lock:
-                                self.latest[topic] = (message, time.monotonic())
+                            self.store_message(topic, event['msg'])
             except (OSError, ValueError, KeyError, TypeError, websocket.WebSocketException) as exc:
                 if not self.stopping.is_set():
                     self.get_logger().warning(f'{topic}: {exc}; reconnecting')
@@ -131,7 +146,8 @@ class TelemetryBridge(Node):
                 self.sensor_times[topic] = received_at
                 if topic == TOPICS[0]:
                     self.markers.publish(self.make_markers(message.data))
-            self.publishers_by_topic[topic].publish(message)
+            if not self.direct:
+                self.publishers_by_topic[topic].publish(message)
         fresh = self.motion.step(now)
         self.publish_motion(now, fresh)
 

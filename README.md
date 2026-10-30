@@ -1,63 +1,124 @@
 # EyeCar ROS 2
 
-ROS 2 Jazzy software for an educational EyeCar rover based on Raspberry Pi 4
-and Arduino Mega 2560.
+![EyeCar on the workbench](public/bonus.jpg)
 
-```text
-keyboard over SSH -> /cmd_vel -> serial driver -> Arduino -> motor + steering
-USB camera -> ffmpeg -> MediaMTX -> WebRTC panel
-                                -> RTSP -> eyecar_camera -> /camera/image_raw
+Convert an educational EyeCar into a ROS 2 Jazzy rover. This repository contains
+the Mega firmware, Raspberry Pi nodes, a read-only camera panel, a laptop
+development container, and the wiring and model references for the build.
+
+| Physical rover | Visual model |
+| --- | --- |
+| ![EyeCar side view](public/left.jpg) | ![EyeCar 3D model](models/eyecar/generated/eyecar%20preview.png) |
+
+[All photographs and model views](docs/Gallery.md) · [Wiring](docs/Wiring.md) ·
+[Build guide](docs/README.md) · [Model downloads](models/eyecar/README.md)
+
+## What runs where
+
+```mermaid
+flowchart LR
+    Laptop["Laptop: Zed / Python nodes / RViz"] <-->|"ROS 2 over the rover AP"| Pi["Pi 4: Ubuntu 24.04 / Jazzy"]
+    Camera["USB camera"] --> Pi
+    Pi <-->|"USB serial, 115200 baud"| Mega["Mega 2560 + expansion board"]
+    Mega --> Drive["Motor driver / steering servo"]
+    Sensors["4 HC-SR04 / 5 IR channels"] --> Mega
+    Pi --> LED["13-pixel LED strip, GPIO18"]
+    Pi --> Panel["Read-only web panel"]
 ```
 
-## Structure
+The Pi runs the hardware-facing services. Student nodes can run on the laptop
+and exchange messages with the Pi over its Wi-Fi AP. The Mega runs an Arduino
+sketch, not ROS. The browser panel displays data and does not control motion.
 
-- `ros2_ws/src/` — ROS 2 packages;
-- `firmware/` — Arduino firmware;
-- `web/` — Vite-based read-only topic and camera browser;
-- `deploy/` — Nginx, MediaMTX, local DDS profile, and systemd services;
-- `docs/` — installation and workflow notes;
-- `scripts/` — helper scripts.
-- `examples/` — small ROS 2 usage examples, including LED colors.
-- `models/eyecar/` — editable rover model and downloadable URDF/CAD exports.
+## Build the rover
 
-Target: Ubuntu Server 24.04 ARM64 with ROS 2 Jazzy.
+Follow the [build guide](docs/README.md) in order:
 
-## Model and RViz
+1. [Identify the hardware and connect signals](docs/Wiring.md).
+2. [Provision Ubuntu and install ROS 2 Jazzy](docs/ROS2_FIRST_START.md).
+3. [Build and upload the Mega firmware](docs/ROS_WORKFLOW_AND_FIRMWARE.md).
+4. [Install the Pi services and camera panel](docs/WEB_PANEL.md).
+5. [Enable the AP and direct ROS connection](docs/NETWORKING.md).
+6. [Open the laptop development container](docs/DEVELOPMENT.md).
 
-![EyeCar visual model](models/eyecar/generated/eyecar%20preview.png)
+The supplied service files use the account `mavxa` and workspace
+`/home/mavxa/ros2_ws`. Change those paths if your Pi account differs.
+Pin assignments describe this build; check your expansion-board revision.
 
-The model includes two 240 x 120 mm plates, wheels, electronics, four HC-SR04
-sensors at the electronics level, a bumper with four IR modules, and a camera
-centered in its holder. Dimensions come from measurements and photographs;
-unmeasured mounts and chassis details remain approximate.
+## Work from the laptop
 
-[Model files and dimensions](models/eyecar/README.md) ·
-[URDF](models/eyecar/generated/eyecar.urdf) ·
-[STL, mm](models/eyecar/generated/eyecar.stl) ·
-[DXF drawing, mm](models/eyecar/generated/eyecar%20drawing.dxf)
+On a Linux laptop with Docker, clone the repository if needed:
 
-On a Linux laptop with Docker and XWayland:
+```bash
+git clone https://github.com/mavxa/eyecar-ros2.git
+cd eyecar-ros2
+```
+
+From the repository root:
+
+```bash
+docker build -t eyecar-ros2:jazzy .
+docker compose up -d
+docker exec -it eyecar-ros2 bash
+```
+
+Inside the container:
+
+```bash
+cd /workspace/ros2_ws
+colcon build --symlink-install --packages-select eyecar_teleop
+source install/setup.bash
+ros2 run eyecar_teleop keyboard_teleop
+```
+
+Connect the laptop to the rover AP before starting networked nodes. The Pi
+needs the one-time DDS activation in [NETWORKING.md](docs/NETWORKING.md).
+Zed can open the same environment through `.devcontainer/devcontainer.json`.
+There is no automatic launch of RViz or control nodes.
+
+For the model, sonar arrows and command-based animation, use the
+[three-terminal RViz workflow](docs/NETWORKING.md#rviz-with-the-rover-model).
+An offline preview with synthetic data is also available:
 
 ```bash
 bash scripts/eyecar-rviz build
-bash scripts/eyecar-rviz demo  # offline preview with synthetic data
-bash scripts/eyecar-rviz       # live read-only telemetry through SSH to eyecar
+bash scripts/eyecar-rviz demo
 ```
 
-RViz shows sonar readings, joint animation and a path estimated from `/cmd_vel`.
-The path is not measured odometry. See [RVIZ.md](docs/RVIZ.md) for setup and
-[SENSORS.md](docs/SENSORS.md) for the ultrasonic/IR topic contract.
+## Interfaces
 
-## Security status
+| Interface | Purpose |
+| --- | --- |
+| `/cmd_vel` | Throttle and steering commands using `geometry_msgs/msg/Twist` |
+| `/eyecar/ultrasonic` | Four distances in centimeters, rear/right/left/front |
+| `/eyecar/infrared` | Five raw ADC channels, A0-A4 |
+| `/eyecar/led/color` | Fill the strip with one RGB color |
+| `/eyecar/led/set_leds` | Set individual pixels through a ROS service |
+| `/camera/image_raw`, `/camera/image_raw/compressed` | Camera images for ROS nodes |
+| `http://192.168.50.1/` | Camera and topic browser on the rover AP |
 
-The deployed panel is read-only: its WebSocket bridge does not publish control
-commands and listens on loopback behind Nginx. ROS services are configured for
-local-only DDS; discovery from another ROS host has not yet been tested.
-The camera and topic values remain visible to devices on the same network.
+The current `/cmd_vel` adapter normalizes `linear.x` to throttle and
+`angular.z` to steering. It is not calibrated velocity/yaw-rate control.
+The RViz path is an estimate from commands, not measured odometry.
+See [sensor contracts](docs/SENSORS.md), [LED examples](ros2_ws/src/eyecar_led/README.md)
+and [vision experiments](docs/VISION.md).
 
-See [WEB_PANEL.md](docs/WEB_PANEL.md) for local preview and deployment, and
-[ROS_WORKFLOW_AND_FIRMWARE.md](docs/ROS_WORKFLOW_AND_FIRMWARE.md) for ROS and
-Arduino workflows. See [VISION.md](docs/VISION.md) for the shared Ultralytics
-environment and the student's annotated-camera topic interface.
+## Repository map
 
-Licensed under the MIT License.
+| Directory / file | Contents |
+| --- | --- |
+| `ros2_ws/src/` | ROS packages for the base, keyboard, LEDs, camera and panel bridge |
+| `firmware/` | Mega 2560 sketch |
+| `deploy/` | Pi services, Nginx, MediaMTX and DDS profiles |
+| `Dockerfile`, `compose.yaml`, `.devcontainer/` | Laptop ROS environment |
+| `web/` | Vite / JavaScript panel source |
+| `scripts/`, `examples/` | Model tools, viewer and example nodes |
+| `public/` | Six photographs of the physical rover |
+| `models/eyecar/` | Dimensions, URDF, STL, OpenSCAD and drawings |
+| `docs/` | English setup and development guides |
+
+The stock SD image, private backups and trained YOLO weights are not included.
+The model is approximate visual geometry. This repository does not yet contain
+a Webots physics simulation.
+
+Licensed under the [MIT License](LICENSE).
