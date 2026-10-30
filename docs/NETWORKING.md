@@ -16,6 +16,115 @@ topic data uses unicast, which avoids multicasting camera frames over Wi-Fi.
 The container side is configured in `compose.yaml`. The Pi needs the one-time
 activation below. Preparing these files on the laptop does not activate the Pi.
 
+## Set up the Pi access point
+
+Use Ethernet SSH for this step so changing Wi-Fi cannot disconnect your shell.
+The AP is a local rover network; it does not share Internet access. Ethernet
+keeps DHCP client mode, so plugging the Pi into a router still provides recovery
+access. Download packages before switching Wi-Fi to AP mode.
+
+```bash
+sudo apt install hostapd iw rfkill
+sudo cp -a /etc/netplan "/root/eyecar-netplan-$(date +%Y%m%d-%H%M%S)"
+sudo mkdir -p /etc/cloud/cloud.cfg.d
+printf 'network: {config: disabled}\n' | sudo tee /etc/cloud/cloud.cfg.d/99-disable-network-config.cfg
+```
+
+Inspect the active `/etc/netplan/*.yaml` files. Rename old Wi-Fi client files
+with a `.disabled` suffix; Netplan ignores them. If a file also defines Ethernet,
+preserve that part. Keep one Ethernet definition, for example
+`/etc/netplan/70-eyecar-ethernet.yaml`:
+
+```yaml
+network:
+  version: 2
+  renderer: networkd
+  ethernets:
+    eth0:
+      optional: true
+      dhcp4: true
+```
+
+The interface names must match `ip -br link`. Give Wi-Fi its own networkd file,
+`/etc/systemd/network/05-eyecar-ap.network`:
+
+```ini
+[Match]
+Name=wlan0
+
+[Link]
+RequiredForOnline=no
+
+[Network]
+Address=192.168.50.1/24
+ConfigureWithoutCarrier=yes
+DHCPServer=yes
+IPv6AcceptRA=no
+LinkLocalAddressing=no
+
+[DHCPServer]
+PoolOffset=20
+PoolSize=100
+EmitDNS=no
+EmitRouter=no
+```
+
+Here **networkd** supplies DHCP leases to AP clients. It is separate from the
+Ethernet DHCP client. No second DHCP server such as dnsmasq is needed.
+
+Create `/etc/hostapd/hostapd.conf` with the following content. Replace the password
+placeholder with your own 8–63 character passphrase and set the country code to
+your actual location. Do not commit the real password.
+
+```ini
+interface=wlan0
+driver=nl80211
+ssid=ROStics-tehnopark33
+country_code=RU
+ieee80211d=1
+hw_mode=g
+channel=6
+ieee80211n=1
+wmm_enabled=1
+auth_algs=1
+wpa=2
+wpa_key_mgmt=WPA-PSK
+rsn_pairwise=CCMP
+wpa_passphrase=REPLACE_WITH_YOUR_PASSWORD
+```
+
+Apply from Ethernet SSH:
+
+```bash
+sudo chmod 600 /etc/netplan/*.yaml /etc/hostapd/hostapd.conf
+sudo netplan generate
+sudo netplan apply
+sudo systemctl enable --now systemd-networkd
+sudo networkctl reload
+sudo networkctl reconfigure wlan0
+sudo rfkill unblock wifi
+sudo systemctl unmask hostapd
+sudo systemctl enable --now hostapd
+```
+
+Check both the service and a real client:
+
+```bash
+iw dev wlan0 info
+ip -4 -br address show wlan0
+networkctl status wlan0
+journalctl -u hostapd -n 30 --no-pager
+```
+
+Expect `type AP`, address `192.168.50.1/24`, and a visible SSID. A connected
+phone/laptop should receive `192.168.50.20`–`192.168.50.119` and reach
+`http://192.168.50.1/`. Check again after a reboot. An active hostapd process
+without a visible SSID or a client lease is not a successful AP setup.
+
+Multicast can work on this AP. The DDS profiles below use it for discovery,
+while sending topic payloads over unicast. Both sides need the same domain and
+reachable interfaces. Having an SSID alone does not configure ROS discovery.
+
 ## One-time Pi activation
 
 Connect the laptop to the AP first. From the repository on the laptop, copy
@@ -34,10 +143,14 @@ The following commands run on the Pi. Save the existing environment files:
 EYECAR_BACKUP="$HOME/eyecar-dds-$(date +%Y%m%d-%H%M%S)"
 mkdir -m 700 "$EYECAR_BACKUP"
 cp /home/mavxa/eyecar_web/ros-local.env "$EYECAR_BACKUP/web.env"
-cp /opt/eyecar-vision/ros-local.env "$EYECAR_BACKUP/vision.env"
+if [ -f /opt/eyecar-vision/ros-local.env ]; then
+  cp /opt/eyecar-vision/ros-local.env "$EYECAR_BACKUP/vision.env"
+fi
 printf 'Backup: %s\n' "$EYECAR_BACKUP"
 sudo install -m 644 /tmp/eyecar-dds-ap.xml /home/mavxa/eyecar_web/cyclonedds-ap.xml
-sudo install -m 644 /tmp/eyecar-dds-ap.xml /opt/eyecar-vision/cyclonedds-ap.xml
+if [ -d /opt/eyecar-vision ]; then
+  sudo install -m 644 /tmp/eyecar-dds-ap.xml /opt/eyecar-vision/cyclonedds-ap.xml
+fi
 ```
 
 Edit `/home/mavxa/eyecar_web/ros-local.env` with `nano`. Change these two lines,
@@ -48,7 +161,8 @@ ROS_AUTOMATIC_DISCOVERY_RANGE=SUBNET
 CYCLONEDDS_URI=file:///home/mavxa/eyecar_web/cyclonedds-ap.xml
 ```
 
-Edit `/opt/eyecar-vision/ros-local.env` with `sudo nano`. Change:
+If the optional shared vision environment is installed, edit
+`/opt/eyecar-vision/ros-local.env` with `sudo nano`. Change:
 
 ```ini
 ROS_AUTOMATIC_DISCOVERY_RANGE=SUBNET
@@ -71,8 +185,8 @@ failure, so they can start after the AP becomes ready. This startup sequence
 must also be checked after a real reboot. The hardware driver cannot provide
 real readings without Arduino and its attached modules.
 
-Open a fresh shell or source `/opt/eyecar-vision/ros-env.bash` in the existing
-shell. Stop an old ROS CLI discovery daemon with `ros2 daemon stop` after changing
+Open a fresh shell that sources the active `~/eyecar_web/ros-local.env`,
+or source it with `set -a; source ~/eyecar_web/ros-local.env; set +a`. Stop an old ROS CLI discovery daemon with `ros2 daemon stop` after changing
 the profile. The web panel remains read-only and keeps its loopback WebSocket
 listener; this change enables direct DDS access for AP clients.
 

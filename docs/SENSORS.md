@@ -1,70 +1,68 @@
-# Датчики EyeCar
+# Ultrasonic and infrared sensors
 
-Arduino передаёт `US c1 c2 c3 c4` и `IR a0 a1 a2 a3 a4` по USB serial
-на 115200 бод. Единственный владелец порта — `eyecar_base/serial_driver`.
-Он публикует два топика типа `std_msgs/msg/UInt16MultiArray`:
+The Mega sends `US c1 c2 c3 c4` and `IR a0 a1 a2 a3 a4` over USB serial at
+115200 baud. `eyecar_base/serial_driver` is the only owner of that port.
+It publishes a message when it receives a new valid sensor report.
 
-| Топик | Порядок data | Значения |
-|---|---|---|
-| `/eyecar/ultrasonic` | US1, US2, US3, US4 | сантиметры, 0 означает отсутствие эха |
-| `/eyecar/infrared` | A0, A1, A2, A3, A4 | сырые ADC 0–1023; в цифровом режиме прошивки 0/1 |
+| Topic | Type | Array order | Units |
+| --- | --- | --- | --- |
+| `/eyecar/ultrasonic` | `std_msgs/msg/UInt16MultiArray` | Rear, right, left, front | Centimetres; 0 means no echo |
+| `/eyecar/infrared` | `std_msgs/msg/UInt16MultiArray` | A0, A1, A2, A3, A4 | Raw ADC, 0–1023 |
 
-Пары TRIG/ECHO в скетче: 5/6, 7/8, 10/11, 12/13. Это порядок входов,
-а не подтверждённые направления расположения датчиков. ИК не пересчитываются
-в сантиметры; модель и AO/DO нужно проверить на оборудовании.
+The directional ultrasonic mapping follows this project's installation.
+Confirm it on your rover by holding an object in front of one module at a time.
+See the [Mega pin table](Wiring.md#arduino-mega-signals) for TRIG/ECHO pairs.
 
-На Pi, в новом SSH-сеансе:
+The firmware triggers one HC-SR04 every 50 ms to reduce interference, reporting
+all four after a complete cycle, about 5 Hz. Zero is not a zero-distance obstacle.
+A valid echo can still be unreliable on angled or sound-absorbing surfaces.
+The firmware's configured maximum range is 400 cm.
+
+IR reports arrive nominally every 100 ms. The current sketch reads five analog
+inputs. These values are not distances in centimetres. Check each module's AO
+connection, surface response and supply rating before choosing a threshold.
+The visual model has four IR boards; the firmware exposes five channels.
+Their physical ordering has not been established from the photographs.
+
+## Inspect the readings
+
+On the Pi, source ROS, the workspace and the active DDS environment:
 
 ```bash
-source /opt/eyecar-vision/ros-env.bash
+source /opt/ros/jazzy/setup.bash
+source ~/ros2_ws/install/setup.bash
+set -a; source ~/eyecar_web/ros-local.env; set +a
 ros2 topic echo /eyecar/ultrasonic
 ```
 
-В другом терминале:
+In another prepared shell:
 
 ```bash
-source /opt/eyecar-vision/ros-env.bash
 ros2 topic echo /eyecar/infrared
+ros2 topic hz /eyecar/ultrasonic
+ros2 topic hz /eyecar/infrared
 ```
 
-Частоту можно проверить через `ros2 topic hz /eyecar/ultrasonic` и
-`ros2 topic hz /eyecar/infrared`. Данные публикуются только при получении
-новой корректной строки от Arduino; старые значения не выдаются за свежие.
-Отключение USB прекращает сообщения, а драйвер пытается переподключиться.
-Старый скетч без US/IR не выдаёт показаний даже при успешном handshake.
+With [direct DDS networking](NETWORKING.md), the same ROS commands work inside
+the laptop container. The read-only panel also shows both arrays.
 
-Постоянный процесс запускается `eyecar-base.service`. Сервис уже enabled,
-linger для mavxa включён. Топик не хранится отдельно от ноды: пока сервис
-работает, publisher существует; после запуска Arduino идут сообщения.
+No USB connection means no new readings. The driver retries the connection;
+it does not repeat cached values as fresh measurements. An older sketch without
+US/IR reports can complete the startup handshake while producing no sensor data.
+
+## Service and motion settings
 
 ```bash
 systemctl --user status eyecar-base.service
 journalctl --user -u eyecar-base.service -n 30 --no-pager
+systemctl --user cat eyecar-base.service
 ```
 
-Для первой проверки использовался drop-in
-`~/.config/systemd/user/eyecar-base.service.d/30-sensors-readonly.conf`,
-который запускает драйвер с `motion_enabled:=false`. Газ и руление из
-`/cmd_vel` игнорируются, передаются только нулевые команды.
+The checked-in service permits motion. A local systemd override may set
+`motion_enabled:=false`; inspect the effective unit if commands are ignored.
+Do not start a second serial driver or Arduino Serial Monitor alongside this
+service. For a sensor-only bench session, stop teleop and other command publishers
+before changing the driver's motion setting.
 
-12 октября 2026 этот drop-in отключён переименованием в `.conf.disabled`.
-Сейчас `motion_enabled=true`, движение разрешено, топики датчиков работают.
-
-Проверяйте каждый ультразвуковой датчик отдельно, ставя предмет перед ним
-и наблюдая соответствующий элемент data. Ноль не означает нулевую дистанцию.
-Для ИК меняйте расстояние/поверхность перед каждым модулем и наблюдайте
-соответствующий вход; постоянный 0 или 1023 сам по себе не доказывает поломку.
-
-Если этот drop-in снова включён и нужно разрешить движение, остановите все teleop
-и автономные publishers, затем отключите именно этот drop-in:
-
-```bash
-systemctl --user stop eyecar-base.service
-mv ~/.config/systemd/user/eyecar-base.service.d/30-sensors-readonly.conf \
-   ~/.config/systemd/user/eyecar-base.service.d/30-sensors-readonly.conf.disabled
-systemctl --user daemon-reload
-systemctl --user start eyecar-base.service
-```
-
-Это вернёт прежний запуск с разрешённым движением; оба топика датчиков останутся.
-Не запускайте второй serial driver или serial monitor одновременно с сервисом.
+For visualisation, see [RViz](RVIZ.md). Four range sensors provide local obstacle
+readings, not a lidar scan or a SLAM map.

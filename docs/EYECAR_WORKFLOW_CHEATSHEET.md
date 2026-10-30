@@ -1,141 +1,51 @@
-# Шпаргалка по ROS 2 workflow для EyeCar
+# ROS 2 workflow
 
-Целевая система: Raspberry Pi 4 Model B, Ubuntu Server 24.04 ARM64,
-ROS 2 Jazzy. Workspace на Raspberry Pi: `~/ros2_ws`.
+Use this guide to write a node yourself. The laptop container has ROS 2 Jazzy;
+the Pi runs the hardware services. With [DDS networking](NETWORKING.md), a node
+on either machine can subscribe to the same topics without being copied to the Pi.
 
-Официальная документация:
-
-- [ROS 2 Jazzy: создание пакета](https://docs.ros.org/en/jazzy/Tutorials/Beginner-Client-Libraries/Creating-Your-First-ROS2-Package.html)
-- [ROS 2 Jazzy: Python publisher/subscriber](https://docs.ros.org/en/jazzy/Tutorials/Beginner-Client-Libraries/Writing-A-Simple-Py-Publisher-And-Subscriber.html)
-- [ROS 2 Jazzy: топики](https://docs.ros.org/en/jazzy/Tutorials/Beginner-CLI-Tools/Understanding-ROS2-Topics/Understanding-ROS2-Topics.html)
-- [ROS 2 Jazzy: nodes](https://docs.ros.org/en/jazzy/Tutorials/Beginner-CLI-Tools/Understanding-ROS2-Nodes/Understanding-ROS2-Nodes.html)
-
-## 1. Модель ROS 2 без лишней магии
+## Package, executable and node
 
 ```mermaid
 flowchart LR
-    W["workspace ~/ros2_ws"] --> P["packages в src/"]
-    P --> E["исполняемые команды"]
-    E --> X["процессы Linux"]
-    X --> N["одна или несколько ROS-нод"]
-    N --> T["topics / services / actions"]
+    W[Workspace] --> P[Packages in src/]
+    P --> E[Installed executables]
+    E --> N[Running ROS nodes]
+    N --> T[Topics and services]
 ```
 
-- **Workspace** — каталог, в котором лежат исходники и результаты сборки.
-- **Package** — единица ROS-проекта с `package.xml`, кодом и зависимостями.
-- **Executable** — имя, которое указывается после имени пакета в `ros2 run`.
-- **Process** — обычный запущенный процесс Linux.
-- **Node** — участник ROS-графа. Один процесс может содержать несколько нод.
-- **Publisher** отправляет сообщения определённого типа в topic.
-- **Subscriber** получает сообщения из topic того же типа.
-- **Executor** вызывает таймеры и callbacks нод, когда приходят сообщения или
-  наступает время таймера.
+`ros2 run eyecar_teleop keyboard_teleop` selects a package and its installed
+executable. The Python entry point is listed in `setup.py`. The ROS node's name
+comes from the code and can be different from both names.
 
-Команда имеет форму:
+A topic appears when a running node creates a publisher or subscription.
+There is no separate topic-creation step. A workspace is a build directory,
+not a network boundary. Matching domain, middleware, discovery settings, message
+types and reachable interfaces determine which nodes can communicate.
 
-```bash
-ros2 run <имя_пакета> <имя_executable>
-```
+## Start with a plain script
 
-`ros2 run` не запускает ноду по её ROS-имени. Он находит установленный
-executable пакета и запускает его `main()`. Уже код внутри `main()` создаёт одну
-или несколько нод.
-
-## 2. Что происходит в текущем EyeCar
-
-```text
-терминал SSH                    браузер
-ros2 run eyecar_teleop          http://<ip>/
-  keyboard_teleop                    │
-        │                       только просмотр
-        ▼
-  /cmd_vel (Twist)
-                       │
-                       ▼
-       /eyecar_serial_driver (user-сервис)
-                       │
-               USB Serial 115200
-                       │
-                       ▼
-              Arduino Mega 2560
-                       │
-           двигатель S3 / руль S2
-```
-
-`keyboard_teleop` создаёт только ноду `/keyboard_teleop` и публикует команды.
-Нода `/eyecar_serial_driver` запускается независимо через
-`eyecar-base.service`, постоянно владеет serial-портом и подписана на
-`/cmd_vel`. Поэтому терминальный teleop можно закрыть и снова открыть без
-переподключения Arduino. Arduino не является ROS-нодой: это контроллер с
-отдельной прошивкой и простым serial-протоколом.
-
-`cmd_vel_monitor` — третий, необязательный subscriber. Он запускается отдельным
-процессом и только показывает сообщения `/cmd_vel`:
-
-```bash
-ros2 run eyecar_teleop cmd_vel_monitor
-```
-
-## 3. Зачем выполнять `source`
-
-```bash
-source /opt/ros/jazzy/setup.bash
-source ~/ros2_ws/install/setup.bash
-```
-
-Первая команда добавляет в окружение системную установку ROS 2 Jazzy. Вторая
-добавляет собранные локальные пакеты из `~/ros2_ws`. Без второй команды новый
-терминал может не найти пакет или продолжить видеть старую сборку.
-
-На EyeCar обе строки уже добавлены в `~/.bashrc`, но при диагностике их полезно
-выполнить явно.
-
-## 4. Создание первой собственной Python-ноды
-
-Ниже учебный пакет `rover_state`, который публикует строку в `/rover/state`.
-Для первой проверки `std_msgs/String` достаточно. Когда состав состояния станет
-понятен, лучше перейти на собственное сообщение или
-`diagnostic_msgs/DiagnosticArray`.
-
-Создать каркас пакета на Raspberry Pi:
-
-```bash
-source /opt/ros/jazzy/setup.bash
-cd ~/ros2_ws/src
-ros2 pkg create rover_state \
-  --build-type ament_python \
-  --license MIT \
-  --dependencies rclpy std_msgs
-```
-
-Создать `~/ros2_ws/src/rover_state/rover_state/state_publisher.py`:
+Create `scripts/hello_rover.py` in your own checkout:
 
 ```python
-import json
-
 import rclpy
 from rclpy.node import Node
 from std_msgs.msg import String
 
 
-class RoverStatePublisher(Node):
-    def __init__(self) -> None:
-        super().__init__('rover_state_publisher')
-        self.publisher = self.create_publisher(String, '/rover/state', 10)
-        self.timer = self.create_timer(0.5, self.publish_state)
+class HelloRover(Node):
+    def __init__(self):
+        super().__init__('hello_rover')
+        self.publisher = self.create_publisher(String, '/eyecar/hello', 10)
+        self.create_timer(1.0, self.send)
 
-    def publish_state(self) -> None:
-        message = String()
-        message.data = json.dumps({
-            'controller_connected': True,
-            'mode': 'manual',
-        })
-        self.publisher.publish(message)
+    def send(self):
+        self.publisher.publish(String(data='Hello from the laptop'))
 
 
-def main(args=None) -> None:
-    rclpy.init(args=args)
-    node = RoverStatePublisher()
+def main():
+    rclpy.init()
+    node = HelloRover()
     try:
         rclpy.spin(node)
     except KeyboardInterrupt:
@@ -150,221 +60,99 @@ if __name__ == '__main__':
     main()
 ```
 
-В `~/ros2_ws/src/rover_state/setup.py` добавить executable в
+Inside the development container:
+
+```bash
+cd /workspace
+source /opt/ros/jazzy/setup.bash
+python3 scripts/hello_rover.py
+```
+
+In a second container terminal:
+
+```bash
+ros2 node list
+ros2 topic info /eyecar/hello
+ros2 topic echo /eyecar/hello
+```
+
+The timer sends a typed message once per second. A subscriber uses
+`create_subscription(String, '/eyecar/hello', callback, 10)` to receive it.
+For camera input use sensor-data QoS, as in the existing camera/vision examples.
+
+## Turn the script into a package executable
+
+Run from the repository workspace in the container:
+
+```bash
+cd /workspace/ros2_ws/src
+ros2 pkg create --build-type ament_python --dependencies rclpy std_msgs -- rover_examples
+cp /workspace/scripts/hello_rover.py rover_examples/rover_examples/hello_rover.py
+```
+
+In the generated `rover_examples/setup.py`, add this entry under
 `entry_points['console_scripts']`:
 
 ```python
-entry_points={
-    'console_scripts': [
-        'state_publisher = rover_state.state_publisher:main',
-    ],
-},
+'hello_rover = rover_examples.hello_rover:main',
 ```
 
-Зависимости `rclpy` и `std_msgs` уже будут добавлены в `package.xml` командой
-`ros2 pkg create`.
-
-## 5. Сборка и запуск пакета
-
-Собирать нужно из корня workspace, а не из `src`:
+Then build and source the overlay:
 
 ```bash
-cd ~/ros2_ws
-source /opt/ros/jazzy/setup.bash
-rosdep install --from-paths src --ignore-src -r -y
-colcon build --symlink-install --packages-select rover_state
+cd /workspace/ros2_ws
+colcon build --symlink-install --packages-select rover_examples
 source install/setup.bash
-ros2 run rover_state state_publisher
+ros2 run rover_examples hello_rover
 ```
 
-Во втором SSH-терминале:
+`--symlink-install` makes most Python edits visible without rebuilding. Rebuild
+when entry points, package metadata or installed resources change. Source the
+overlay in each new shell. Do not copy the laptop's `build/` or `install/` to ARM64.
+
+## Run a node at Pi boot
+
+First copy the package sources to `~/ros2_ws/src` on the Pi and build there.
+Test the executable manually. Create a user unit at
+`~/.config/systemd/user/rover-hello.service`, replacing `mavxa` if needed:
+
+```ini
+[Unit]
+Description=Rover hello example
+After=network.target
+
+[Service]
+EnvironmentFile=/home/mavxa/eyecar_web/ros-local.env
+ExecStart=/bin/bash -c 'source /opt/ros/jazzy/setup.bash && source /home/mavxa/ros2_ws/install/setup.bash && exec ros2 run rover_examples hello_rover'
+Restart=on-failure
+RestartSec=3
+
+[Install]
+WantedBy=default.target
+```
+
+Enable it as that user:
 
 ```bash
-source /opt/ros/jazzy/setup.bash
-source ~/ros2_ws/install/setup.bash
-
-ros2 node list
-ros2 node info /rover_state_publisher
-ros2 topic list -t
-ros2 topic info /rover/state --verbose
-ros2 topic echo /rover/state
-ros2 topic hz /rover/state
+systemctl --user daemon-reload
+systemctl --user enable --now rover-hello.service
+sudo loginctl enable-linger "$USER"
+journalctl --user -u rover-hello.service -n 30 --no-pager
 ```
 
-Полезные команды:
+This keeps the node running without an open SSH session. A script alone is not
+installed into a package by `colcon`: its package metadata and entry point are
+what make `ros2 run` find it.
 
-```bash
-# Показать пакеты workspace
-colcon list
+## Hardware and firmware
 
-# Показать executable конкретного пакета
-ros2 pkg executables rover_state
+`/cmd_vel` carries normalised driver inputs in this build, not calibrated
+physical velocity. Start with the existing teleop settings. Running several
+command publishers at once makes control unpredictable.
 
-# Пересобрать только изменённый пакет
-colcon build --symlink-install --packages-select rover_state
+Use [firmware workflow](ROS_WORKFLOW_AND_FIRMWARE.md) for Mega compilation and
+upload, [sensor reference](SENSORS.md) for array ordering, and
+[LED examples](../examples/led_modes.py) for whole-strip and per-pixel changes.
 
-# Собрать пакет и его зависимости до него
-colcon build --symlink-install --packages-up-to rover_state
-```
-
-При `--symlink-install` обычные изменения Python-файлов часто видны без новой
-сборки. После изменения `setup.py`, `setup.cfg`, `package.xml`, имён модулей или
-добавления executable пакет нужно пересобрать и снова выполнить
-`source install/setup.bash`.
-
-## 6. Что публиковать в состоянии ровера
-
-Полезный минимальный набор для будущего сообщения:
-
-- время сообщения `stamp`;
-- есть ли связь с Arduino;
-- возраст последней команды управления;
-- текущая команда газа и руля;
-- активировался ли watchdog;
-- последнее подтверждение Arduino;
-- напряжение батареи, только если оно реально измеряется отдельным входом;
-- ошибки serial и состояние камеры.
-
-Не записывать в состояние выдуманные физические скорость, угол или заряд. Для
-них сначала нужны датчики и калибровка.
-
-## 7. Web-панель и USB-камера
-
-Панель для просмотра после установки новой версии:
-
-```text
-http://eyecar.local/
-```
-
-Если mDNS недоступен, открыть `http://<IP Pi>/`. Панель содержит WebRTC-видео,
-список топиков и последние сообщения. Управление остаётся в терминальной
-`keyboard_teleop`, где доступны сочетания W+A/W+D/S+A/S+D.
-
-Сервисы на Raspberry Pi:
-
-```bash
-systemctl --user status eyecar-base eyecar-video eyecar-rosbridge eyecar-camera
-journalctl --user -u eyecar-video -f
-journalctl --user -u eyecar-rosbridge -f
-```
-
-Чтобы user-сервисы стартовали сразу при загрузке, до первого SSH-входа:
-
-```bash
-sudo loginctl enable-linger mavxa
-```
-
-Подробная схема и порты описаны в [WEB_PANEL.md](WEB_PANEL.md).
-
-### Резервный просмотр через `ffplay`
-
-На EyeCar сейчас обнаружена камера `Web-camera DQ5MF3F1`:
-
-- видеопоток: `/dev/video0`;
-- служебный интерфейс: `/dev/video1`;
-- MJPEG 1280x720 при 30 FPS поддерживается камерой;
-- пользователи `mavxa` и `griftf` состоят в группе `video`;
-- `ffmpeg` и `v4l2-ctl` установлены на Raspberry Pi;
-- локальный компьютер уже имеет `ffplay`.
-
-На основном компьютере также установлена короткая команда:
-
-```bash
-eyecar-video
-```
-
-Её исходник находится в `scripts/eyecar-video`, а
-`~/.local/bin/eyecar-video` указывает на него. Скрипт отключает SSH ControlMaster
-и TTY, поэтому старый Kitty-сеанс не влияет на группы и не повреждает бинарный
-видеопоток. Профиль просмотра настроен на минимальную задержку: MJPEG
-640x360@30 без перекодирования, немедленная отправка пакетов и отбрасывание
-опоздавших кадров. Проверенный поток 1280x720@30 занимал около 30.1 Мбит/с,
-а текущий 640x360@30 — около 10.5 Мбит/с.
-
-Если добавляется новый пользователь, один раз выполнить на Raspberry Pi и
-перезайти по SSH:
-
-```bash
-sudo usermod -aG video <user>
-exit
-```
-
-После нового входа проверить права и режимы:
-
-```bash
-ssh eyecar
-id
-v4l2-ctl --list-devices
-v4l2-ctl -d /dev/video0 --list-formats-ext
-```
-
-В выводе `id` должна быть группа `video`. Захват одного JPEG 1280x720 от имени
-`mavxa` уже проверен. Затем одной командой на основном компьютере открыть поток
-через зашифрованный SSH-канал:
-
-```bash
-ssh eyecar 'ffmpeg -nostdin -hide_banner -loglevel warning \
-  -f v4l2 -input_format mjpeg -framerate 30 -video_size 1280x720 \
-  -i /dev/video0 -an -c:v copy -f mjpeg -' \
-| ffplay -hide_banner -loglevel warning \
-  -fflags nobuffer -flags low_delay -framedrop -f mjpeg -
-```
-
-Здесь Raspberry Pi не перекодирует видео: готовые MJPEG-кадры камеры передаются
-через SSH. Это экономит CPU и не требует открывать дополнительный сетевой порт.
-Остановить просмотр можно `Q` в окне `ffplay` или `Ctrl+C` в терминале.
-
-Если `getent group video` уже показывает пользователя, но `ssh eyecar 'id'`
-ещё не содержит `video`, используется старое постоянное SSH-соединение,
-созданное до изменения групп. Закрыть старый `kitten ssh eyecar` и подключиться
-заново. Для немедленного запуска без закрытия текущей сессии:
-
-```bash
-ssh eyecar "sg video -c 'ffmpeg -nostdin -hide_banner -loglevel warning \
-  -f v4l2 -input_format mjpeg -framerate 30 -video_size 1280x720 \
-  -i /dev/video0 -an -c:v copy -f mjpeg -'" \
-| ffplay -hide_banner -loglevel warning \
-  -fflags nobuffer -flags low_delay -framedrop -f mjpeg -
-```
-
-Проверка одного кадра на Raspberry Pi:
-
-```bash
-ffmpeg -f v4l2 -input_format mjpeg -video_size 1280x720 \
-  -i /dev/video0 -frames:v 1 /tmp/eyecar-camera.jpg
-```
-
-Этот `ffplay`-поток существует отдельно от ROS 2. Если изображение понадобится
-алгоритмам ровера, следующим этапом можно запустить V4L2 camera node, публиковать
-`sensor_msgs/msg/Image` в ROS-топик и подключать к нему CV-ноды.
-
-## 8. Короткий рабочий цикл
-
-```text
-изменить код
-    ↓
-проверить зависимости в package.xml
-    ↓
-добавить/проверить console_scripts в setup.py
-    ↓
-cd ~/ros2_ws
-    ↓
-colcon build --symlink-install --packages-select <package>
-    ↓
-source install/setup.bash
-    ↓
-ros2 run <package> <executable>
-    ↓
-ros2 node list / ros2 topic echo / ros2 topic hz
-```
-
-Частые ошибки:
-
-- `Package '<name>' not found` — workspace не собран или не выполнен
-  `source ~/ros2_ws/install/setup.bash`.
-- `No executable found` — нет записи в `console_scripts`, ошибочно указано имя
-  executable или пакет не пересобран после изменения `setup.py`.
-- Нода есть, а сообщений нет — проверить publisher/subscriber, точное имя topic,
-  одинаковый тип сообщения и `ros2 topic info <topic> --verbose`.
-- Изменения не появились — пересобрать пакет, заново выполнить `source` и
-  убедиться, что запущен пакет из нужного workspace.
+References: [Python publisher/subscriber](https://docs.ros.org/en/jazzy/Tutorials/Beginner-Client-Libraries/Writing-A-Simple-Py-Publisher-And-Subscriber.html),
+[creating a package](https://docs.ros.org/en/jazzy/Tutorials/Beginner-Client-Libraries/Creating-Your-First-ROS2-Package.html).

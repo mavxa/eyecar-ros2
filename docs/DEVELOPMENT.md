@@ -155,3 +155,25 @@ The previous SSH/RViz viewer remains available independently.
 References: [Docker's ROS 2 guide](https://docs.docker.com/guides/ros2/),
 [Zed devcontainers](https://zed.dev/docs/dev-containers),
 [Zed Python](https://zed.dev/docs/languages/python).
+
+
+## Check a change
+
+The host-side model, motion, wiring and documentation checks use Python's
+standard library:
+
+```bash
+python3 -m unittest discover -s tests -p 'test_*.py'
+python3 scripts/eyecar_wiring.py --check
+```
+
+The ROS integration scripts must run in a sourced Jazzy environment. Keep them
+in isolated test domains, away from the rover's command domain. The DDS network
+integration creates and removes two disposable Docker containers; it refuses
+to run while the AP subnet is already routed on the laptop.
+
+```bash
+python3 tests/dds_network_integration.py
+```
+
+None of these host checks validates real motor motion or sensor accuracy.

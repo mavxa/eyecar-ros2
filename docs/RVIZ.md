@@ -123,3 +123,18 @@ a consistent map while the rover moves. The command estimate is not a substitute
 References: [ROS container images](https://hub.docker.com/_/ros),
 [RViz marker display](https://github.com/ros2/ros2_documentation/blob/jazzy/source/Tutorials/Intermediate/RViz/Marker-Display-types/Marker-Display-types.rst),
 [Nav2 range layer](https://docs.nav2.org/jazzy/configuration_and_development/configuration_guide/core_servers/costmap_2d/costmap_plugins/range/).
+
+
+## Home Ethernet check (31 October 2026)
+
+The Pi was reachable through a home router at the time of this check. An SSH
+forward to its loopback bridge returned the live topic catalogue and a live
+`/rosout` message inside the development container. In a separate local domain,
+RViz started with OpenGL 4.5, `robot_state_publisher` loaded the generated model,
+and the receiver published `base_link` and wheel/steering transforms.
+
+No Arduino USB serial device was present. Sensor readings, steering animation
+from real commands and physical movement were therefore not verified. This
+checks the SSH viewer path, not direct DDS over the AP. The AP-specific DDS
+profile deliberately excludes the home Ethernet subnet; connect the laptop to
+the rover AP for that workflow, or use the SSH viewer over Ethernet.

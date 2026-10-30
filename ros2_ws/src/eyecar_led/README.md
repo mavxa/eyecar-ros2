@@ -26,6 +26,7 @@ PWM control on GPIO18 normally needs root access:
 sudo bash -lc '
   source /opt/ros/jazzy/setup.bash
   source /home/mavxa/ros2_ws/install/setup.bash
+  set -a; source /home/mavxa/eyecar_web/ros-local.env; set +a
   ros2 run eyecar_led led_strip --ros-args \
     -p gpio_pin:=18 \
     -p led_count:=13 \
@@ -34,7 +35,8 @@ sudo bash -lc '
 ```
 
 For normal operation, install and enable the included root system service. All
-EyeCar ROS processes use the same loopback-only Cyclone DDS profile:
+EyeCar ROS processes must use the same active Cyclone DDS profile. Fresh installs
+use loopback; the [AP profile](../../../docs/NETWORKING.md) enables laptop nodes:
 
 ```bash
 sudo install -m 0644 deploy/systemd/eyecar-led.service \
