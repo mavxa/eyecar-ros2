@@ -33,8 +33,9 @@ camera depth 25, electronics placement and all unmeasured mounts are estimates.
 Four HC-SR04 modules use rear/right/left/front yaw 180/-90/+90/0 degrees.
 Their centers share the electronics level at 80 mm above ground. The camera
 is centered vertically in the holder, rather than sitting above it.
-Four IR modules are shown beneath the front bumper. Firmware still reports
-five IR channels; physical channel mapping is not inferred from the drawing.
+The visual model currently draws four IR boards beneath the front bumper.
+Firmware reads five IR channels; confirm the physical layout and channel
+assignment before using the model as an assembly reference.
 
 `generated/` contains:
 
@@ -45,12 +46,14 @@ five IR channels; physical channel mapping is not inferred from the drawing.
 - `eyecar drawing.dxf`: R12 DXF orthographic reference for import into CAD software.
 - `eyecar drawing.svg` and `.png`: readable orthographic reference views.
 - `eyecar preview.png`: 3D preview.
+- `eyecar rviz.png`: screenshot of the offline demo, with synthetic telemetry.
 
 The drawing and STL are not manufacturing-ready or a verified collision model.
 KOMPAS was not found on the laptop, so no native `.cdw`/`.a3d` is produced.
 DXF import into KOMPAS is an interchange route; it has not been verified here.
 
-`rviz_bridge.py` receives telemetry through the existing read-only Pi bridge.
+`rviz_bridge.py` receives telemetry directly through DDS in the development
+container, or through the read-only Pi WebSocket bridge in the legacy viewer.
 `eyecar_motion.py` integrates commands with a nominal bicycle model. Its pose,
 wheel rotation and steering are predictions from commands, not sensor feedback.
 Actual pose/speed need measured odometry. Nothing in this model changes Arduino
@@ -60,3 +63,6 @@ Two relevant Jazzy RViz limitations are handled in the generator/viewer:
 [multiple visuals can share the first material](https://github.com/ros2/rviz/issues/1293)
 and [small text has oversized word spacing](https://github.com/ros2/rviz/issues/1336).
 Each visual part has its own fixed link; telemetry labels avoid spaces.
+
+See the [photo and model gallery](../../docs/Gallery.md),
+[wiring reference](../../docs/Wiring.md) and [direct ROS workflow](../../docs/NETWORKING.md).
