@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CycloneDDS xmlns="https://cdds.io/config">
+  <Domain Id="any">
+    <General>
+      <Interfaces>
+        <!-- Offline development stays on loopback until nodes are restarted on the AP. -->
+        <NetworkInterface address="192.168.50.0" presence_required="false" priority="10" />
+        <!-- Disabling multicast on lo also disables AP multicast in Cyclone 0.10. -->
+        <NetworkInterface name="lo" multicast="true" />
+      </Interfaces>
+      <AllowMulticast>spdp</AllowMulticast>
+    </General>
+    <Discovery>
+      <Peers>
+        <Peer Address="127.0.0.1" />
+      </Peers>
+    </Discovery>
+  </Domain>
+</CycloneDDS>

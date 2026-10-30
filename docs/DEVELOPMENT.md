@@ -139,6 +139,19 @@ architecture. Reconnect from Zed after installing it.
 ## Network and the Pi
 
 Compose uses the host network, domain `0`, `SUBNET` discovery and CycloneDDS.
-The Pi must use a matching domain and allow network discovery before its
-nodes can exchange messages with the container. Starting this environment
-does not change the Pi's current configuration.
+Its DDS profile selects the rover AP subnet `192.168.50.0/24` and loopback.
+Connect the laptop to the rover AP for direct communication through that AP.
+For another domain, set it when creating the container:
+
+```bash
+ROS_DOMAIN_ID=86 docker compose up -d
+```
+
+The Pi must use the same domain and allow discovery on its AP interface.
+See [NETWORKING.md](NETWORKING.md) for the one-time Pi activation and manual
+RViz workflow. These local files do not change the Pi's loopback-only profile.
+The previous SSH/RViz viewer remains available independently.
+
+References: [Docker's ROS 2 guide](https://docs.docker.com/guides/ros2/),
+[Zed devcontainers](https://zed.dev/docs/dev-containers),
+[Zed Python](https://zed.dev/docs/languages/python).

@@ -36,6 +36,8 @@ Inside it, run `rviz2`, `ros2` commands or your Python nodes manually.
 The repository is mounted at `/workspace`; ROS is sourced in interactive Bash.
 Zed and other devcontainer editors can use `.devcontainer/devcontainer.json`.
 See [DEVELOPMENT.md](docs/DEVELOPMENT.md) for graphics, Python imports and builds.
+For direct ROS communication through the rover AP, see
+[NETWORKING.md](docs/NETWORKING.md). It requires one-time activation on the Pi.
 
 ## Model and RViz
 

@@ -2,6 +2,7 @@
 
 For an interactive container where you start RViz and nodes yourself, see
 [DEVELOPMENT.md](DEVELOPMENT.md). Both modes build from the root Dockerfile.
+For direct DDS reception without an SSH tunnel, see [NETWORKING.md](NETWORKING.md).
 The commands below start the existing model and telemetry viewer automatically.
 
 Run from a terminal in the laptop's graphical session, at the repository root:

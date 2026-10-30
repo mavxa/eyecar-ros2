@@ -9,6 +9,8 @@ services:
     environment:
       ROS_DOMAIN_ID: ${ROS_DOMAIN_ID:-0}
       ROS_AUTOMATIC_DISCOVERY_RANGE: SUBNET
+      CYCLONEDDS_URI: file:///workspace/deploy/dds/laptop.xml
+      EYECAR_RVIZ_DIRECT: "1"
       DISPLAY: ${DISPLAY:-:0}
       XAUTHORITY: /tmp/eyecar.xauth
       LIBGL_ALWAYS_SOFTWARE: "1"
