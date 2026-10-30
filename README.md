@@ -22,6 +22,21 @@ USB camera -> ffmpeg -> MediaMTX -> WebRTC panel
 
 Target: Ubuntu Server 24.04 ARM64 with ROS 2 Jazzy.
 
+## Development container
+
+For a persistent ROS 2 shell on a Linux laptop:
+
+```bash
+docker build -t eyecar-ros2:jazzy .
+docker compose up -d
+docker exec -it eyecar-ros2 bash
+```
+
+Inside it, run `rviz2`, `ros2` commands or your Python nodes manually.
+The repository is mounted at `/workspace`; ROS is sourced in interactive Bash.
+Zed and other devcontainer editors can use `.devcontainer/devcontainer.json`.
+See [DEVELOPMENT.md](docs/DEVELOPMENT.md) for graphics, Python imports and builds.
+
 ## Model and RViz
 
 ![EyeCar visual model](models/eyecar/generated/eyecar%20preview.png)

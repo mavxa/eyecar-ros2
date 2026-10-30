@@ -1,5 +1,9 @@
 # RViz on the laptop
 
+For an interactive container where you start RViz and nodes yourself, see
+[DEVELOPMENT.md](DEVELOPMENT.md). Both modes build from the root Dockerfile.
+The commands below start the existing model and telemetry viewer automatically.
+
 Run from a terminal in the laptop's graphical session, at the repository root:
 
 ```bash

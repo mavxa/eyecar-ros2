@@ -1,0 +1,9 @@
+{
+  "name": "EyeCar ROS 2 Jazzy",
+  "initializeCommand": ["docker", "build", "-t", "eyecar-ros2:jazzy", "."],
+  "dockerComposeFile": "../compose.yaml",
+  "service": "ros2",
+  "workspaceFolder": "/workspace",
+  "remoteUser": "ubuntu",
+  "shutdownAction": "none"
+}
