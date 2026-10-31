@@ -230,7 +230,17 @@ publishes only derived markers, joint states, TF and a command-based path.
 It does not republish `/cmd_vel` or sensor inputs, preventing a feedback loop.
 Your own nodes access other ROS topics directly without this viewer process.
 
-Run these commands in separate container terminals:
+For a single command, run inside the development container:
+
+```bash
+bash /workspace/deploy/rviz/start.sh
+```
+
+This starts the model publisher, telemetry node and configured RViz together.
+Plain `rviz2` does not start those nodes or load the EyeCar display settings.
+Close the viewer before starting another model/telemetry instance.
+
+To manage each process yourself, run these commands in separate container terminals:
 
 ```bash
 # Terminal 1: model and fixed transforms.
