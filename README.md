@@ -118,7 +118,10 @@ and [vision experiments](docs/VISION.md).
 | `docs/` | English setup and development guides |
 
 The stock SD image, private backups and trained YOLO weights are not included.
-The model is approximate visual geometry. This repository does not yet contain
-a Webots physics simulation.
+The [Webots simulation](docs/SIMULATION.md) uses the shared EyeCar geometry,
+Jazzy and the official `webots_ros2_driver`. It runs in a separate container and
+ROS domain, with matching camera, sensor, driving and LED interfaces. Start
+there to test node behaviour without the Pi. Geometry and physics parameters
+are approximate; validate motion and vision on the real rover afterwards.
 
 Licensed under the [MIT License](LICENSE).

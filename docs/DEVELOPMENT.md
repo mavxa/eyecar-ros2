@@ -138,6 +138,11 @@ architecture. Reconnect from Zed after installing it.
 
 ## Network and the Pi
 
+For development without the Pi, use the [Webots simulation](SIMULATION.md).
+It has a separate image/Compose file and domain 42; the regular container below
+uses the real rover's domain 0. Student nodes in the simulation must use its
+domain and simulation clock.
+
 Compose uses the host network, domain `0`, `SUBNET` discovery and CycloneDDS.
 Its DDS profile selects the rover AP subnet `192.168.50.0/24` and loopback.
 Connect the laptop to the rover AP for direct communication through that AP.

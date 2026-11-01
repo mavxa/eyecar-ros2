@@ -66,3 +66,8 @@ Each visual part has its own fixed link; telemetry labels avoid spaces.
 
 See the [photo and model gallery](../../docs/Gallery.md),
 [wiring reference](../../docs/Wiring.md) and [direct ROS workflow](../../docs/NETWORKING.md).
+
+The [Webots simulator](../../docs/SIMULATION.md) reuses these dimensions and
+visual parts, adding wheel/steering joints, approximate collision shapes and
+provisional physics. Regenerate it with `python3 scripts/eyecar_webots.py`.
+The visual STL is not used as a single rigid collision mesh.

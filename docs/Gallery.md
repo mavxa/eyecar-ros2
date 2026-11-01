@@ -51,6 +51,12 @@ across the front of the mast.
 
 ## Generated model
 
+The shared model also runs in [Webots](SIMULATION.md), with provisional physics:
+
+![EyeCar Webots scene](images/Webots%20scene.png)
+
+This is the simulator view, not a photograph or a measured dynamics model.
+
 ### Three-dimensional preview
 
 ![EyeCar 3D model](../models/eyecar/generated/eyecar%20preview.png)
