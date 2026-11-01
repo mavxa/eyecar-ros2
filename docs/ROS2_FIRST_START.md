@@ -146,13 +146,17 @@ On the Pi:
 ```bash
 source /opt/ros/jazzy/setup.bash
 cd ~/ros2_ws
-rosdep install --from-paths src --ignore-src -r -y
-colcon build --symlink-install
+rosdep install --from-paths src/eyecar_base src/eyecar_camera \
+  src/eyecar_interfaces src/eyecar_led src/eyecar_teleop src/eyecar_web \
+  --ignore-src -r -y
+colcon build --symlink-install --packages-skip eyecar_sim
 source install/setup.bash
 ```
 
 Do not transfer laptop `build/` or `install/` directories to the ARM64 Pi.
-Build them on the target. To load the Pi workspace in later Bash sessions:
+Build them on the target. The Webots simulation package is laptop-only and is
+excluded from the Pi build/dependency installation. To load the Pi workspace
+in later Bash sessions:
 
 ```bash
 grep -qxF 'source ~/ros2_ws/install/setup.bash' ~/.bashrc \
