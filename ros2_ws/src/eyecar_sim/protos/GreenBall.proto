@@ -1,0 +1,67 @@
+#VRML_SIM R2025a utf8
+# template language: javascript
+# Green training ball with two perpendicular dark-green tape bands.
+PROTO GreenBall [
+  field SFVec3f translation 0 0 0.04
+  field SFRotation rotation 0 0 1 0
+  field SFFloat radius 0.04
+  field SFFloat bandWidth 0.008
+]
+{
+  %<
+    const radius = fields.radius.value;
+    const width = fields.bandWidth.value;
+    if (!(Number.isFinite(radius) && Number.isFinite(width) && radius > 0 && width > 0 && width < radius))
+      throw new Error('GreenBall needs radius > bandWidth > 0');
+    const rows = 48, columns = 96;
+    const points = [[0, 0, radius]];
+    const faces = [];
+    for (let row = 1; row < rows; ++row) {
+      const phi = Math.PI * row / rows;
+      for (let col = 0; col < columns; ++col) {
+        const theta = 2 * Math.PI * col / columns;
+        points.push([radius * Math.sin(phi) * Math.cos(theta),
+                     radius * Math.sin(phi) * Math.sin(theta), radius * Math.cos(phi)]);
+      }
+    }
+    const bottom = points.push([0, 0, -radius]) - 1;
+    for (let col = 0; col < columns; ++col) {
+      const next = (col + 1) % columns;
+      faces.push([0, 1 + col, 1 + next]);
+      for (let row = 0; row < rows - 2; ++row) {
+        const a = 1 + row * columns, b = a + columns;
+        faces.push([a + col, b + col, b + next, a + next]);
+      }
+      const last = 1 + (rows - 2) * columns;
+      faces.push([bottom, last + next, last + col]);
+    }
+    const colors = faces.map(face => {
+      const y = face.reduce((sum, i) => sum + points[i][1], 0) / face.length;
+      const z = face.reduce((sum, i) => sum + points[i][2], 0) / face.length;
+      return Math.min(Math.abs(y), Math.abs(z)) <= width / 2 ? 1 : 0;
+    });
+  >%
+  Solid {
+    translation IS translation
+    rotation IS rotation
+    name "green ball"
+    children [ Shape {
+      appearance PBRAppearance { baseColor 0.55 0.82 0.18 roughness 0.65 metalness 0 }
+      geometry IndexedFaceSet {
+        coord DEF BALL_POINTS Coordinate { point [ %<= points.map(p => p.join(' ')).join(',\n') >% ] }
+        normal DEF BALL_NORMALS Normal { vector [ %<= points.map(p => p.map(v => v / radius).join(' ')).join(',\n') >% ] }
+        coordIndex [ %<= faces.filter((f, i) => colors[i] === 0).map(f => f.join(' ') + ' -1').join('\n') >% ]
+      }
+    }
+    Shape {
+      appearance PBRAppearance { baseColor 0.035 0.33 0.16 roughness 0.5 metalness 0 }
+      geometry IndexedFaceSet {
+        coord USE BALL_POINTS
+        normal USE BALL_NORMALS
+        coordIndex [ %<= faces.filter((f, i) => colors[i] === 1).map(f => f.join(' ') + ' -1').join('\n') >% ]
+      }
+    } ]
+    boundingObject Sphere { radius IS radius }
+    physics Physics { density -1 mass 0.03 }
+  }
+}

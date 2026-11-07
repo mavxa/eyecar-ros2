@@ -5,6 +5,12 @@ For an interactive container where you start RViz and nodes yourself, see
 For direct DDS reception without an SSH tunnel, see [NETWORKING.md](NETWORKING.md).
 The commands below start the existing model and telemetry viewer automatically.
 
+Running `rviz2` alone opens the viewer; it does not start the robot model or
+telemetry nodes. In the running development container, start the complete
+viewer with `bash /workspace/deploy/rviz/start.sh`. Compose selects direct DDS
+mode, so connect the laptop to the rover AP first. Start only one model and
+telemetry publisher set in that domain.
+
 Run from a terminal in the laptop's graphical session, at the repository root:
 
 ```bash
@@ -13,7 +19,10 @@ bash scripts/eyecar-rviz
 ```
 
 The first command builds an Ubuntu/ROS 2 Jazzy container with RViz. It downloads
-the base image and packages. The second opens a dedicated SSH tunnel to the
+the base image and packages under the shared `eyecar-ros2:jazzy` tag. If you
+already built the development container on this Docker engine, skip this build.
+Run the launcher on the laptop host, outside the container.
+The second opens a dedicated SSH tunnel to the
 `eyecar` SSH alias and starts RViz locally through XWayland with GPU access.
 For a different SSH destination, use `bash scripts/eyecar-rviz user@address`.
 Docker, XWayland, xauth, and working SSH authentication are required on the laptop.

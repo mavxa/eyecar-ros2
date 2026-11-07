@@ -32,7 +32,10 @@ Wheelbase 170, wheel-center track 145, wheel width 23, plate thickness 3,
 camera depth 25, electronics placement and all unmeasured mounts are estimates.
 Four HC-SR04 modules use rear/right/left/front yaw 180/-90/+90/0 degrees.
 Their centers share the electronics level at 80 mm above ground. The camera
-is centered vertically in the holder, rather than sitting above it.
+is centered vertically in the holder, on the front face of the mast below its
+top. The holder spans 240–280 mm above ground and the camera centre is at 260 mm,
+40 mm below the previous model. The camera body is fully in front of the mast.
+The simulated horizontal field of view is 90°; it is not a measured lens value.
 The visual model currently draws four IR boards beneath the front bumper.
 Firmware reads five IR channels; confirm the physical layout and channel
 assignment before using the model as an assembly reference.
@@ -46,7 +49,7 @@ assignment before using the model as an assembly reference.
 - `eyecar drawing.dxf`: R12 DXF orthographic reference for import into CAD software.
 - `eyecar drawing.svg` and `.png`: readable orthographic reference views.
 - `eyecar preview.png`: 3D preview.
-- `eyecar rviz.png`: screenshot of the offline demo, with synthetic telemetry.
+- `eyecar rviz.png`: screenshot of the Webots model and camera in RViz, with simulated telemetry.
 
 The drawing and STL are not manufacturing-ready or a verified collision model.
 KOMPAS was not found on the laptop, so no native `.cdw`/`.a3d` is produced.
@@ -66,3 +69,8 @@ Each visual part has its own fixed link; telemetry labels avoid spaces.
 
 See the [photo and model gallery](../../docs/Gallery.md),
 [wiring reference](../../docs/Wiring.md) and [direct ROS workflow](../../docs/NETWORKING.md).
+
+The [Webots simulator](../../docs/SIMULATION.md) reuses these dimensions and
+visual parts, adding wheel/steering joints, approximate collision shapes and
+provisional physics. Regenerate it with `python3 scripts/eyecar_webots.py`.
+The visual STL is not used as a single rigid collision mesh.

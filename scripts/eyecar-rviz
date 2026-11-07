@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 project_root=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)
-image_name=eyecar-rviz:jazzy
+image_name=eyecar-ros2:jazzy
 
 if [[ ${1:-} == build ]]; then
     exec docker build -t "$image_name" "$project_root"

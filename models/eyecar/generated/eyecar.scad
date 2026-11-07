@@ -257,14 +257,14 @@ color([0.08,0.09,0.1,1]) translate([65,0,200]) rotate([0,0,0]) cube([4.0,55.0,16
 // mast_foot
 color([0.08,0.09,0.1,1]) translate([65,0,124]) rotate([0,0,0]) cube([25.0,65.0,6.0], center=true);
 // camera_holder_-0.0425
-color([0.08,0.09,0.1,1]) translate([65,-42.5,300]) rotate([0,0,0]) cube([20.0,4.0,40.0], center=true);
+color([0.08,0.09,0.1,1]) translate([77,-42.5,260]) rotate([0,0,0]) cube([20.0,4.0,40.0], center=true);
 // camera_holder_0.0425
-color([0.08,0.09,0.1,1]) translate([65,42.5,300]) rotate([0,0,0]) cube([20.0,4.0,40.0], center=true);
+color([0.08,0.09,0.1,1]) translate([77,42.5,260]) rotate([0,0,0]) cube([20.0,4.0,40.0], center=true);
 // camera_holder_bar
-color([0.08,0.09,0.1,1]) translate([65,0,283]) rotate([0,0,0]) cube([25.0,85.0,6.0], center=true);
+color([0.08,0.09,0.1,1]) translate([77,0,243]) rotate([0,0,0]) cube([20.0,85.0,6.0], center=true);
 // camera_bar
-color([0.12,0.14,0.16,1]) translate([75,0,300]) rotate([0,0,0]) cube([25.0,155.0,25.0], center=true);
+color([0.12,0.14,0.16,1]) translate([99.5,0,260]) rotate([0,0,0]) cube([25.0,155.0,25.0], center=true);
 // camera_lens_ring
-color([0.67,0.7,0.73,1]) translate([87.5,0,300]) rotate([0,90,0]) cylinder(r=10.0,h=6.0,center=true);
+color([0.67,0.7,0.73,1]) translate([112,0,260]) rotate([0,90,0]) cylinder(r=10.0,h=6.0,center=true);
 // camera_lens
-color([0.02,0.08,0.12,1]) translate([92.5,0,300]) rotate([0,90,0]) cylinder(r=7.0,h=4.0,center=true);
+color([0.02,0.08,0.12,1]) translate([117,0,260]) rotate([0,90,0]) cylinder(r=7.0,h=4.0,center=true);

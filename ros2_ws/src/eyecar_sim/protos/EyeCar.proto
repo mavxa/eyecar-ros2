@@ -1,0 +1,563 @@
+#VRML_SIM R2025a utf8
+# Generated from models/eyecar/dimensions.json. Physics values are provisional.
+PROTO EyeCar [
+  field SFVec3f translation 0 0 0.003
+  field SFRotation rotation 0 0 1 0
+]
+{
+  Robot {
+    translation IS translation rotation IS rotation
+    name "eyecar" controller "<extern>"
+    children [
+Pose { translation 0 0 0.065 rotation 0 0 1 0
+      children [ Shape { appearance PBRAppearance { baseColor 0.08 0.09 0.1
+        roughness 0.8 metalness 0 } geometry Box { size 0.24 0.12 0.003 } } ] }
+Pose { translation 0 0 0.12 rotation 0 0 1 0
+      children [ Shape { appearance PBRAppearance { baseColor 0.15 0.18 0.2
+        roughness 0.8 metalness 0 } geometry Box { size 0.24 0.12 0.003 } } ] }
+Pose { translation -0.1 -0.045 0.0925 rotation 0 0 1 0
+      children [ Shape { appearance PBRAppearance { baseColor 0.67 0.7 0.73
+        roughness 0.8 metalness 0 } geometry Cylinder { radius 0.003 height 0.05499999999999999 subdivision 16 } } ] }
+Pose { translation -0.1 -0.045 0.04 rotation 0 0 1 0
+      children [ Shape { appearance PBRAppearance { baseColor 0.67 0.7 0.73
+        roughness 0.8 metalness 0 } geometry Cylinder { radius 0.003 height 0.05 subdivision 16 } } ] }
+Pose { translation -0.1 0.045 0.0925 rotation 0 0 1 0
+      children [ Shape { appearance PBRAppearance { baseColor 0.67 0.7 0.73
+        roughness 0.8 metalness 0 } geometry Cylinder { radius 0.003 height 0.05499999999999999 subdivision 16 } } ] }
+Pose { translation -0.1 0.045 0.04 rotation 0 0 1 0
+      children [ Shape { appearance PBRAppearance { baseColor 0.67 0.7 0.73
+        roughness 0.8 metalness 0 } geometry Cylinder { radius 0.003 height 0.05 subdivision 16 } } ] }
+Pose { translation 0.1 -0.045 0.0925 rotation 0 0 1 0
+      children [ Shape { appearance PBRAppearance { baseColor 0.67 0.7 0.73
+        roughness 0.8 metalness 0 } geometry Cylinder { radius 0.003 height 0.05499999999999999 subdivision 16 } } ] }
+Pose { translation 0.1 -0.045 0.04 rotation 0 0 1 0
+      children [ Shape { appearance PBRAppearance { baseColor 0.67 0.7 0.73
+        roughness 0.8 metalness 0 } geometry Cylinder { radius 0.003 height 0.05 subdivision 16 } } ] }
+Pose { translation 0.1 0.045 0.0925 rotation 0 0 1 0
+      children [ Shape { appearance PBRAppearance { baseColor 0.67 0.7 0.73
+        roughness 0.8 metalness 0 } geometry Cylinder { radius 0.003 height 0.05499999999999999 subdivision 16 } } ] }
+Pose { translation 0.1 0.045 0.04 rotation 0 0 1 0
+      children [ Shape { appearance PBRAppearance { baseColor 0.67 0.7 0.73
+        roughness 0.8 metalness 0 } geometry Cylinder { radius 0.003 height 0.05 subdivision 16 } } ] }
+Pose { translation 0 -0.035 0.02 rotation 0 0 1 0
+      children [ Shape { appearance PBRAppearance { baseColor 0.08 0.09 0.1
+        roughness 0.8 metalness 0 } geometry Box { size 0.205 0.009 0.01 } } ] }
+Pose { translation 0 0.035 0.02 rotation 0 0 1 0
+      children [ Shape { appearance PBRAppearance { baseColor 0.08 0.09 0.1
+        roughness 0.8 metalness 0 } geometry Box { size 0.205 0.009 0.01 } } ] }
+Pose { translation -0.03 0 0.033 rotation 0 0 1 0
+      children [ Shape { appearance PBRAppearance { baseColor 0.08 0.09 0.1
+        roughness 0.8 metalness 0 } geometry Box { size 0.075 0.045 0.025 } } ] }
+Pose { translation -0.045 0.035 0.037 rotation 0 1 0 1.570796
+      children [ Shape { appearance PBRAppearance { baseColor 0.67 0.7 0.73
+        roughness 0.8 metalness 0 } geometry Cylinder { radius 0.012 height 0.045 subdivision 16 } } ] }
+Pose { translation 0 0 0.035 rotation 0 1 0 1.570796
+      children [ Shape { appearance PBRAppearance { baseColor 0.67 0.7 0.73
+        roughness 0.8 metalness 0 } geometry Cylinder { radius 0.003 height 0.17 subdivision 16 } } ] }
+Pose { translation -0.085 0 0.03 rotation 1 0 0 1.570796
+      children [ Shape { appearance PBRAppearance { baseColor 0.67 0.7 0.73
+        roughness 0.8 metalness 0 } geometry Cylinder { radius 0.004 height 0.145 subdivision 16 } } ] }
+Pose { translation 0.085 0 0.03 rotation 1 0 0 1.570796
+      children [ Shape { appearance PBRAppearance { baseColor 0.67 0.7 0.73
+        roughness 0.8 metalness 0 } geometry Cylinder { radius 0.004 height 0.145 subdivision 16 } } ] }
+Pose { translation -0.057 0 0.073 rotation 0 0 1 0
+      children [ Shape { appearance PBRAppearance { baseColor 0.08 0.42 0.22
+        roughness 0.8 metalness 0 } geometry Box { size 0.085 0.056 0.003 } } ] }
+Pose { translation -0.02 -0.018 0.082 rotation 0 0 1 0
+      children [ Shape { appearance PBRAppearance { baseColor 0.67 0.7 0.73
+        roughness 0.8 metalness 0 } geometry Box { size 0.016 0.015 0.014 } } ] }
+Pose { translation -0.02 0.018 0.082 rotation 0 0 1 0
+      children [ Shape { appearance PBRAppearance { baseColor 0.67 0.7 0.73
+        roughness 0.8 metalness 0 } geometry Box { size 0.016 0.015 0.014 } } ] }
+Pose { translation -0.06 0 0.077 rotation 0 0 1 0
+      children [ Shape { appearance PBRAppearance { baseColor 0.08 0.09 0.1
+        roughness 0.8 metalness 0 } geometry Box { size 0.016 0.016 0.004 } } ] }
+Pose { translation 0.05 0 0.073 rotation 0 0 1 0
+      children [ Shape { appearance PBRAppearance { baseColor 0.04 0.29 0.57
+        roughness 0.8 metalness 0 } geometry Box { size 0.102 0.054 0.003 } } ] }
+Pose { translation 0.05 0 0.084 rotation 0 0 1 0
+      children [ Shape { appearance PBRAppearance { baseColor 0.15 0.2 0.24
+        roughness 0.8 metalness 0 } geometry Box { size 0.09 0.053 0.003 } } ] }
+Pose { translation 0.05 -0.023 0.089 rotation 0 0 1 0
+      children [ Shape { appearance PBRAppearance { baseColor 0.08 0.09 0.1
+        roughness 0.8 metalness 0 } geometry Box { size 0.085 0.005 0.008 } } ] }
+Pose { translation 0.05 0.023 0.089 rotation 0 0 1 0
+      children [ Shape { appearance PBRAppearance { baseColor 0.08 0.09 0.1
+        roughness 0.8 metalness 0 } geometry Box { size 0.085 0.005 0.008 } } ] }
+Pose { translation 0.1375 0 0.018 rotation 0 0 1 0
+      children [ Shape { appearance PBRAppearance { baseColor 0.08 0.09 0.1
+        roughness 0.8 metalness 0 } geometry Box { size 0.035 0.16 0.006 } } ] }
+Pose { translation 0.1355 -0.045 0.012 rotation 0 0 1 0
+      children [ Shape { appearance PBRAppearance { baseColor 0.04 0.29 0.57
+        roughness 0.8 metalness 0 } geometry Box { size 0.018 0.01 0.002 } } ] }
+Pose { translation 0.1405 -0.045 0.009 rotation 0 0 1 0
+      children [ Shape { appearance PBRAppearance { baseColor 0.08 0.09 0.1
+        roughness 0.8 metalness 0 } geometry Box { size 0.006 0.006 0.004 } } ] }
+Pose { translation 0.1355 -0.015 0.012 rotation 0 0 1 0
+      children [ Shape { appearance PBRAppearance { baseColor 0.04 0.29 0.57
+        roughness 0.8 metalness 0 } geometry Box { size 0.018 0.01 0.002 } } ] }
+Pose { translation 0.1405 -0.015 0.009 rotation 0 0 1 0
+      children [ Shape { appearance PBRAppearance { baseColor 0.08 0.09 0.1
+        roughness 0.8 metalness 0 } geometry Box { size 0.006 0.006 0.004 } } ] }
+Pose { translation 0.1355 0.015 0.012 rotation 0 0 1 0
+      children [ Shape { appearance PBRAppearance { baseColor 0.04 0.29 0.57
+        roughness 0.8 metalness 0 } geometry Box { size 0.018 0.01 0.002 } } ] }
+Pose { translation 0.1405 0.015 0.009 rotation 0 0 1 0
+      children [ Shape { appearance PBRAppearance { baseColor 0.08 0.09 0.1
+        roughness 0.8 metalness 0 } geometry Box { size 0.006 0.006 0.004 } } ] }
+Pose { translation 0.1355 0.045 0.012 rotation 0 0 1 0
+      children [ Shape { appearance PBRAppearance { baseColor 0.04 0.29 0.57
+        roughness 0.8 metalness 0 } geometry Box { size 0.018 0.01 0.002 } } ] }
+Pose { translation 0.1405 0.045 0.009 rotation 0 0 1 0
+      children [ Shape { appearance PBRAppearance { baseColor 0.08 0.09 0.1
+        roughness 0.8 metalness 0 } geometry Box { size 0.006 0.006 0.004 } } ] }
+Pose { translation -0.117 -3.67394e-19 0.069 rotation 0 0 1 3.141593
+      children [ Shape { appearance PBRAppearance { baseColor 0.08 0.09 0.1
+        roughness 0.8 metalness 0 } geometry Box { size 0.008 0.04 0.01 } } ] }
+Pose { translation -0.12 0 0.08 rotation 0 0 1 3.141593
+      children [ Shape { appearance PBRAppearance { baseColor 0.04 0.29 0.57
+        roughness 0.8 metalness 0 } geometry Box { size 0.002 0.045 0.02 } } ] }
+Pose { translation -0.127 0.012 0.08 rotation -0.7071068 4.32978e-17 0.7071068 3.141593
+      children [ Shape { appearance PBRAppearance { baseColor 0.67 0.7 0.73
+        roughness 0.8 metalness 0 } geometry Cylinder { radius 0.008 height 0.012 subdivision 16 } } ] }
+Pose { translation -0.127 -0.012 0.08 rotation -0.7071068 4.32978e-17 0.7071068 3.141593
+      children [ Shape { appearance PBRAppearance { baseColor 0.67 0.7 0.73
+        roughness 0.8 metalness 0 } geometry Cylinder { radius 0.008 height 0.012 subdivision 16 } } ] }
+Pose { translation 0.08 -0.042 0.069 rotation 0 0 -1 1.570796
+      children [ Shape { appearance PBRAppearance { baseColor 0.08 0.09 0.1
+        roughness 0.8 metalness 0 } geometry Box { size 0.008 0.04 0.01 } } ] }
+Pose { translation 0.08 -0.045 0.08 rotation 0 0 -1 1.570796
+      children [ Shape { appearance PBRAppearance { baseColor 0.04 0.29 0.57
+        roughness 0.8 metalness 0 } geometry Box { size 0.002 0.045 0.02 } } ] }
+Pose { translation 0.068 -0.052 0.08 rotation 0.5773503 0.5773503 -0.5773503 2.094395
+      children [ Shape { appearance PBRAppearance { baseColor 0.67 0.7 0.73
+        roughness 0.8 metalness 0 } geometry Cylinder { radius 0.008 height 0.012 subdivision 16 } } ] }
+Pose { translation 0.092 -0.052 0.08 rotation 0.5773503 0.5773503 -0.5773503 2.094395
+      children [ Shape { appearance PBRAppearance { baseColor 0.67 0.7 0.73
+        roughness 0.8 metalness 0 } geometry Cylinder { radius 0.008 height 0.012 subdivision 16 } } ] }
+Pose { translation 0.08 0.042 0.069 rotation 0 0 1 1.570796
+      children [ Shape { appearance PBRAppearance { baseColor 0.08 0.09 0.1
+        roughness 0.8 metalness 0 } geometry Box { size 0.008 0.04 0.01 } } ] }
+Pose { translation 0.08 0.045 0.08 rotation 0 0 1 1.570796
+      children [ Shape { appearance PBRAppearance { baseColor 0.04 0.29 0.57
+        roughness 0.8 metalness 0 } geometry Box { size 0.002 0.045 0.02 } } ] }
+Pose { translation 0.092 0.052 0.08 rotation -0.5773503 0.5773503 0.5773503 2.094395
+      children [ Shape { appearance PBRAppearance { baseColor 0.67 0.7 0.73
+        roughness 0.8 metalness 0 } geometry Cylinder { radius 0.008 height 0.012 subdivision 16 } } ] }
+Pose { translation 0.068 0.052 0.08 rotation -0.5773503 0.5773503 0.5773503 2.094395
+      children [ Shape { appearance PBRAppearance { baseColor 0.67 0.7 0.73
+        roughness 0.8 metalness 0 } geometry Cylinder { radius 0.008 height 0.012 subdivision 16 } } ] }
+Pose { translation 0.112 0 0.069 rotation 0 0 1 0
+      children [ Shape { appearance PBRAppearance { baseColor 0.08 0.09 0.1
+        roughness 0.8 metalness 0 } geometry Box { size 0.008 0.04 0.01 } } ] }
+Pose { translation 0.115 0 0.08 rotation 0 0 1 0
+      children [ Shape { appearance PBRAppearance { baseColor 0.04 0.29 0.57
+        roughness 0.8 metalness 0 } geometry Box { size 0.002 0.045 0.02 } } ] }
+Pose { translation 0.122 -0.012 0.08 rotation 0 1 0 1.570796
+      children [ Shape { appearance PBRAppearance { baseColor 0.67 0.7 0.73
+        roughness 0.8 metalness 0 } geometry Cylinder { radius 0.008 height 0.012 subdivision 16 } } ] }
+Pose { translation 0.122 0.012 0.08 rotation 0 1 0 1.570796
+      children [ Shape { appearance PBRAppearance { baseColor 0.67 0.7 0.73
+        roughness 0.8 metalness 0 } geometry Cylinder { radius 0.008 height 0.012 subdivision 16 } } ] }
+Pose { translation 0.065 0 0.2 rotation 0 0 1 0
+      children [ Shape { appearance PBRAppearance { baseColor 0.08 0.09 0.1
+        roughness 0.8 metalness 0 } geometry Box { size 0.004 0.055 0.16 } } ] }
+Pose { translation 0.065 0 0.124 rotation 0 0 1 0
+      children [ Shape { appearance PBRAppearance { baseColor 0.08 0.09 0.1
+        roughness 0.8 metalness 0 } geometry Box { size 0.025 0.065 0.006 } } ] }
+Pose { translation 0.077 -0.0425 0.26 rotation 0 0 1 0
+      children [ Shape { appearance PBRAppearance { baseColor 0.08 0.09 0.1
+        roughness 0.8 metalness 0 } geometry Box { size 0.02 0.004 0.04 } } ] }
+Pose { translation 0.077 0.0425 0.26 rotation 0 0 1 0
+      children [ Shape { appearance PBRAppearance { baseColor 0.08 0.09 0.1
+        roughness 0.8 metalness 0 } geometry Box { size 0.02 0.004 0.04 } } ] }
+Pose { translation 0.077 0 0.243 rotation 0 0 1 0
+      children [ Shape { appearance PBRAppearance { baseColor 0.08 0.09 0.1
+        roughness 0.8 metalness 0 } geometry Box { size 0.02 0.085 0.006 } } ] }
+Pose { translation 0.0995 0 0.26 rotation 0 0 1 0
+      children [ Shape { appearance PBRAppearance { baseColor 0.12 0.14 0.16
+        roughness 0.8 metalness 0 } geometry Box { size 0.025 0.155 0.025 } } ] }
+Pose { translation 0.112 0 0.26 rotation 0 1 0 1.570796
+      children [ Shape { appearance PBRAppearance { baseColor 0.67 0.7 0.73
+        roughness 0.8 metalness 0 } geometry Cylinder { radius 0.01 height 0.006 subdivision 16 } } ] }
+Pose { translation 0.117 0 0.26 rotation 0 1 0 1.570796
+      children [ Shape { appearance PBRAppearance { baseColor 0.02 0.08 0.12
+        roughness 0.8 metalness 0 } geometry Cylinder { radius 0.007 height 0.004 subdivision 16 } } ] }
+HingeJoint {
+              jointParameters HingeJointParameters { axis 0 1 0 anchor -0.085 0.0725 0.03 dampingConstant 0.001 }
+              device [ RotationalMotor { name "rear_left_motor" maxVelocity 25 maxTorque 0.15 }
+                       PositionSensor { name "rear_left_encoder" } ]
+              endPoint Solid { translation -0.085 0.0725 0.03 name "rear_left_wheel"
+                children [ Pose { translation 0 0 0 rotation 1 0 0 1.570796
+      children [ Shape { appearance PBRAppearance { baseColor 0.08 0.09 0.1
+        roughness 0.8 metalness 0 } geometry Cylinder { radius 0.03 height 0.023 subdivision 16 } } ] }
+Pose { translation 0 0 0 rotation 1 0 0 1.570796
+      children [ Shape { appearance PBRAppearance { baseColor 0.67 0.7 0.73
+        roughness 0.8 metalness 0 } geometry Cylinder { radius 0.018 height 0.024 subdivision 16 } } ] }
+Pose { translation 0 0 0 rotation 1 0 0 1.570796
+      children [ Shape { appearance PBRAppearance { baseColor 0.08 0.09 0.1
+        roughness 0.8 metalness 0 } geometry Cylinder { radius 0.006 height 0.026 subdivision 16 } } ] }
+Pose { translation 0 0 0.029 rotation 0 0 1 0
+      children [ Shape { appearance PBRAppearance { baseColor 0.13 0.14 0.15
+        roughness 0.8 metalness 0 } geometry Box { size 0.008 0.025 0.003 } } ] }
+Pose { translation 0.01109782 0 0.02679251 rotation 0 1 0 0.3926991
+      children [ Shape { appearance PBRAppearance { baseColor 0.13 0.14 0.15
+        roughness 0.8 metalness 0 } geometry Box { size 0.008 0.025 0.003 } } ] }
+Pose { translation 0.0205061 0 0.0205061 rotation 0 1 0 0.7853982
+      children [ Shape { appearance PBRAppearance { baseColor 0.13 0.14 0.15
+        roughness 0.8 metalness 0 } geometry Box { size 0.008 0.025 0.003 } } ] }
+Pose { translation 0.02679251 0 0.01109782 rotation 0 1 0 1.178097
+      children [ Shape { appearance PBRAppearance { baseColor 0.13 0.14 0.15
+        roughness 0.8 metalness 0 } geometry Box { size 0.008 0.025 0.003 } } ] }
+Pose { translation 0.029 0 3.469447e-18 rotation 0 1 0 1.570796
+      children [ Shape { appearance PBRAppearance { baseColor 0.13 0.14 0.15
+        roughness 0.8 metalness 0 } geometry Box { size 0.008 0.025 0.003 } } ] }
+Pose { translation 0.02679251 0 -0.01109782 rotation 0 1 0 1.963495
+      children [ Shape { appearance PBRAppearance { baseColor 0.13 0.14 0.15
+        roughness 0.8 metalness 0 } geometry Box { size 0.008 0.025 0.003 } } ] }
+Pose { translation 0.0205061 0 -0.0205061 rotation 0 1 0 2.356194
+      children [ Shape { appearance PBRAppearance { baseColor 0.13 0.14 0.15
+        roughness 0.8 metalness 0 } geometry Box { size 0.008 0.025 0.003 } } ] }
+Pose { translation 0.01109782 0 -0.02679251 rotation 0 1 0 2.748894
+      children [ Shape { appearance PBRAppearance { baseColor 0.13 0.14 0.15
+        roughness 0.8 metalness 0 } geometry Box { size 0.008 0.025 0.003 } } ] }
+Pose { translation 0 0 -0.029 rotation 0 1 0 3.141593
+      children [ Shape { appearance PBRAppearance { baseColor 0.13 0.14 0.15
+        roughness 0.8 metalness 0 } geometry Box { size 0.008 0.025 0.003 } } ] }
+Pose { translation -0.01109782 0 -0.02679251 rotation -0 1 -0 3.534292
+      children [ Shape { appearance PBRAppearance { baseColor 0.13 0.14 0.15
+        roughness 0.8 metalness 0 } geometry Box { size 0.008 0.025 0.003 } } ] }
+Pose { translation -0.0205061 0 -0.0205061 rotation -0 1 -0 3.926991
+      children [ Shape { appearance PBRAppearance { baseColor 0.13 0.14 0.15
+        roughness 0.8 metalness 0 } geometry Box { size 0.008 0.025 0.003 } } ] }
+Pose { translation -0.02679251 0 -0.01109782 rotation -0 1 -0 4.31969
+      children [ Shape { appearance PBRAppearance { baseColor 0.13 0.14 0.15
+        roughness 0.8 metalness 0 } geometry Box { size 0.008 0.025 0.003 } } ] }
+Pose { translation -0.029 0 -6.938894e-18 rotation -0 1 -0 4.712389
+      children [ Shape { appearance PBRAppearance { baseColor 0.13 0.14 0.15
+        roughness 0.8 metalness 0 } geometry Box { size 0.008 0.025 0.003 } } ] }
+Pose { translation -0.02679251 0 0.01109782 rotation -0 1 -0 5.105088
+      children [ Shape { appearance PBRAppearance { baseColor 0.13 0.14 0.15
+        roughness 0.8 metalness 0 } geometry Box { size 0.008 0.025 0.003 } } ] }
+Pose { translation -0.0205061 0 0.0205061 rotation -0 1 -0 5.497787
+      children [ Shape { appearance PBRAppearance { baseColor 0.13 0.14 0.15
+        roughness 0.8 metalness 0 } geometry Box { size 0.008 0.025 0.003 } } ] }
+Pose { translation -0.01109782 0 0.02679251 rotation -0 1 -0 5.890486
+      children [ Shape { appearance PBRAppearance { baseColor 0.13 0.14 0.15
+        roughness 0.8 metalness 0 } geometry Box { size 0.008 0.025 0.003 } } ] } ] contactMaterial "eyecar_tire"
+                boundingObject Pose { rotation 1 0 0 1.570796327
+                  children [ Cylinder { radius 0.03 height 0.023 } ] }
+                physics Physics { density -1 mass 0.05 } } }
+HingeJoint {
+              jointParameters HingeJointParameters { axis 0 1 0 anchor -0.085 -0.0725 0.03 dampingConstant 0.001 }
+              device [ RotationalMotor { name "rear_right_motor" maxVelocity 25 maxTorque 0.15 }
+                       PositionSensor { name "rear_right_encoder" } ]
+              endPoint Solid { translation -0.085 -0.0725 0.03 name "rear_right_wheel"
+                children [ Pose { translation 0 0 0 rotation 1 0 0 1.570796
+      children [ Shape { appearance PBRAppearance { baseColor 0.08 0.09 0.1
+        roughness 0.8 metalness 0 } geometry Cylinder { radius 0.03 height 0.023 subdivision 16 } } ] }
+Pose { translation 0 0 0 rotation 1 0 0 1.570796
+      children [ Shape { appearance PBRAppearance { baseColor 0.67 0.7 0.73
+        roughness 0.8 metalness 0 } geometry Cylinder { radius 0.018 height 0.024 subdivision 16 } } ] }
+Pose { translation 0 0 0 rotation 1 0 0 1.570796
+      children [ Shape { appearance PBRAppearance { baseColor 0.08 0.09 0.1
+        roughness 0.8 metalness 0 } geometry Cylinder { radius 0.006 height 0.026 subdivision 16 } } ] }
+Pose { translation 0 0 0.029 rotation 0 0 1 0
+      children [ Shape { appearance PBRAppearance { baseColor 0.13 0.14 0.15
+        roughness 0.8 metalness 0 } geometry Box { size 0.008 0.025 0.003 } } ] }
+Pose { translation 0.01109782 0 0.02679251 rotation 0 1 0 0.3926991
+      children [ Shape { appearance PBRAppearance { baseColor 0.13 0.14 0.15
+        roughness 0.8 metalness 0 } geometry Box { size 0.008 0.025 0.003 } } ] }
+Pose { translation 0.0205061 0 0.0205061 rotation 0 1 0 0.7853982
+      children [ Shape { appearance PBRAppearance { baseColor 0.13 0.14 0.15
+        roughness 0.8 metalness 0 } geometry Box { size 0.008 0.025 0.003 } } ] }
+Pose { translation 0.02679251 0 0.01109782 rotation 0 1 0 1.178097
+      children [ Shape { appearance PBRAppearance { baseColor 0.13 0.14 0.15
+        roughness 0.8 metalness 0 } geometry Box { size 0.008 0.025 0.003 } } ] }
+Pose { translation 0.029 0 3.469447e-18 rotation 0 1 0 1.570796
+      children [ Shape { appearance PBRAppearance { baseColor 0.13 0.14 0.15
+        roughness 0.8 metalness 0 } geometry Box { size 0.008 0.025 0.003 } } ] }
+Pose { translation 0.02679251 0 -0.01109782 rotation 0 1 0 1.963495
+      children [ Shape { appearance PBRAppearance { baseColor 0.13 0.14 0.15
+        roughness 0.8 metalness 0 } geometry Box { size 0.008 0.025 0.003 } } ] }
+Pose { translation 0.0205061 0 -0.0205061 rotation 0 1 0 2.356194
+      children [ Shape { appearance PBRAppearance { baseColor 0.13 0.14 0.15
+        roughness 0.8 metalness 0 } geometry Box { size 0.008 0.025 0.003 } } ] }
+Pose { translation 0.01109782 0 -0.02679251 rotation 0 1 0 2.748894
+      children [ Shape { appearance PBRAppearance { baseColor 0.13 0.14 0.15
+        roughness 0.8 metalness 0 } geometry Box { size 0.008 0.025 0.003 } } ] }
+Pose { translation 0 0 -0.029 rotation 0 1 0 3.141593
+      children [ Shape { appearance PBRAppearance { baseColor 0.13 0.14 0.15
+        roughness 0.8 metalness 0 } geometry Box { size 0.008 0.025 0.003 } } ] }
+Pose { translation -0.01109782 0 -0.02679251 rotation -0 1 -0 3.534292
+      children [ Shape { appearance PBRAppearance { baseColor 0.13 0.14 0.15
+        roughness 0.8 metalness 0 } geometry Box { size 0.008 0.025 0.003 } } ] }
+Pose { translation -0.0205061 0 -0.0205061 rotation -0 1 -0 3.926991
+      children [ Shape { appearance PBRAppearance { baseColor 0.13 0.14 0.15
+        roughness 0.8 metalness 0 } geometry Box { size 0.008 0.025 0.003 } } ] }
+Pose { translation -0.02679251 0 -0.01109782 rotation -0 1 -0 4.31969
+      children [ Shape { appearance PBRAppearance { baseColor 0.13 0.14 0.15
+        roughness 0.8 metalness 0 } geometry Box { size 0.008 0.025 0.003 } } ] }
+Pose { translation -0.029 0 -6.938894e-18 rotation -0 1 -0 4.712389
+      children [ Shape { appearance PBRAppearance { baseColor 0.13 0.14 0.15
+        roughness 0.8 metalness 0 } geometry Box { size 0.008 0.025 0.003 } } ] }
+Pose { translation -0.02679251 0 0.01109782 rotation -0 1 -0 5.105088
+      children [ Shape { appearance PBRAppearance { baseColor 0.13 0.14 0.15
+        roughness 0.8 metalness 0 } geometry Box { size 0.008 0.025 0.003 } } ] }
+Pose { translation -0.0205061 0 0.0205061 rotation -0 1 -0 5.497787
+      children [ Shape { appearance PBRAppearance { baseColor 0.13 0.14 0.15
+        roughness 0.8 metalness 0 } geometry Box { size 0.008 0.025 0.003 } } ] }
+Pose { translation -0.01109782 0 0.02679251 rotation -0 1 -0 5.890486
+      children [ Shape { appearance PBRAppearance { baseColor 0.13 0.14 0.15
+        roughness 0.8 metalness 0 } geometry Box { size 0.008 0.025 0.003 } } ] } ] contactMaterial "eyecar_tire"
+                boundingObject Pose { rotation 1 0 0 1.570796327
+                  children [ Cylinder { radius 0.03 height 0.023 } ] }
+                physics Physics { density -1 mass 0.05 } } }
+HingeJoint {
+                  jointParameters HingeJointParameters { axis 0 0 1 anchor 0.085 0.0725 0.03 }
+                  device [ RotationalMotor { name "front_left_steer" minPosition -0.8 maxPosition 0.8
+                    maxVelocity 4 maxTorque 0.5 } PositionSensor { name "front_left_steer_encoder" } ]
+                  endPoint Solid { translation 0.085 0.0725 0.03 name "front_left_knuckle"
+                    children [ HingeJoint {
+              jointParameters HingeJointParameters { axis 0 1 0 anchor 0 0 0 dampingConstant 0.001 }
+              device [ RotationalMotor { name "front_left_motor" maxVelocity 25 maxTorque 0.15 }
+                       PositionSensor { name "front_left_encoder" } ]
+              endPoint Solid { translation 0 0 0 name "front_left_wheel"
+                children [ Pose { translation 0 0 0 rotation 1 0 0 1.570796
+      children [ Shape { appearance PBRAppearance { baseColor 0.08 0.09 0.1
+        roughness 0.8 metalness 0 } geometry Cylinder { radius 0.03 height 0.023 subdivision 16 } } ] }
+Pose { translation 0 0 0 rotation 1 0 0 1.570796
+      children [ Shape { appearance PBRAppearance { baseColor 0.67 0.7 0.73
+        roughness 0.8 metalness 0 } geometry Cylinder { radius 0.018 height 0.024 subdivision 16 } } ] }
+Pose { translation 0 0 0 rotation 1 0 0 1.570796
+      children [ Shape { appearance PBRAppearance { baseColor 0.08 0.09 0.1
+        roughness 0.8 metalness 0 } geometry Cylinder { radius 0.006 height 0.026 subdivision 16 } } ] }
+Pose { translation 0 0 0.029 rotation 0 0 1 0
+      children [ Shape { appearance PBRAppearance { baseColor 0.13 0.14 0.15
+        roughness 0.8 metalness 0 } geometry Box { size 0.008 0.025 0.003 } } ] }
+Pose { translation 0.01109782 0 0.02679251 rotation 0 1 0 0.3926991
+      children [ Shape { appearance PBRAppearance { baseColor 0.13 0.14 0.15
+        roughness 0.8 metalness 0 } geometry Box { size 0.008 0.025 0.003 } } ] }
+Pose { translation 0.0205061 0 0.0205061 rotation 0 1 0 0.7853982
+      children [ Shape { appearance PBRAppearance { baseColor 0.13 0.14 0.15
+        roughness 0.8 metalness 0 } geometry Box { size 0.008 0.025 0.003 } } ] }
+Pose { translation 0.02679251 0 0.01109782 rotation 0 1 0 1.178097
+      children [ Shape { appearance PBRAppearance { baseColor 0.13 0.14 0.15
+        roughness 0.8 metalness 0 } geometry Box { size 0.008 0.025 0.003 } } ] }
+Pose { translation 0.029 0 3.469447e-18 rotation 0 1 0 1.570796
+      children [ Shape { appearance PBRAppearance { baseColor 0.13 0.14 0.15
+        roughness 0.8 metalness 0 } geometry Box { size 0.008 0.025 0.003 } } ] }
+Pose { translation 0.02679251 0 -0.01109782 rotation 0 1 0 1.963495
+      children [ Shape { appearance PBRAppearance { baseColor 0.13 0.14 0.15
+        roughness 0.8 metalness 0 } geometry Box { size 0.008 0.025 0.003 } } ] }
+Pose { translation 0.0205061 0 -0.0205061 rotation 0 1 0 2.356194
+      children [ Shape { appearance PBRAppearance { baseColor 0.13 0.14 0.15
+        roughness 0.8 metalness 0 } geometry Box { size 0.008 0.025 0.003 } } ] }
+Pose { translation 0.01109782 0 -0.02679251 rotation 0 1 0 2.748894
+      children [ Shape { appearance PBRAppearance { baseColor 0.13 0.14 0.15
+        roughness 0.8 metalness 0 } geometry Box { size 0.008 0.025 0.003 } } ] }
+Pose { translation 0 0 -0.029 rotation 0 1 0 3.141593
+      children [ Shape { appearance PBRAppearance { baseColor 0.13 0.14 0.15
+        roughness 0.8 metalness 0 } geometry Box { size 0.008 0.025 0.003 } } ] }
+Pose { translation -0.01109782 0 -0.02679251 rotation -0 1 -0 3.534292
+      children [ Shape { appearance PBRAppearance { baseColor 0.13 0.14 0.15
+        roughness 0.8 metalness 0 } geometry Box { size 0.008 0.025 0.003 } } ] }
+Pose { translation -0.0205061 0 -0.0205061 rotation -0 1 -0 3.926991
+      children [ Shape { appearance PBRAppearance { baseColor 0.13 0.14 0.15
+        roughness 0.8 metalness 0 } geometry Box { size 0.008 0.025 0.003 } } ] }
+Pose { translation -0.02679251 0 -0.01109782 rotation -0 1 -0 4.31969
+      children [ Shape { appearance PBRAppearance { baseColor 0.13 0.14 0.15
+        roughness 0.8 metalness 0 } geometry Box { size 0.008 0.025 0.003 } } ] }
+Pose { translation -0.029 0 -6.938894e-18 rotation -0 1 -0 4.712389
+      children [ Shape { appearance PBRAppearance { baseColor 0.13 0.14 0.15
+        roughness 0.8 metalness 0 } geometry Box { size 0.008 0.025 0.003 } } ] }
+Pose { translation -0.02679251 0 0.01109782 rotation -0 1 -0 5.105088
+      children [ Shape { appearance PBRAppearance { baseColor 0.13 0.14 0.15
+        roughness 0.8 metalness 0 } geometry Box { size 0.008 0.025 0.003 } } ] }
+Pose { translation -0.0205061 0 0.0205061 rotation -0 1 -0 5.497787
+      children [ Shape { appearance PBRAppearance { baseColor 0.13 0.14 0.15
+        roughness 0.8 metalness 0 } geometry Box { size 0.008 0.025 0.003 } } ] }
+Pose { translation -0.01109782 0 0.02679251 rotation -0 1 -0 5.890486
+      children [ Shape { appearance PBRAppearance { baseColor 0.13 0.14 0.15
+        roughness 0.8 metalness 0 } geometry Box { size 0.008 0.025 0.003 } } ] } ] contactMaterial "eyecar_tire"
+                boundingObject Pose { rotation 1 0 0 1.570796327
+                  children [ Cylinder { radius 0.03 height 0.023 } ] }
+                physics Physics { density -1 mass 0.05 } } } ] boundingObject Sphere { radius 0.004 }
+                    physics Physics { density -1 mass 0.01 } } }
+HingeJoint {
+                  jointParameters HingeJointParameters { axis 0 0 1 anchor 0.085 -0.0725 0.03 }
+                  device [ RotationalMotor { name "front_right_steer" minPosition -0.8 maxPosition 0.8
+                    maxVelocity 4 maxTorque 0.5 } PositionSensor { name "front_right_steer_encoder" } ]
+                  endPoint Solid { translation 0.085 -0.0725 0.03 name "front_right_knuckle"
+                    children [ HingeJoint {
+              jointParameters HingeJointParameters { axis 0 1 0 anchor 0 0 0 dampingConstant 0.001 }
+              device [ RotationalMotor { name "front_right_motor" maxVelocity 25 maxTorque 0.15 }
+                       PositionSensor { name "front_right_encoder" } ]
+              endPoint Solid { translation 0 0 0 name "front_right_wheel"
+                children [ Pose { translation 0 0 0 rotation 1 0 0 1.570796
+      children [ Shape { appearance PBRAppearance { baseColor 0.08 0.09 0.1
+        roughness 0.8 metalness 0 } geometry Cylinder { radius 0.03 height 0.023 subdivision 16 } } ] }
+Pose { translation 0 0 0 rotation 1 0 0 1.570796
+      children [ Shape { appearance PBRAppearance { baseColor 0.67 0.7 0.73
+        roughness 0.8 metalness 0 } geometry Cylinder { radius 0.018 height 0.024 subdivision 16 } } ] }
+Pose { translation 0 0 0 rotation 1 0 0 1.570796
+      children [ Shape { appearance PBRAppearance { baseColor 0.08 0.09 0.1
+        roughness 0.8 metalness 0 } geometry Cylinder { radius 0.006 height 0.026 subdivision 16 } } ] }
+Pose { translation 0 0 0.029 rotation 0 0 1 0
+      children [ Shape { appearance PBRAppearance { baseColor 0.13 0.14 0.15
+        roughness 0.8 metalness 0 } geometry Box { size 0.008 0.025 0.003 } } ] }
+Pose { translation 0.01109782 0 0.02679251 rotation 0 1 0 0.3926991
+      children [ Shape { appearance PBRAppearance { baseColor 0.13 0.14 0.15
+        roughness 0.8 metalness 0 } geometry Box { size 0.008 0.025 0.003 } } ] }
+Pose { translation 0.0205061 0 0.0205061 rotation 0 1 0 0.7853982
+      children [ Shape { appearance PBRAppearance { baseColor 0.13 0.14 0.15
+        roughness 0.8 metalness 0 } geometry Box { size 0.008 0.025 0.003 } } ] }
+Pose { translation 0.02679251 0 0.01109782 rotation 0 1 0 1.178097
+      children [ Shape { appearance PBRAppearance { baseColor 0.13 0.14 0.15
+        roughness 0.8 metalness 0 } geometry Box { size 0.008 0.025 0.003 } } ] }
+Pose { translation 0.029 0 3.469447e-18 rotation 0 1 0 1.570796
+      children [ Shape { appearance PBRAppearance { baseColor 0.13 0.14 0.15
+        roughness 0.8 metalness 0 } geometry Box { size 0.008 0.025 0.003 } } ] }
+Pose { translation 0.02679251 0 -0.01109782 rotation 0 1 0 1.963495
+      children [ Shape { appearance PBRAppearance { baseColor 0.13 0.14 0.15
+        roughness 0.8 metalness 0 } geometry Box { size 0.008 0.025 0.003 } } ] }
+Pose { translation 0.0205061 0 -0.0205061 rotation 0 1 0 2.356194
+      children [ Shape { appearance PBRAppearance { baseColor 0.13 0.14 0.15
+        roughness 0.8 metalness 0 } geometry Box { size 0.008 0.025 0.003 } } ] }
+Pose { translation 0.01109782 0 -0.02679251 rotation 0 1 0 2.748894
+      children [ Shape { appearance PBRAppearance { baseColor 0.13 0.14 0.15
+        roughness 0.8 metalness 0 } geometry Box { size 0.008 0.025 0.003 } } ] }
+Pose { translation 0 0 -0.029 rotation 0 1 0 3.141593
+      children [ Shape { appearance PBRAppearance { baseColor 0.13 0.14 0.15
+        roughness 0.8 metalness 0 } geometry Box { size 0.008 0.025 0.003 } } ] }
+Pose { translation -0.01109782 0 -0.02679251 rotation -0 1 -0 3.534292
+      children [ Shape { appearance PBRAppearance { baseColor 0.13 0.14 0.15
+        roughness 0.8 metalness 0 } geometry Box { size 0.008 0.025 0.003 } } ] }
+Pose { translation -0.0205061 0 -0.0205061 rotation -0 1 -0 3.926991
+      children [ Shape { appearance PBRAppearance { baseColor 0.13 0.14 0.15
+        roughness 0.8 metalness 0 } geometry Box { size 0.008 0.025 0.003 } } ] }
+Pose { translation -0.02679251 0 -0.01109782 rotation -0 1 -0 4.31969
+      children [ Shape { appearance PBRAppearance { baseColor 0.13 0.14 0.15
+        roughness 0.8 metalness 0 } geometry Box { size 0.008 0.025 0.003 } } ] }
+Pose { translation -0.029 0 -6.938894e-18 rotation -0 1 -0 4.712389
+      children [ Shape { appearance PBRAppearance { baseColor 0.13 0.14 0.15
+        roughness 0.8 metalness 0 } geometry Box { size 0.008 0.025 0.003 } } ] }
+Pose { translation -0.02679251 0 0.01109782 rotation -0 1 -0 5.105088
+      children [ Shape { appearance PBRAppearance { baseColor 0.13 0.14 0.15
+        roughness 0.8 metalness 0 } geometry Box { size 0.008 0.025 0.003 } } ] }
+Pose { translation -0.0205061 0 0.0205061 rotation -0 1 -0 5.497787
+      children [ Shape { appearance PBRAppearance { baseColor 0.13 0.14 0.15
+        roughness 0.8 metalness 0 } geometry Box { size 0.008 0.025 0.003 } } ] }
+Pose { translation -0.01109782 0 0.02679251 rotation -0 1 -0 5.890486
+      children [ Shape { appearance PBRAppearance { baseColor 0.13 0.14 0.15
+        roughness 0.8 metalness 0 } geometry Box { size 0.008 0.025 0.003 } } ] } ] contactMaterial "eyecar_tire"
+                boundingObject Pose { rotation 1 0 0 1.570796327
+                  children [ Cylinder { radius 0.03 height 0.023 } ] }
+                physics Physics { density -1 mass 0.05 } } } ] boundingObject Sphere { radius 0.004 }
+                    physics Physics { density -1 mass 0.01 } } }
+DistanceSensor { name "us_rear"
+          translation -0.12 0 0.08
+          rotation 0 0 1 3.141592653589793 type "sonar"
+          numberOfRays 5 aperture 0.26 lookupTable [ 0 0 0, 4 4 0 ] }
+DistanceSensor { name "us_right"
+          translation 0.08 -0.045 0.08
+          rotation 0 0 1 -1.5707963267948966 type "sonar"
+          numberOfRays 5 aperture 0.26 lookupTable [ 0 0 0, 4 4 0 ] }
+DistanceSensor { name "us_left"
+          translation 0.08 0.045 0.08
+          rotation 0 0 1 1.5707963267948966 type "sonar"
+          numberOfRays 5 aperture 0.26 lookupTable [ 0 0 0, 4 4 0 ] }
+DistanceSensor { name "us_front"
+          translation 0.115 0 0.08
+          rotation 0 0 1 0.0 type "sonar"
+          numberOfRays 5 aperture 0.26 lookupTable [ 0 0 0, 4 4 0 ] }
+DistanceSensor { name "ir_0"
+          translation 0.13 -0.044 0.009
+          rotation 0 1 0 1.570796327 type "infra-red"
+          lookupTable [ 0 1023 0, 0.06 0 0 ] }
+DistanceSensor { name "ir_1"
+          translation 0.13 -0.022 0.009
+          rotation 0 1 0 1.570796327 type "infra-red"
+          lookupTable [ 0 1023 0, 0.06 0 0 ] }
+DistanceSensor { name "ir_2"
+          translation 0.13 0.0 0.009
+          rotation 0 1 0 1.570796327 type "infra-red"
+          lookupTable [ 0 1023 0, 0.06 0 0 ] }
+DistanceSensor { name "ir_3"
+          translation 0.13 0.022 0.009
+          rotation 0 1 0 1.570796327 type "infra-red"
+          lookupTable [ 0 1023 0, 0.06 0 0 ] }
+DistanceSensor { name "ir_4"
+          translation 0.13 0.044 0.009
+          rotation 0 1 0 1.570796327 type "infra-red"
+          lookupTable [ 0 1023 0, 0.06 0 0 ] }
+LED { name "led_0" translation -0.06 0.064 0.12
+          gradual TRUE color [] children [ Shape {
+            appearance Appearance { material Material { diffuseColor 0 0 0 emissiveColor 0 0 0 } }
+            geometry Box { size 0.007 0.004 0.007 } } ] }
+LED { name "led_1" translation -0.049999999999999996 0.064 0.12
+          gradual TRUE color [] children [ Shape {
+            appearance Appearance { material Material { diffuseColor 0 0 0 emissiveColor 0 0 0 } }
+            geometry Box { size 0.007 0.004 0.007 } } ] }
+LED { name "led_2" translation -0.039999999999999994 0.064 0.12
+          gradual TRUE color [] children [ Shape {
+            appearance Appearance { material Material { diffuseColor 0 0 0 emissiveColor 0 0 0 } }
+            geometry Box { size 0.007 0.004 0.007 } } ] }
+LED { name "led_3" translation -0.03 0.064 0.12
+          gradual TRUE color [] children [ Shape {
+            appearance Appearance { material Material { diffuseColor 0 0 0 emissiveColor 0 0 0 } }
+            geometry Box { size 0.007 0.004 0.007 } } ] }
+LED { name "led_4" translation -0.019999999999999997 0.064 0.12
+          gradual TRUE color [] children [ Shape {
+            appearance Appearance { material Material { diffuseColor 0 0 0 emissiveColor 0 0 0 } }
+            geometry Box { size 0.007 0.004 0.007 } } ] }
+LED { name "led_5" translation -0.009999999999999995 0.064 0.12
+          gradual TRUE color [] children [ Shape {
+            appearance Appearance { material Material { diffuseColor 0 0 0 emissiveColor 0 0 0 } }
+            geometry Box { size 0.007 0.004 0.007 } } ] }
+LED { name "led_6" translation 0.0 0.064 0.12
+          gradual TRUE color [] children [ Shape {
+            appearance Appearance { material Material { diffuseColor 0 0 0 emissiveColor 0 0 0 } }
+            geometry Box { size 0.007 0.004 0.007 } } ] }
+LED { name "led_7" translation 0.010000000000000009 0.064 0.12
+          gradual TRUE color [] children [ Shape {
+            appearance Appearance { material Material { diffuseColor 0 0 0 emissiveColor 0 0 0 } }
+            geometry Box { size 0.007 0.004 0.007 } } ] }
+LED { name "led_8" translation 0.020000000000000004 0.064 0.12
+          gradual TRUE color [] children [ Shape {
+            appearance Appearance { material Material { diffuseColor 0 0 0 emissiveColor 0 0 0 } }
+            geometry Box { size 0.007 0.004 0.007 } } ] }
+LED { name "led_9" translation 0.03 0.064 0.12
+          gradual TRUE color [] children [ Shape {
+            appearance Appearance { material Material { diffuseColor 0 0 0 emissiveColor 0 0 0 } }
+            geometry Box { size 0.007 0.004 0.007 } } ] }
+LED { name "led_10" translation 0.04000000000000001 0.064 0.12
+          gradual TRUE color [] children [ Shape {
+            appearance Appearance { material Material { diffuseColor 0 0 0 emissiveColor 0 0 0 } }
+            geometry Box { size 0.007 0.004 0.007 } } ] }
+LED { name "led_11" translation 0.05 0.064 0.12
+          gradual TRUE color [] children [ Shape {
+            appearance Appearance { material Material { diffuseColor 0 0 0 emissiveColor 0 0 0 } }
+            geometry Box { size 0.007 0.004 0.007 } } ] }
+LED { name "led_12" translation 0.06 0.064 0.12
+          gradual TRUE color [] children [ Shape {
+            appearance Appearance { material Material { diffuseColor 0 0 0 emissiveColor 0 0 0 } }
+            geometry Box { size 0.007 0.004 0.007 } } ] }
+Camera { name "camera" translation 0.117 0 0.26
+      width 320 height 240 fieldOfView 1.5707963267948966 near 0.01 far 10 }
+GPS { name "gps" }
+InertialUnit { name "imu" }
+    ]
+    boundingObject Group { children [
+Pose { translation 0 0 0.072 children [
+      Box { size 0.24 0.12 0.10 } ] }
+Pose { translation 0.1375 0 0.018
+              children [ Box { size 0.035 0.16 0.006 } ] }
+Pose { translation 0.065 0 0.2
+              children [ Box { size 0.004 0.055 0.16 } ] }
+Pose { translation 0.0995 0 0.26
+              children [ Box { size 0.025 0.155 0.025 } ] }
+    ] }
+    physics Physics { density -1 mass 1.0 centerOfMass [ 0 0 0.06 ] }
+  }
+}

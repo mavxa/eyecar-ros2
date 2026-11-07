@@ -37,6 +37,16 @@ class ModelGeometryTests(unittest.TestCase):
         origin = self.robot.find("joint[@name='camera_mount']/origin")
         self.assertAlmostEqual(float(origin.attrib['xyz'].split()[2]),center)
         self.assertEqual(self.parts['camera_lens']['center'][2],center)
+        mast = self.parts['camera_mast']
+        mast_top = mast['center'][2]+mast['size'][2]/2
+        self.assertLess(camera['center'][2]+camera['size'][2]/2, mast_top)
+        self.assertAlmostEqual(holder['center'][2]+holder['size'][2]/2, mast_top)
+        self.assertGreater(holder['center'][0], mast['center'][0])
+        self.assertGreater(camera['center'][0]-camera['size'][0]/2, mast['center'][0]+mast['size'][0]/2)
+        self.assertAlmostEqual(float(origin.attrib['xyz'].split()[0]), camera['center'][0])
+        optical = self.robot.find("joint[@name='camera_optical_mount']/origin")
+        self.assertAlmostEqual(camera['center'][0]+float(optical.attrib['xyz'].split()[0]),
+                               self.parts['camera_lens']['center'][0])
 
 
 if __name__ == '__main__':
