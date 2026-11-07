@@ -12,8 +12,12 @@ from webots_ros2_driver.webots_launcher import WebotsLauncher
 
 
 def generate_launch_description():
-    if os.environ.get('ROS_DOMAIN_ID', '0') == '0':
-        raise RuntimeError('Use a separate simulation domain, for example ROS_DOMAIN_ID=42')
+    if int(os.environ.get('ROS_DOMAIN_ID', '0')) == 0:
+        raise RuntimeError(
+            'Simulation is using the real-rover domain 0. '
+            'Run "source /workspace/deploy/ros-sim.bash" in this terminal '
+            '(and in every RViz/student-node terminal), then launch again. '
+            'Or enter the simulation container: docker exec -it eyecar-sim bash.')
     package = Path(get_package_share_directory('eyecar_sim'))
     description = package / 'config/eyecar.urdf'
     webots = WebotsLauncher(world=str(package / 'worlds/practice.wbt'),

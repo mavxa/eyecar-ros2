@@ -10,5 +10,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && apt-get install -y --no-install-recommends /tmp/webots.deb \
     && rm -f /tmp/webots.deb && rm -rf /var/lib/apt/lists/*
 
-ENV WEBOTS_HOME=/usr/local/webots
+ENV WEBOTS_HOME=/usr/local/webots \
+    ROS_DOMAIN_ID=42 ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST USER=ubuntu
 USER ubuntu

@@ -16,6 +16,81 @@ topic data uses unicast, which avoids multicasting camera frames over Wi-Fi.
 The container side is configured in `compose.yaml`. The Pi needs the one-time
 activation below. Preparing these files on the laptop does not activate the Pi.
 
+## Pick the environment
+
+| Work | Container | ROS domain / discovery | Network required |
+| --- | --- | --- | --- |
+| Webots, student nodes and RViz together | `eyecar-sim` | 42 / LOCALHOST | Laptop only; no AP or DDS XML |
+| Student nodes and RViz with the real rover | `eyecar-ros2` | 0 / SUBNET, AP DDS XML | Laptop connected to the EyeCar AP |
+| Legacy read-only SSH viewer | `eyecar-rviz` | 81 / LOCALHOST | SSH to the real rover; not a simulation client |
+
+The simulator already includes RViz. A separate viewer container is optional,
+not part of the normal simulation workflow. If using another ROS process on
+the same Linux laptop, give it the same domain and discovery settings. Both
+Compose configurations use host networking.
+
+A **Wi-Fi connection profile** makes Linux join the AP. A **DDS profile**
+chooses the interfaces used by ROS. `ROS_DOMAIN_ID` separates ROS graphs.
+Changing the domain does not connect the laptop to Wi-Fi or assign an IP address.
+
+## Create the laptop's EyeCar Wi-Fi profile
+
+Run these commands on the **Linux laptop host**, outside Docker. This example
+uses NetworkManager, as on CachyOS; the Pi instructions below use networkd.
+Check for an existing `eyecar` connection with `nmcli connection show` first.
+If it already exists, activate it instead of creating a duplicate.
+
+```bash
+nmcli device wifi list
+nmcli --ask device wifi connect "ROStics-tehnopark33" name eyecar
+nmcli connection modify eyecar connection.autoconnect no
+```
+
+Enter the AP password at the prompt. The connection is saved for later use,
+but will not automatically replace your normal Wi-Fi. For subsequent sessions:
+
+```bash
+nmcli --ask connection up eyecar
+ip -4 route get 192.168.50.1
+ping -c 3 192.168.50.1
+```
+
+Expect an AP-subnet address on the laptop and a route through its Wi-Fi
+interface. Open `http://192.168.50.1/`. This AP is local and need not provide
+Internet access. A working panel proves IP reachability, not DDS discovery.
+The desktop network settings can save the same profile without using nmcli.
+See [NetworkManager examples](https://networkmanager.dev/docs/api/latest/nmcli-examples.html).
+
+## Select the laptop's ROS profile
+
+Inside the normal development container, Compose already sets the real-rover
+profile. To select it explicitly, including after a simulation session:
+
+```bash
+source /workspace/deploy/ros-rover.bash
+printenv ROS_DOMAIN_ID ROS_AUTOMATIC_DISCOVERY_RANGE RMW_IMPLEMENTATION
+printf '%s\n' "$CYCLONEDDS_URI"
+ros2 daemon stop
+ros2 topic list
+```
+
+Expect domain `0`, `SUBNET`, `rmw_cyclonedds_cpp`, and a URI ending in
+`deploy/dds/laptop.xml`. The script derives the XML path from its own location;
+it also works as `source deploy/ros-rover.bash` from a native laptop checkout
+with ROS installed. It clears legacy localhost/static-peer settings.
+
+The checked-in XML files are the starting profiles: `laptop.xml` selects the
+AP subnet `192.168.50.0/24` and loopback; `rover.xml` requires the Pi's AP
+address `192.168.50.1`. If changing the AP subnet, update these addresses together.
+No new XML needs to be written for the standard setup. Activate the Pi side
+with the [one-time instructions](#one-time-pi-activation) below.
+
+For simulation instead, source `/workspace/deploy/ros-sim.bash` in every
+simulation/RViz/student-node shell. It selects domain `42`, `LOCALHOST` and
+clears the rover XML. See [SIMULATION.md](SIMULATION.md). Stop and restart nodes
+when switching environments. Do not source the laptop profile on the Pi:
+the Pi services use the separate `rover.xml` deployment described below.
+
 ## Set up the Pi access point
 
 Use Ethernet SSH for this step so changing Wi-Fi cannot disconnect your shell.

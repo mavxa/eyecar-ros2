@@ -9,6 +9,23 @@ Student nodes use the same topic names and message types as on the Pi. Webots
 replaces the physical base, camera and LED drivers. Arduino firmware is not run
 or emulated. No connection to the Pi is needed.
 
+## Which container to use
+
+For a simulation lesson, use **only `eyecar-sim`**. It contains Webots, ROS,
+RViz and Python, so your node and RViz can run in additional terminals of the
+same container. The normal `eyecar-ros2` container is for work with the real Pi;
+it is not required as a second viewer container.
+
+The older `bash scripts/eyecar-rviz` launcher creates an SSH telemetry viewer
+for the real rover in domain 81. Use the RViz command below inside `eyecar-sim`
+for simulation; that older SSH viewer is a separate workflow.
+
+The simulator uses domain **42** and `LOCALHOST` discovery. This keeps its
+`/cmd_vel` and camera topics separate from the physical rover on domain **0**.
+No AP connection or DDS XML file is needed for simulation. Docker uses the host
+network, so processes on the laptop can join the simulation by using the same
+ROS environment. A domain number selects a ROS graph; it does not create Wi-Fi.
+
 ![EyeCar running in Webots with the ROS controller connected](images/Webots%20scene.png)
 
 The screenshot was captured with software rendering in a virtual X11 desktop.
@@ -40,6 +57,7 @@ Create the simulation overlay inside the container:
 
 ```bash
 source /opt/ros/jazzy/setup.bash
+source /workspace/deploy/ros-sim.bash
 colcon --log-base /tmp/eyecar-sim/log build \
   --base-paths /workspace/ros2_ws/src \
   --build-base /tmp/eyecar-sim/build \
@@ -76,6 +94,7 @@ Open another host terminal:
 
 ```bash
 docker exec -it eyecar-sim bash
+source /workspace/deploy/ros-sim.bash
 source /tmp/eyecar-sim/install/setup.bash
 ros2 topic list
 ros2 topic echo /eyecar/ultrasonic
@@ -139,6 +158,8 @@ Training data, competition objects and photorealistic rendering are not included
 From a prepared simulation container shell:
 
 ```bash
+source /workspace/deploy/ros-sim.bash
+source /tmp/eyecar-sim/install/setup.bash
 rviz2 -d /workspace/ros2_ws/src/eyecar_sim/config/sim.rviz \
   --ros-args -p use_sim_time:=true
 ```
@@ -164,6 +185,36 @@ The node should subscribe to the camera topic rather than hard-code a USB
 device. Model-file paths and behaviour thresholds can be parameters. YOLO must
 be installed in the environment running the student node; the simulator image
 provides ROS/OpenCV, not a trained model or an Ultralytics environment.
+
+## Troubleshoot domain errors (issue #2)
+
+`RuntimeError: Use a separate simulation domain` means that the launch process
+received domain 0 or no domain setting. `InvalidFrontendLaunchFileError` is the
+launch loader's follow-up error, not evidence of broken Python syntax or DHCP.
+Older simulator images inherited domain 0 from the development image; only
+Compose set domain 42. The simulator image now sets 42 itself.
+
+For an already built container, fix the current shell without rebuilding:
+
+```bash
+source /workspace/deploy/ros-sim.bash
+source /tmp/eyecar-sim/install/setup.bash
+printenv ROS_DOMAIN_ID ROS_AUTOMATIC_DISCOVERY_RANGE
+ros2 launch eyecar_sim sim.launch.py
+```
+
+Expect `42` and `LOCALHOST`. Source `ros-sim.bash` in every RViz/student-node
+terminal as well; it clears a previously selected rover DDS XML and static peers.
+Stop and restart nodes after switching. An exported variable changes child
+processes, not nodes that are already running. Do not source Pi/AP environment
+files in a simulation shell.
+
+To keep the fixed defaults for future containers, rebuild the simulator image
+and recreate its Compose container with
+`docker compose -f compose.sim.yaml up -d --force-recreate`.
+Rebuild the temporary overlay afterwards. A Zed window
+opened through the root `.devcontainer` still selects the real-rover container;
+check the container name before running the simulation instructions.
 
 ## Change the robot or scene
 

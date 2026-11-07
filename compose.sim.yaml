@@ -12,7 +12,6 @@ services:
       ROS_DOMAIN_ID: "42"
       ROS_AUTOMATIC_DISCOVERY_RANGE: LOCALHOST
       RMW_IMPLEMENTATION: rmw_cyclonedds_cpp
-      CYCLONEDDS_URI: file:///workspace/deploy/cyclonedds-loopback.xml
       DISPLAY: ${DISPLAY:-:0}
       XAUTHORITY: /tmp/eyecar.xauth
       LIBGL_ALWAYS_SOFTWARE: "1"

@@ -143,6 +143,14 @@ It has a separate image/Compose file and domain 42; the regular container below
 uses the real rover's domain 0. Student nodes in the simulation must use its
 domain and simulation clock.
 
+The root `.devcontainer/devcontainer.json` selects the regular container.
+For a simulation lesson, run your node and RViz in additional `eyecar-sim`
+terminals; no second viewer container is needed. Source
+`/workspace/deploy/ros-sim.bash` in those shells. To select the real rover again,
+source `/workspace/deploy/ros-rover.bash` in a real-rover shell. The
+[network guide](NETWORKING.md#create-the-laptops-eyecar-wi-fi-profile) explains
+how to save the AP connection on the laptop.
+
 Compose uses the host network, domain `0`, `SUBNET` discovery and CycloneDDS.
 Its DDS profile selects the rover AP subnet `192.168.50.0/24` and loopback.
 Connect the laptop to the rover AP for direct communication through that AP.
