@@ -76,13 +76,13 @@ robot_state_publisher:
         <joint name="camera_mount" type="fixed">
           <parent link="base_link" />
           <child link="camera_link" />
-          <origin xyz="0.075 0 0.3" rpy="0 0 0" />
+          <origin xyz="0.0995 0 0.26" rpy="0 0 0" />
         </joint>
         <link name="camera_optical_frame" />
         <joint name="camera_optical_mount" type="fixed">
           <parent link="camera_link" />
           <child link="camera_optical_frame" />
-          <origin xyz="0 0 0" rpy="-1.570796 0 -1.570796" />
+          <origin xyz="0.0175 0 0" rpy="-1.570796 0 -1.570796" />
         </joint>
         <link name="part_electronics_plate">
           <visual name="electronics_plate">
@@ -2146,7 +2146,7 @@ robot_state_publisher:
         <joint name="part_camera_holder_m0p0425_mount" type="fixed">
           <parent link="base_link" />
           <child link="part_camera_holder_m0p0425" />
-          <origin xyz="0.065 -0.0425 0.3" rpy="0 0 0" />
+          <origin xyz="0.077 -0.0425 0.26" rpy="0 0 0" />
         </joint>
         <link name="part_camera_holder_0p0425">
           <visual name="camera_holder_0.0425">
@@ -2162,13 +2162,13 @@ robot_state_publisher:
         <joint name="part_camera_holder_0p0425_mount" type="fixed">
           <parent link="base_link" />
           <child link="part_camera_holder_0p0425" />
-          <origin xyz="0.065 0.0425 0.3" rpy="0 0 0" />
+          <origin xyz="0.077 0.0425 0.26" rpy="0 0 0" />
         </joint>
         <link name="part_camera_holder_bar">
           <visual name="camera_holder_bar">
             <origin xyz="0 0 0" rpy="0 0 0" />
             <geometry>
-              <box size="0.025 0.085 0.006" />
+              <box size="0.02 0.085 0.006" />
             </geometry>
             <material name="camera_holder_bar_material">
               <color rgba="0.08 0.09 0.1 1" />
@@ -2178,7 +2178,7 @@ robot_state_publisher:
         <joint name="part_camera_holder_bar_mount" type="fixed">
           <parent link="base_link" />
           <child link="part_camera_holder_bar" />
-          <origin xyz="0.065 0 0.283" rpy="0 0 0" />
+          <origin xyz="0.077 0 0.243" rpy="0 0 0" />
         </joint>
         <link name="part_camera_bar">
           <visual name="camera_bar">
@@ -2194,7 +2194,7 @@ robot_state_publisher:
         <joint name="part_camera_bar_mount" type="fixed">
           <parent link="base_link" />
           <child link="part_camera_bar" />
-          <origin xyz="0.075 0 0.3" rpy="0 0 0" />
+          <origin xyz="0.0995 0 0.26" rpy="0 0 0" />
         </joint>
         <link name="part_camera_lens_ring">
           <visual name="camera_lens_ring">
@@ -2210,7 +2210,7 @@ robot_state_publisher:
         <joint name="part_camera_lens_ring_mount" type="fixed">
           <parent link="base_link" />
           <child link="part_camera_lens_ring" />
-          <origin xyz="0.0875 0 0.3" rpy="0 1.570796 0" />
+          <origin xyz="0.112 0 0.26" rpy="0 1.570796 0" />
         </joint>
         <link name="part_camera_lens">
           <visual name="camera_lens">
@@ -2226,6 +2226,6 @@ robot_state_publisher:
         <joint name="part_camera_lens_mount" type="fixed">
           <parent link="base_link" />
           <child link="part_camera_lens" />
-          <origin xyz="0.0925 0 0.3" rpy="0 1.570796 0" />
+          <origin xyz="0.117 0 0.26" rpy="0 1.570796 0" />
         </joint>
       </robot>

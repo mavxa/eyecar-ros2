@@ -18,7 +18,11 @@ GREEN = (0.08, 0.42, 0.22, 1)
 
 def camera_center_z(d):
     return (d['chassis_bottom_z']+d['upper_plate_offset']+
-            d['mast_height']+d['bracket_height']/2)
+            d['mast_height']-d['bracket_height']/2)
+
+
+def camera_center_x(d):
+    return d['plate_length']/2-d['mast_from_front']+0.002+0.020+d['camera_depth']/2
 
 
 def rotation(rpy):
@@ -109,20 +113,21 @@ def parts_for(d):
             cylinder(f'us_{name}_{index}', center, 0.008, 0.012, SILVER, (0, math.pi/2, angle))
 
     mast_x = d['plate_length']/2-d['mast_from_front']
-    mast_top = upper+d['mast_height']
     box('camera_mast', (mast_x, 0, upper+d['mast_height']/2),
         (0.004, d['mast_width'], d['mast_height']), BLACK)
     box('mast_foot', (mast_x, 0, upper+0.004), (0.025, 0.065, 0.006), BLACK)
-    for y in (-d['bracket_width']/2, d['bracket_width']/2):
-        box(f'camera_holder_{y}', (mast_x, y, mast_top+d['bracket_height']/2),
-            (0.020, 0.004, d['bracket_height']), BLACK)
-    box('camera_holder_bar', (mast_x, 0, mast_top+0.003), (0.025, d['bracket_width'], 0.006))
     camera_z = camera_center_z(d)
-    box('camera_bar', (mast_x+0.010, 0, camera_z),
+    holder_x = mast_x+0.012
+    for y in (-d['bracket_width']/2, d['bracket_width']/2):
+        box(f'camera_holder_{y}', (holder_x, y, camera_z),
+            (0.020, 0.004, d['bracket_height']), BLACK)
+    box('camera_holder_bar', (holder_x, 0, camera_z-d['bracket_height']/2+0.003), (0.020, d['bracket_width'], 0.006))
+    camera_x = camera_center_x(d)
+    box('camera_bar', (camera_x, 0, camera_z),
         (d['camera_depth'], d['camera_width'], d['camera_height']), (0.12, 0.14, 0.16, 1))
-    cylinder('camera_lens_ring', (mast_x+0.010+d['camera_depth']/2, 0, camera_z),
+    cylinder('camera_lens_ring', (camera_x+d['camera_depth']/2, 0, camera_z),
              0.010, 0.006, SILVER, (0, math.pi/2, 0))
-    cylinder('camera_lens', (mast_x+0.015+d['camera_depth']/2, 0, camera_z),
+    cylinder('camera_lens', (camera_x+0.005+d['camera_depth']/2, 0, camera_z),
              0.007, 0.004, (0.02, 0.08, 0.12, 1), (0, math.pi/2, 0))
     return parts
 
@@ -166,9 +171,8 @@ def make_urdf(d, parts):
         joint('us_'+sensor['name']+'_mount', 'base_link', 'us_'+sensor['name'],
               (sensor['x'], sensor['y'], sensor['z']), rpy=(0, 0, math.radians(sensor['yaw_deg'])))
     joint('camera_mount', 'base_link', 'camera_link',
-          (d['plate_length']/2-d['mast_from_front']+0.010, 0,
-           camera_center_z(d)))
-    joint('camera_optical_mount', 'camera_link', 'camera_optical_frame', (0, 0, 0),
+          (camera_center_x(d), 0, camera_center_z(d)))
+    joint('camera_optical_mount', 'camera_link', 'camera_optical_frame', (d['camera_depth']/2+0.005, 0, 0),
           rpy=(-math.pi/2, 0, -math.pi/2))
 
     for part in parts:

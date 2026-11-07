@@ -8,7 +8,7 @@ WHEELS = ('rear_left', 'rear_right', 'front_left', 'front_right')
 def wheel_commands(linear, angular, d):
     if not math.isfinite(linear) or not math.isfinite(angular):
         linear = angular = 0.0
-    speed = max(-0.25, min(0.25, linear))
+    speed = max(-0.25, min(0.25, linear))*d['simulation_speed_scale']
     steering = max(-1.0, min(1.0, angular/d['angular_command_limit']))
     curvature = math.tan(steering*math.radians(d['estimated_max_steering_deg']))/d['wheelbase']
     left, right = (1-curvature*d['wheel_track']/2, 1+curvature*d['wheel_track']/2)

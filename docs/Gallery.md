@@ -77,9 +77,8 @@ These are reference views with dimensions, not sheet-metal flat patterns.
 
 ![EyeCar in RViz](../models/eyecar/generated/eyecar%20rviz.png)
 
-This screenshot uses synthetic demo data. It shows the visual model, sensor
-arrows and command-derived path. It is not evidence of measured odometry or
-a successful run on the physical rover.
+This screenshot shows the model, camera and simulated pose from Webots in RViz.
+It uses synthetic sensor data and is not evidence of a run on the physical rover.
 
 ## Model files
 
@@ -93,7 +92,7 @@ a successful run on the physical rover.
 | [SVG drawing](../models/eyecar/generated/eyecar%20drawing.svg) | Scalable drawing |
 | [PNG drawing](../models/eyecar/generated/eyecar%20drawing.png) | Raster drawing preview |
 | [3D preview](../models/eyecar/generated/eyecar%20preview.png) | Rendered visual assembly |
-| [RViz screenshot](../models/eyecar/generated/eyecar%20rviz.png) | Offline demo scene |
+| [RViz screenshot](../models/eyecar/generated/eyecar%20rviz.png) | Webots model and camera in RViz |
 
 Edit [dimensions.json](../models/eyecar/dimensions.json) and run
 `python3 scripts/eyecar_model.py` from the repository root to regenerate the

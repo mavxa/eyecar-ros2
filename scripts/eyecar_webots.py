@@ -6,7 +6,7 @@ import math
 from pathlib import Path
 import xml.etree.ElementTree as ET
 
-from eyecar_model import DIMENSIONS, ROOT, camera_center_z, make_urdf, parts_for, vector
+from eyecar_model import DIMENSIONS, ROOT, camera_center_x, camera_center_z, make_urdf, parts_for, vector
 
 PACKAGE = ROOT / 'ros2_ws/src/eyecar_sim'
 
@@ -76,9 +76,9 @@ def robot_proto(d):
           gradual TRUE color [] children [ Shape {{
             appearance Appearance {{ material Material {{ diffuseColor 0 0 0 emissiveColor 0 0 0 }} }}
             geometry Box {{ size 0.007 0.004 0.007 }} }} ] }}''')
-    camera_x = d['plate_length']/2-d['mast_from_front']+0.015+d['camera_depth']/2
+    camera_x = camera_center_x(d)+0.005+d['camera_depth']/2
     children.append(f'''Camera {{ name "camera" translation {camera_x} 0 {camera_center_z(d)}
-      width 320 height 240 fieldOfView 1.05 near 0.01 far 10 }}''')
+      width 320 height 240 fieldOfView {math.radians(d['camera_horizontal_fov_deg'])} near 0.01 far 10 }}''')
     children.extend(['GPS { name "gps" }', 'InertialUnit { name "imu" }'])
     collision = [f'''Pose {{ translation 0 0 0.072 children [
       Box {{ size {d['plate_length']} {d['plate_width']} 0.10 }} ] }}''']

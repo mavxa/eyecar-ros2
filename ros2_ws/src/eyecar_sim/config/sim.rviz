@@ -24,6 +24,13 @@ Visualization Manager:
     - Class: rviz_default_plugins/Odometry
       Name: Simulation pose
       Enabled: true
+      Keep: 1
+      Shape:
+        Value: Arrow
+        Shaft Length: 0.08
+        Shaft Radius: 0.004
+        Head Length: 0.025
+        Head Radius: 0.01
       Topic:
         Value: /simulation/odom
     - Class: rviz_default_plugins/Image

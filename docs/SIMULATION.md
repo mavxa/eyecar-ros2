@@ -143,10 +143,15 @@ Example JPEG from the simulated camera, with the blue target beside the wall:
 ![Synthetic camera image](images/Webots%20camera.jpg)
 
 `/cmd_vel` is **not standard calibrated velocity control** on this rover.
-The simulator maps `linear.x` to a nominal speed limited to ±0.25 m/s and maps
+The simulator clamps `linear.x` to ±0.25, then applies the configurable
+`simulation_speed_scale` of 1.25. This gives a nominal limit of ±0.3125 m/s,
+25% faster than the first version. It maps
 `angular.z` / 0.85 to ±30° central steering, then computes Ackermann wheel
 angles and speeds. These constants make the existing teleop usable; they do
 not identify the real ESC response. Brake/reverse arming pulses are not emulated.
+The simulated camera's horizontal FOV is 90°, configured by
+`camera_horizontal_fov_deg` in the shared dimensions file. This is a simulation
+setting, not a measurement of the physical camera lens.
 
 The scene provides a floor, a wall, a blue cylinder and a red obstacle. A real
 YOLO model may fail to recognise such simple rendered objects. Use the scene

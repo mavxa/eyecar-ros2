@@ -4,7 +4,7 @@
     "Approximate visual model from user measurements and photographs; not manufacturing CAD or a collision model.",
     "Two 240 x 120 mm plates. The 105 mm chassis stack uses gaps of 50 and 55 mm; lowest drivetrain datum is 15 mm above ground.",
     "Camera width 155 mm is left-to-right, confirmed by user. Mast height is measured from the upper plate; bracket 85 mm is assumed to be its width.",
-    "All HC-SR04 centers are at 80 mm above ground, alongside the electronics. The camera is centered within the holder height.",
+    "All HC-SR04 centers are at 80 mm above ground, alongside the electronics. The camera holder is on the front of the mast, below its top; the camera is centered within the holder height.",
     "Plate thickness, wheelbase/track/width, electronics placement, mast thickness, camera depth and sensor heights are estimates.",
     "Four physical IR modules are drawn. Firmware still reports five raw IR channels; no channel assignment is inferred."
   ],
@@ -28,6 +28,8 @@
   "camera_width": 0.155,
   "camera_height": 0.025,
   "camera_depth": 0.025,
+  "camera_horizontal_fov_deg": 90,
+  "simulation_speed_scale": 1.25,
   "command_timeout_s": 0.5,
   "angular_command_limit": 0.85,
   "estimated_max_steering_deg": 30,

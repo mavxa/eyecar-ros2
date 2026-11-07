@@ -22,6 +22,7 @@ class WebotsModelTests(unittest.TestCase):
         self.assertEqual(proto.count('type "infra-red"'), 5)
         self.assertEqual(proto.count('gradual TRUE'), 13)
         self.assertIn('width 320 height 240', proto)
+        self.assertIn(f'fieldOfView {math.pi/2}', proto)
         for wheel in ('front_left', 'front_right', 'rear_left', 'rear_right'):
             self.assertIn(f'name "{wheel}_motor"', proto)
         model = ET.fromstring(generated['config/eyecar.urdf'])
@@ -33,7 +34,8 @@ class WebotsModelTests(unittest.TestCase):
     def test_ackermann_and_invalid_commands(self):
         speeds, angles = wheel_commands(0.18, 0, self.d)
         self.assertEqual(angles, [0, 0])
-        self.assertTrue(all(abs(v-6) < 1e-8 for v in speeds))
+        self.assertTrue(all(abs(v-7.5) < 1e-8 for v in speeds))
+        self.assertEqual(wheel_commands(5, 0, self.d), wheel_commands(0.25, 0, self.d))
         speeds, angles = wheel_commands(0.18, 0.85, self.d)
         self.assertGreater(angles[0], angles[1])
         self.assertGreater(speeds[1], speeds[0])
