@@ -1,5 +1,6 @@
 #VRML_SIM R2025a utf8
 EXTERNPROTO "../protos/EyeCar.proto"
+EXTERNPROTO "../protos/GreenBall.proto"
 
 WorldInfo {
   basicTimeStep 16
@@ -48,4 +49,5 @@ Solid {
   } ]
   boundingObject USE BLOCK
 }
+GreenBall { translation 0.55 0.15 0.04 }
 EyeCar { }

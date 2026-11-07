@@ -69,6 +69,8 @@ try:
     assert image.shape == (240, 320, 3)
     assert np.std(image) > 5, 'Camera returned a blank image'
     assert np.count_nonzero((image[:, :, 0] > 120) & (image[:, :, 2] < 100)) > 50, 'Blue target is outside the camera view'
+    b, g, r = image.astype(np.float32).transpose(2, 0, 1)
+    assert np.count_nonzero((g > r*1.2) & (g > b*1.2) & (g > 40)) > 30, 'Green ball is outside the camera view'
     Path('/tmp/eyecar-sim-camera.jpg').write_bytes(jpeg.data)
     print('PASS: camera JPEG, four sonar channels and five IR channels', flush=True)
 

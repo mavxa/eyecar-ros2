@@ -138,7 +138,7 @@ IR placement and response are provisional: the visual model has four boards,
 while the firmware exposes five channels. Do not tune real line-following
 thresholds against this approximation.
 
-Example JPEG from the simulated camera, with the blue target beside the wall:
+Example JPEG from the simulated camera, with the blue target and the green ball:
 
 ![Synthetic camera image](images/Webots%20camera.jpg)
 
@@ -153,8 +153,17 @@ The simulated camera's horizontal FOV is 90°, configured by
 `camera_horizontal_fov_deg` in the shared dimensions file. This is a simulation
 setting, not a measurement of the physical camera lens.
 
-The scene provides a floor, a wall, a blue cylinder and a red obstacle. A real
-YOLO model may fail to recognise such simple rendered objects. Use the scene
+The scene provides a floor, a wall, a blue cylinder, a red obstacle and a green
+ball with two dark-green tape bands crossing at right angles. `GreenBall.proto`
+models an approximate 80 mm ball with 8 mm bands and a provisional mass of 30 g.
+It has a spherical collider and can roll when pushed. Its default position is
+`0.55 0.15 0.04`, in front of the rover and visible to its camera. Change the
+instance's `translation`, `radius` and `bandWidth` in `practice.wbt`; keep the
+centre's height equal to the radius when placing it on the floor.
+
+After adding a new PROTO, rebuild `eyecar_sim` and restart Webots so the new
+asset is installed alongside the world. A Docker image rebuild is not needed.
+A real YOLO model may fail to recognise such simple rendered objects. Use the scene
 to test message flow and reactions, then test detection with the real camera.
 Training data, competition objects and photorealistic rendering are not included.
 
@@ -242,6 +251,9 @@ Restart Webots after a geometry/world change. No hardware firmware change is nee
 ## Verify
 
 Host-side geometry/control tests:
+
+The procedural ball mesh check uses Node.js when available; it is skipped
+otherwise. Webots itself uses its built-in JavaScript engine and does not need Node.js.
 
 ```bash
 python3 -m unittest discover -s tests -p 'test_*.py'
