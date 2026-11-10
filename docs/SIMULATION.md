@@ -39,21 +39,64 @@ flowchart LR
     Driver -->|Same camera and sensor topics| Student
 ```
 
-## Build on the Linux laptop
+## Build the simulator images
 
 Run on the host from the repository root. The first image is the existing
 development environment; skip its build if it is already current. The second
 adds Webots and its ROS driver without changing the regular development image.
-The simulator image currently targets **x86-64 Linux**, not the ARM64 Pi.
+The simulator image targets **x86-64 Linux containers**. On Windows, run
+these commands from Ubuntu in WSL 2.
 
 ```bash
 docker build -t eyecar-ros2:jazzy .
 docker build -f deploy/webots/Dockerfile -t eyecar-webots:jazzy .
+```
+
+## Start the container on Linux
+
+Run from your graphical desktop terminal so Compose receives `DISPLAY` and
+`XAUTHORITY`. On a Wayland desktop, Webots uses XWayland.
+
+```bash
 docker compose -f compose.sim.yaml up -d
 docker exec -it eyecar-sim bash
 ```
 
-Create the simulation overlay inside the container:
+## Start the container on Windows through WSLg
+
+In Docker Desktop, enable the WSL 2 engine and enable Ubuntu under
+**Settings > Resources > WSL Integration**. In the **Ubuntu WSL 2 terminal**,
+open the repository and verify that WSLg has created its X11 socket:
+
+```bash
+ls -l /mnt/wslg/.X11-unix/X0
+```
+
+Then run these commands in the same Ubuntu terminal:
+
+```bash
+export DISPLAY=:0
+docker compose -f compose.sim.yaml -f compose.sim.wsl.yaml up -d
+docker exec eyecar-sim test -S /tmp/.X11-unix/X0
+docker exec -it eyecar-sim bash
+```
+
+The override passes WSLg's Unix socket into the container and uses Docker's
+bridge network. Webots and RViz open as separate windows on the Windows
+desktop. Run ROS commands in shells of that container so they share its
+loopback ROS discovery. Existing images work with this override. Compose
+2.24.4 or newer is required.
+
+If the socket is missing in Ubuntu, check WSLg before starting Compose. In
+PowerShell, run `wsl --update` and `wsl --shutdown`, reopen Ubuntu and check
+the socket again. If Ubuntu has the socket and the container does not, check
+that you ran Compose from the integrated Ubuntu terminal with both files.
+If you had previously exported `DISPLAY=host.docker.internal:0.0`, remove
+that setting from your shell startup files.
+[Microsoft WSLg container setup](https://github.com/microsoft/wslg/blob/main/samples/container/Containers.md)
+and [Docker Desktop WSL integration](https://docs.docker.com/desktop/features/wsl/#enable-docker-in-a-wsl-2-distribution).
+
+## Build and launch inside the container
 
 ```bash
 source /opt/ros/jazzy/setup.bash
@@ -72,8 +115,6 @@ container recreation. It survives stopping/restarting the same container.
 This avoids overwriting the regular development workspace's build products.
 Python edits use the source mount; restart the simulator to load plugin changes.
 
-Start Compose from your graphical desktop terminal so it receives `DISPLAY`
-and `XAUTHORITY`. The supplied X11 setup uses XWayland on a Wayland desktop.
 Software rendering is selected for portability. Its speed depends on the CPU;
 hardware GPU rendering has not been configured or verified by this setup.
 
@@ -91,11 +132,10 @@ is not supported by this example.
 
 ### Webots cannot open the display (issue #4)
 
-If Webots reports `could not connect to display host.docker.internal:0.0`,
-start with the Xvfb command above in the same container after sourcing the
-simulation environment and overlay. It uses the virtual display already in
-the image. You can confirm that the controller is connected by reading a sensor
-message from a second shell in the same container:
+If Webots reports `could not connect to display host.docker.internal:0.0` on
+Windows, follow the [WSLg setup above](#start-the-container-on-windows-through-wslg).
+Once the window opens, you can confirm that the controller is connected by
+reading a sensor message from a second shell in the same container:
 
 ```bash
 source /workspace/deploy/ros-sim.bash
@@ -109,22 +149,6 @@ that log line is an argument to the controller. Check the earlier Webots
 error to find the cause. The simulator image already contains
 `libxcb-cursor0`; Qt can print its package hint even when the display is
 unreachable.
-
-To open the Webots or RViz window from Docker Desktop over TCP, the host must
-run an X server that accepts the container's connection and authorizes its X11
-client. `host.docker.internal:0.0` points to display 0 on the host, on TCP
-port 6000. Check reachability inside the container:
-
-```bash
-timeout 3 bash -c '</dev/tcp/host.docker.internal/6000'
-```
-
-If this fails, check whether the host X server listens on TCP and whether the
-host firewall permits the connection from Docker Desktop. A successful TCP
-check still requires valid X11 authorization. On native Linux with X11 or
-XWayland, keep the local `DISPLAY` and `XAUTHORITY` values from the graphical
-terminal as described above.
-[Docker Desktop host connectivity](https://docs.docker.com/desktop/features/networking/networking-how-tos/#connect-a-container-to-a-service-on-the-host)
 
 ## Run your node or teleop
 
@@ -315,6 +339,8 @@ To remove only the simulation container:
 ```bash
 docker compose -f compose.sim.yaml down
 ```
+
+In WSL 2, use `docker compose -f compose.sim.yaml -f compose.sim.wsl.yaml down`.
 
 References: [official webots_ros2](https://github.com/cyberbotics/webots_ros2),
 [Jazzy Webots tutorial](https://docs.ros.org/en/jazzy/Tutorials/Advanced/Simulators/Webots/Setting-Up-Simulation-Webots-Basic.html),

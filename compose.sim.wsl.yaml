@@ -1,0 +1,13 @@
+services:
+  sim:
+    network_mode: bridge
+    environment:
+      XAUTHORITY: !reset null
+    volumes: !override
+      - .:/workspace
+      - type: bind
+        source: ${EYECAR_X11_SOCKET_DIR:-/mnt/wslg/.X11-unix}
+        target: /tmp/.X11-unix
+        read_only: true
+        bind:
+          create_host_path: false
