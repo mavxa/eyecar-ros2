@@ -30,7 +30,9 @@ and SSH accepts keys. After cloud-init finishes, connect with
 Open the panel at `http://eyecar.local/`. From the Pi SSH shell:
 
 ```bash
+set -a
 source /etc/eyecar/ros-local.env
+set +a
 source /opt/ros/jazzy/setup.bash
 source /opt/eyecar/install/setup.bash
 ros2 topic list
@@ -38,11 +40,12 @@ systemctl status eyecar-base eyecar-video eyecar-camera eyecar-rosbridge eyecar-
 ```
 
 The ROS graph initially uses loopback. The service user has USB serial
-and video access. See [Networking](NETWORKING.md) for setting up the rover AP,
-and [firmware setup](ROS_WORKFLOW_AND_FIRMWARE.md#mega-firmware) for programming
-the Mega. The firmware source ships under `/opt/eyecar/firmware`. Check the
-actual serial path if the board uses a USB ID other than the default CH340.
-The image leaves vision training and inference dependencies optional.
+and video access. See [Networking](NETWORKING.md) for setting up the rover AP.
+For the SD image, update `/etc/eyecar/ros-local.env` and restart the services
+with system-wide `sudo systemctl` commands. The firmware source ships under
+`/opt/eyecar/firmware`. See [firmware setup](ROS_WORKFLOW_AND_FIRMWARE.md#mega-firmware)
+to program the Mega and check the actual serial path if the board uses a USB
+ID other than the default CH340. Vision dependencies are optional.
 
 ## Laptop container images
 
