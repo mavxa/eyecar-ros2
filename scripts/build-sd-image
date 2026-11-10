@@ -55,6 +55,7 @@ resize2fs "${loop}p2"
 
 mkdir "$root"
 mount "${loop}p2" "$root"
+mkdir -p "$root/boot/firmware"
 mount "${loop}p1" "$root/boot/firmware"
 mount --bind /dev "$root/dev"
 mount -t proc proc "$root/proc"
