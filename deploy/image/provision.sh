@@ -9,6 +9,8 @@ chmod 755 /usr/sbin/policy-rc.d
 trap 'rm -f /usr/sbin/policy-rc.d' EXIT
 
 dpkg -i /tmp/eyecar-ros-apt.deb
+# The preinstalled rootfs already contains packages from noble-updates.
+sed -i 's/^Suites: noble$/Suites: noble noble-updates/' /etc/apt/sources.list.d/ubuntu.sources
 apt-get update
 apt-get install -y --no-install-recommends \
     avahi-daemon build-essential cmake ffmpeg nginx openssh-server \
