@@ -77,7 +77,8 @@ and `XAUTHORITY`. The supplied X11 setup uses XWayland on a Wayland desktop.
 Software rendering is selected for portability. Its speed depends on the CPU;
 hardware GPU rendering has not been configured or verified by this setup.
 
-For a session without a display, replace the final launch command with:
+For a session without a display, including a Docker Desktop container without
+an X server, replace the final launch command with:
 
 ```bash
 WEBOTS_OFFSCREEN=1 ros2 launch eyecar_sim sim.launch.py gui:=false
@@ -87,6 +88,43 @@ This uses Xvfb. The main 3D view is hidden, while camera rendering and ROS
 messages remain available. Close Webots or press Ctrl+C in the launch terminal
 to end the session. Starting two worlds on the default Webots controller port
 is not supported by this example.
+
+### Webots cannot open the display (issue #4)
+
+If Webots reports `could not connect to display host.docker.internal:0.0`,
+start with the Xvfb command above in the same container after sourcing the
+simulation environment and overlay. It uses the virtual display already in
+the image. You can confirm that the controller is connected by reading a sensor
+message from a second shell in the same container:
+
+```bash
+source /workspace/deploy/ros-sim.bash
+source /tmp/eyecar-sim/install/setup.bash
+ros2 topic echo --once /eyecar/ultrasonic
+```
+
+When Webots aborts during startup, ROS launch shuts down its controller. The
+controller's exit code `-15` means it received SIGTERM, and the URDF path in
+that log line is an argument to the controller. Check the earlier Webots
+error to find the cause. The simulator image already contains
+`libxcb-cursor0`; Qt can print its package hint even when the display is
+unreachable.
+
+To open the Webots or RViz window from Docker Desktop over TCP, the host must
+run an X server that accepts the container's connection and authorizes its X11
+client. `host.docker.internal:0.0` points to display 0 on the host, on TCP
+port 6000. Check reachability inside the container:
+
+```bash
+timeout 3 bash -c '</dev/tcp/host.docker.internal/6000'
+```
+
+If this fails, check whether the host X server listens on TCP and whether the
+host firewall permits the connection from Docker Desktop. A successful TCP
+check still requires valid X11 authorization. On native Linux with X11 or
+XWayland, keep the local `DISPLAY` and `XAUTHORITY` values from the graphical
+terminal as described above.
+[Docker Desktop host connectivity](https://docs.docker.com/desktop/features/networking/networking-how-tos/#connect-a-container-to-a-service-on-the-host)
 
 ## Run your node or teleop
 
