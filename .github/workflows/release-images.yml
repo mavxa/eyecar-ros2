@@ -1,0 +1,104 @@
+name: EyeCar images
+
+on:
+  push:
+    branches: [dev, main]
+    tags: ['v*']
+    paths:
+      - .github/workflows/release-images.yml
+      - scripts/build-sd-image
+      - deploy/**
+      - ros2_ws/src/**
+      - web/**
+      - firmware/**
+      - Dockerfile
+      - tests/**
+
+permissions:
+  contents: read
+
+concurrency:
+  group: eyecar-images-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref_type == 'branch' }}
+
+jobs:
+  sd-image:
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 40
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
+        with:
+          bun-version: 1.4.4
+      - name: Build the web panel
+        working-directory: web
+        run: |
+          bun install --frozen-lockfile
+          bun run build
+      - name: Build and verify the SD image
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends cloud-guest-utils zerofree
+          version=v0.0.0-ci
+          if [[ $GITHUB_REF_TYPE == tag ]]; then version=$GITHUB_REF_NAME; fi
+          sudo scripts/build-sd-image "$version" "$RUNNER_TEMP/eyecar-release"
+      - name: Attach the image to a draft release
+        if: github.ref_type == 'tag'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cd "$RUNNER_TEMP/eyecar-release"
+          sha256sum -c SHA256SUMS
+          if status=$(gh release view "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" --json isDraft --jq '.isDraft'); then
+            [[ $status == true ]] || { echo 'This release has already been published.' >&2; exit 1; }
+            gh release upload "$GITHUB_REF_NAME" ./*.img.xz SHA256SUMS --clobber --repo "$GITHUB_REPOSITORY"
+          else
+            gh release create "$GITHUB_REF_NAME" ./*.img.xz SHA256SUMS \
+              --repo "$GITHUB_REPOSITORY" --draft --verify-tag --generate-notes
+          fi
+
+  containers:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    permissions:
+      packages: write
+      contents: read
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - name: Build both container images
+        run: |
+          owner=${GITHUB_REPOSITORY_OWNER,,}
+          version=ci
+          if [[ $GITHUB_REF_TYPE == tag ]]; then version=${GITHUB_REF_NAME#v}; fi
+          dev_image="ghcr.io/$owner/eyecar-ros2:$version"
+          sim_image="ghcr.io/$owner/eyecar-webots:$version"
+          labels=(--label "org.opencontainers.image.source=$GITHUB_SERVER_URL/$GITHUB_REPOSITORY"
+                  --label "org.opencontainers.image.revision=$GITHUB_SHA")
+          docker build "${labels[@]}" -t "$dev_image" -t eyecar-ros2:jazzy .
+          docker build "${labels[@]}" -t "$sim_image" -f deploy/webots/Dockerfile .
+          printf 'DEV_IMAGE=%s\nSIM_IMAGE=%s\n' "$dev_image" "$sim_image" >> "$GITHUB_ENV"
+      - name: Verify Webots, ROS and RViz
+        run: |
+          docker run --rm "$DEV_IMAGE" bash -c 'test -x /opt/ros/jazzy/lib/rviz2/rviz2'
+          docker run --rm -v "$PWD:/workspace:ro" "$SIM_IMAGE" bash -c '
+            set -eo pipefail
+            source /workspace/deploy/ros-sim.bash
+            colcon --log-base /tmp/sim/log build --base-paths /workspace/ros2_ws/src \
+              --build-base /tmp/sim/build --install-base /tmp/sim/install \
+              --symlink-install --packages-select eyecar_interfaces eyecar_sim eyecar_teleop
+            source /tmp/sim/install/setup.bash
+            WEBOTS_OFFSCREEN=1 ros2 launch eyecar_sim sim.launch.py gui:=false >/tmp/webots.log 2>&1 &
+            trap "cat /tmp/webots.log" ERR
+            timeout 60 bash -c "until ros2 topic list | grep -qx /simulation/odom; do sleep 1; done"
+            timeout 90 python3 /workspace/tests/webots_integration.py
+          '
+      - name: Publish both images to GitHub Packages
+        if: github.ref_type == 'tag'
+        env:
+          GHCR_TOKEN: ${{ github.token }}
+        run: |
+          printf '%s' "$GHCR_TOKEN" | docker login ghcr.io -u "$GITHUB_ACTOR" --password-stdin
+          docker push "$DEV_IMAGE"
+          docker push "$SIM_IMAGE"

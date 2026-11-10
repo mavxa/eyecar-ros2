@@ -32,6 +32,9 @@ sketch, not ROS. The browser panel displays data and does not control motion.
 
 ## Build the rover
 
+For the versioned microSD image and ready-made laptop containers, see
+[EyeCar images and releases](docs/RELEASES.md).
+
 Follow the [build guide](docs/README.md) in order:
 
 1. [Identify the hardware and connect signals](docs/Wiring.md).
