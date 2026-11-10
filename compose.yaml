@@ -1,6 +1,6 @@
 services:
   ros2:
-    image: eyecar-ros2:jazzy
+    image: ${EYECAR_ROS_IMAGE:-eyecar-ros2:jazzy}
     container_name: eyecar-ros2
     pull_policy: never
     init: true

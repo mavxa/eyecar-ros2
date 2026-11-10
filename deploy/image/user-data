@@ -1,0 +1,11 @@
+#cloud-config
+hostname: eyecar
+manage_etc_hosts: true
+ssh_pwauth: false
+users:
+  - name: ubuntu
+    groups: [adm, dialout, sudo, video]
+    shell: /bin/bash
+    sudo: 'ALL=(ALL) NOPASSWD:ALL'
+    lock_passwd: true
+    ssh_authorized_keys: []

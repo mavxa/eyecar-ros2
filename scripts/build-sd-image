@@ -1,0 +1,94 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+if [[ $# != 2 || ! $1 =~ ^v[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9.-]+)?$ ]]; then
+    echo "Usage: $0 vX.Y.Z OUTPUT_DIRECTORY" >&2
+    exit 2
+fi
+if [[ $EUID != 0 || $(uname -m) != aarch64 ]]; then
+    echo "Run as root on a Linux ARM64 build machine." >&2
+    exit 2
+fi
+
+version=$1
+output=$(realpath -m "$2")
+repo=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)
+[[ -f $repo/web/dist/index.html ]] || { echo 'Build web/dist before building the SD image.' >&2; exit 2; }
+
+ubuntu_file=ubuntu-24.04.5-preinstalled-server-arm64+raspi.img.xz
+ubuntu_sha=b23371a5c8d02f612c26e7c18cacb81c5a48f968c7c66a2645391320aa94351e
+ros_apt_version=1.3.0
+ros_apt_sha=f31d84adf5054c7d60ded0e82c0f776a77ea33af53d08f40b9ad7c94cca55296
+mediamtx_version=v1.21.3
+mediamtx_sha=27f038237cb5f77a724f6afc58eca2798f2bc4edf9989895631a80eeb41a4fe2
+
+work=$(mktemp -d)
+root=$work/root
+image=$work/eyecar.img
+loop=
+cleanup() {
+    if mountpoint -q "$root"; then
+        umount -R "$root" || return 1
+    fi
+    if [[ -n $loop ]]; then
+        losetup -d "$loop" || return 1
+    fi
+    rm -rf -- "$work"
+}
+trap cleanup EXIT
+
+download() {
+    curl --fail --location --retry 3 --silent --show-error "$1" -o "$2"
+    printf '%s  %s\n' "$3" "$2" | sha256sum -c -
+}
+
+download "https://cdimage.ubuntu.com/releases/noble/release/$ubuntu_file" "$work/base.img.xz" "$ubuntu_sha"
+xz -dc "$work/base.img.xz" | dd of="$image" bs=4M conv=sparse status=none
+rm "$work/base.img.xz"
+# Keep the Pi boot partition and expand the ext4 root to make room for ROS.
+truncate -s 8G "$image"
+growpart "$image" 2
+loop=$(losetup --find --show --partscan "$image")
+udevadm settle
+e2fsck -fy "${loop}p2" || [[ $? == 1 ]]
+resize2fs "${loop}p2"
+
+mkdir "$root"
+mount "${loop}p2" "$root"
+mkdir -p "$root/boot/firmware"
+mount "${loop}p1" "$root/boot/firmware"
+mount --bind /dev "$root/dev"
+mount -t proc proc "$root/proc"
+mv "$root/etc/resolv.conf" "$work/resolv.conf"
+cp -L /etc/resolv.conf "$root/etc/resolv.conf"
+
+mkdir -p "$root/opt/eyecar/web/dist"
+git -c safe.directory="$repo" -C "$repo" archive HEAD deploy firmware ros2_ws/src | tar -x -C "$root/opt/eyecar"
+cp -a "$repo/web/dist/." "$root/opt/eyecar/web/dist/"
+git -c safe.directory="$repo" -C "$repo" rev-parse HEAD > "$root/opt/eyecar/REVISION"
+
+download "https://github.com/ros-infrastructure/ros-apt-source/releases/download/$ros_apt_version/ros2-apt-source_${ros_apt_version}.noble_all.deb" "$root/tmp/eyecar-ros-apt.deb" "$ros_apt_sha"
+download "https://github.com/bluenviron/mediamtx/releases/download/$mediamtx_version/mediamtx_${mediamtx_version}_linux_arm64.tar.gz" "$work/mediamtx.tar.gz" "$mediamtx_sha"
+tar -xzf "$work/mediamtx.tar.gz" -C "$work" mediamtx
+install -m 755 "$work/mediamtx" "$root/tmp/eyecar-mediamtx"
+chroot "$root" /bin/bash /opt/eyecar/deploy/image/provision.sh
+rm "$root/tmp/eyecar-ros-apt.deb" "$root/tmp/eyecar-mediamtx"
+
+install -m 644 "$repo/deploy/image/user-data" "$root/boot/firmware/user-data"
+mv -T "$work/resolv.conf" "$root/etc/resolv.conf"
+umount -R "$root"
+e2fsck -fy "${loop}p2" || [[ $? == 1 ]]
+zerofree "${loop}p2"
+losetup -d "$loop"
+loop=
+
+asset="eyecar-$version-raspi-arm64.img.xz"
+xz -T2 -6 --stdout "$image" > "$work/$asset"
+xz -t "$work/$asset"
+if (( $(stat -c %s "$work/$asset") >= 2147483648 )); then
+    echo "The compressed image exceeds GitHub Releases' per-asset limit." >&2
+    exit 1
+fi
+mkdir -p "$output"
+mv "$work/$asset" "$output/$asset"
+(cd "$output" && sha256sum "$asset" > SHA256SUMS && sha256sum -c SHA256SUMS)

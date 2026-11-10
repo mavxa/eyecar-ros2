@@ -25,7 +25,8 @@ class RvizLauncherTests(unittest.TestCase):
                                    capture_output=True, check=True)
             image = 'eyecar-ros2:jazzy'
             self.assertIn(image, build.stdout.splitlines())
-            self.assertIn('image: ' + image, (ROOT / 'compose.yaml').read_text())
+            self.assertIn('image: ${EYECAR_ROS_IMAGE:-' + image + '}',
+                          (ROOT / 'compose.yaml').read_text())
             launch = subprocess.run(command, env=env, text=True, capture_output=True)
             self.assertNotEqual(launch.returncode, 0)
             self.assertIn('graphical laptop session', launch.stderr)

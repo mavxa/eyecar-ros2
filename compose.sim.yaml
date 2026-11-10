@@ -1,7 +1,7 @@
 name: eyecar-sim
 services:
   sim:
-    image: eyecar-webots:jazzy
+    image: ${EYECAR_SIM_IMAGE:-eyecar-webots:jazzy}
     container_name: eyecar-sim
     pull_policy: never
     init: true
