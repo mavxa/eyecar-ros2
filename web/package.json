@@ -8,6 +8,6 @@
     "preview": "vite preview --host 127.0.0.1"
   },
   "devDependencies": {
-    "vite": "^8.3.6"
+    "vite": "^8.3.8"
   }
 }
